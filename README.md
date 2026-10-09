@@ -76,7 +76,15 @@ Bhujal decouples deterministic spatial hydrogeology from generative contextual s
 * **Serverless Execution**: AWS Lambda container running FastAPI using the Mangum ASGI adapter, configured for 512 MB memory and 30-second execution envelopes.
 * **Field Observation Ledger**: Amazon DynamoDB running in on-demand capacity mode (`bhujal-observations`) with single-table indexing on `observation_id` and global secondary indexing on `site_id`.
 * **Binary and Report Storage**: Amazon S3 (`bhujal-uploads-<account-id>`) configured with presigned URL upload workflows for field imagery and static report artifacts.
-* **AI Explanation Engine**: Amazon Bedrock hosting Anthropic Claude 3 Sonnet orchestrating contextual synthesis through the Strands Agents framework, backed by a deterministic template engine when cloud credentials are not supplied.
+* **Multi-Agent AI Collective**: Seven specialized autonomous domain agents coordinated by an administrative lead orchestrator, backed by Amazon Bedrock (Anthropic Claude 3 Sonnet) and a high-performance deterministic fallback engine:
+  1. `HydrogeologyAgent`: Evaluates terrain slope, soil permeability, and fracture lineaments.
+  2. `HeatWaterStressAgent`: Diagnoses thermal radiometric anomalies and dry-season water distress.
+  3. `SpringshedAgent`: Monitors mountain spring drying hazards and catchment deforestation.
+  4. `SafetyAuditorAgent`: Enforces geotechnical slope stability (>35°), landslide, and flood buffer vetoes.
+  5. `InterventionComposerAgent`: Tailors civil structures (Check Dams, Percolation Tanks, etc.) with MGNREGA cost ranges.
+  6. `ScenarioSimulatorAgent`: Simulates rainfall variations (0.5x to 1.5x) and intervention resilience deltas.
+  7. `TelemetryQAAgent`: Inspects field measurements, validates units, and flags physical anomalies.
+  * `LeadPlannerOrchestratorAgent`: Chief administrative orchestrator synthesizing specialist briefings into planning action dossiers.
 
 ---
 
@@ -206,9 +214,24 @@ Before any civil intervention is approved, the site is evaluated against determi
    pytest tests/ -v --tb=short
    ```
 
-5. Launch local services:
+5. Command-Line Interface (CLI):
    ```bash
-   make dev
+   # Enumerate tracked demo settlements
+   python main.py list
+
+   # Perform comprehensive multi-criteria hydro-climatic analysis
+   python main.py evaluate site_001
+
+   # Execute climate scenario simulation (-20% rainfall with check dam)
+   python main.py simulate site_001 --rainfall 0.8 --intervention check_dam
+
+   # Generate planner action dossier across demonstration sites
+   python main.py report --sites site_001,site_002,site_003
+   ```
+
+6. Launch local API server:
+   ```bash
+   python main.py server --port 8000
    ```
 
 ---

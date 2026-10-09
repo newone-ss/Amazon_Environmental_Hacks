@@ -1,8 +1,7 @@
 # ──────────────────────────────────────────────
-# Demo Sites — Bhujal
-# Pre-selected villages/sites in Koraput district
-# for the 3-minute demo. These have synthetic
-# feature values for illustration.
+# Demo Sites Specification — Bhujal
+# Curated micro-catchments and settlements in Koraput District, Odisha
+# Structured for validation across all scoring, safety, and intervention pathways.
 # ──────────────────────────────────────────────
 
 sites:
@@ -13,11 +12,38 @@ sites:
     state: "Odisha"
     lat: 18.8124
     lon: 82.7133
-    elevation_m: 580                  # ASSUMPTION: illustrative
-    population: 1200                  # ASSUMPTION: illustrative
+    elevation_m: 580.0
+    population: 1200
     has_spring: true
-    notes: "Village with known spring; moderate slope; good demo of recharge + spring scores"
     data_tag: "illustrative"
+    notes: "Upland valley settlement with perennial spring; gentle-to-moderate slope; primary baseline for check dam and springshed treatment."
+    features:
+      slope_degrees: 8.5
+      soil_type: "sandy_loam"
+      soil_permeability: 0.75
+      rainfall_intensity: 0.70
+      lulc_class: "forest"
+      lulc_perviousness: 0.80
+      lineament_density: 0.65
+      drainage_density: 0.40
+      lst_summer_max_c: 38.5
+      ndvi_summer: 0.48
+      rainfall_deficit_pct: 6.0
+      groundwater_depth_m: 9.5
+      distance_to_perennial_water_m: 1200.0
+      population_density_per_km2: 145.0
+      catchment_area_ha: 14.5
+      forest_loss_pct: 7.5
+      geology: "weathered_granite"
+      rainfall_trend_pct: -3.0
+      stream_order: 2
+      landslide_susceptibility: "low"
+      seismic_zone: 2
+      distance_to_river_m: 850.0
+      elevation_above_river_m: 28.0
+      protected_area_type: null
+      settlement: false
+      stream_bed_material: "gravelly"
 
   - id: site_002
     name: "Mundaguda"
@@ -26,11 +52,38 @@ sites:
     state: "Odisha"
     lat: 18.9456
     lon: 82.8910
-    elevation_m: 720
+    elevation_m: 720.0
     population: 800
     has_spring: false
-    notes: "Hilltop village; steep slopes; demonstrates REJECTED safety verdict"
     data_tag: "illustrative"
+    notes: "High-relief ridge settlement on steep granitic scarp; demonstrates safety veto engine (SLOPE_STEEP and LANDSLIDE_ZONE)."
+    features:
+      slope_degrees: 42.0
+      soil_type: "gravelly"
+      soil_permeability: 0.55
+      rainfall_intensity: 0.85
+      lulc_class: "scrub"
+      lulc_perviousness: 0.65
+      lineament_density: 0.40
+      drainage_density: 0.80
+      lst_summer_max_c: 39.0
+      ndvi_summer: 0.35
+      rainfall_deficit_pct: 12.0
+      groundwater_depth_m: 22.0
+      distance_to_perennial_water_m: 3500.0
+      population_density_per_km2: 85.0
+      catchment_area_ha: 3.0
+      forest_loss_pct: 22.0
+      geology: "charnockite"
+      rainfall_trend_pct: -6.0
+      stream_order: 1
+      landslide_susceptibility: "high"
+      seismic_zone: 2
+      distance_to_river_m: 2200.0
+      elevation_above_river_m: 140.0
+      protected_area_type: null
+      settlement: false
+      stream_bed_material: "boulder"
 
   - id: site_003
     name: "Parajam"
@@ -39,11 +92,38 @@ sites:
     state: "Odisha"
     lat: 18.5234
     lon: 82.5678
-    elevation_m: 350
+    elevation_m: 350.0
     population: 2500
     has_spring: true
-    notes: "Lowland village near river; demonstrates flood zone CONDITIONAL verdict and high heat stress"
     data_tag: "illustrative"
+    notes: "Lowland riverine plain; high summer thermal exposure; demonstrates riparian flood buffer veto (FLOOD_ZONE) and heat stress."
+    features:
+      slope_degrees: 3.2
+      soil_type: "clay_loam"
+      soil_permeability: 0.40
+      rainfall_intensity: 0.60
+      lulc_class: "agriculture"
+      lulc_perviousness: 0.60
+      lineament_density: 0.30
+      drainage_density: 0.35
+      lst_summer_max_c: 44.8
+      ndvi_summer: 0.18
+      rainfall_deficit_pct: 22.0
+      groundwater_depth_m: 16.5
+      distance_to_perennial_water_m: 140.0
+      population_density_per_km2: 320.0
+      catchment_area_ha: 32.0
+      forest_loss_pct: 4.0
+      geology: "alluvium"
+      rainfall_trend_pct: -4.0
+      stream_order: 4
+      landslide_susceptibility: "low"
+      seismic_zone: 2
+      distance_to_river_m: 140.0
+      elevation_above_river_m: 3.8
+      protected_area_type: null
+      settlement: false
+      stream_bed_material: "sandy"
 
   - id: site_004
     name: "Dukum"
@@ -52,11 +132,38 @@ sites:
     state: "Odisha"
     lat: 19.0345
     lon: 83.0123
-    elevation_m: 640
+    elevation_m: 640.0
     population: 600
     has_spring: true
-    notes: "Tribal hamlet; spring drying observed; good demo of springshed intervention"
     data_tag: "illustrative"
+    notes: "Indigenous tribal hamlet experiencing acute spring desiccation; high catchment deforestation; demonstrates springshed management."
+    features:
+      slope_degrees: 18.0
+      soil_type: "loam"
+      soil_permeability: 0.65
+      rainfall_intensity: 0.75
+      lulc_class: "forest"
+      lulc_perviousness: 0.75
+      lineament_density: 0.55
+      drainage_density: 0.50
+      lst_summer_max_c: 40.2
+      ndvi_summer: 0.32
+      rainfall_deficit_pct: 16.0
+      groundwater_depth_m: 12.0
+      distance_to_perennial_water_m: 2100.0
+      population_density_per_km2: 65.0
+      catchment_area_ha: 4.8
+      forest_loss_pct: 38.5
+      geology: "khondalite"
+      rainfall_trend_pct: -15.5
+      stream_order: 2
+      landslide_susceptibility: "low"
+      seismic_zone: 2
+      distance_to_river_m: 1800.0
+      elevation_above_river_m: 45.0
+      protected_area_type: null
+      settlement: false
+      stream_bed_material: "gravelly"
 
   - id: site_005
     name: "Kotpad Town"
@@ -65,8 +172,35 @@ sites:
     state: "Odisha"
     lat: 19.1567
     lon: 82.3456
-    elevation_m: 270
+    elevation_m: 270.0
     population: 5000
     has_spring: false
-    notes: "Semi-urban; flat terrain; good candidate for percolation tank and rooftop RWH"
     data_tag: "illustrative"
+    notes: "Semi-urban plateau settlement; flat topography with permeable substrate; optimal candidate for percolation tanks and rooftop RWH."
+    features:
+      slope_degrees: 1.8
+      soil_type: "sandy_loam"
+      soil_permeability: 0.80
+      rainfall_intensity: 0.65
+      lulc_class: "settlement"
+      lulc_perviousness: 0.35
+      lineament_density: 0.45
+      drainage_density: 0.25
+      lst_summer_max_c: 41.5
+      ndvi_summer: 0.22
+      rainfall_deficit_pct: 10.0
+      groundwater_depth_m: 11.0
+      distance_to_perennial_water_m: 800.0
+      population_density_per_km2: 650.0
+      catchment_area_ha: 55.0
+      forest_loss_pct: 2.0
+      geology: "laterite"
+      rainfall_trend_pct: -2.0
+      stream_order: 2
+      landslide_susceptibility: "low"
+      seismic_zone: 2
+      distance_to_river_m: 950.0
+      elevation_above_river_m: 18.0
+      protected_area_type: null
+      settlement: true
+      stream_bed_material: "sandy"

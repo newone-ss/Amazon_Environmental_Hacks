@@ -26,6 +26,7 @@ env/
 data/raw/
 data/processed/
 data/export/
+data/reports/
 *.tif
 *.tiff
 *.nc
