@@ -1,33 +1,94 @@
-# Decisions Log
+# Architectural Decision Records (ADR)
 
-> Every non-trivial design decision is recorded here with date, context, and rationale.
+> **Standard**: Modified Nygard ADR Format  
+> **Status**: Active Project Architecture Log  
+> **Repository Context**: Bhujal Spatial Decision Support Platform
 
 ---
 
-## 2026-10-09 — Phase 0
+## ADR Index
 
-### D001: Demo AOI — Koraput District, Odisha
-**Context**: Need one area for demo. Must be hilly, tribal, with springs and heat-water stress.
-**Decision**: Koraput District, Odisha (bounding box: 82.05–83.40°E, 18.25–19.30°N).
-**Rationale**: Eastern Ghats, tribal population (>50%), known spring-fed villages, monsoon-dependent, IMD rainfall data available. Fits all demo requirements.
-**Risk**: Bounding box is simplified; actual district boundary is more complex.
+* [ADR-001: Selection of Koraput District, Odisha as Demonstration Area](#adr-001-selection-of-koraput-district-odisha-as-demonstration-area)
+* [ADR-002: Enforcement of Five-Field Scoring Schema at Type Level](#adr-002-enforcement-of-five-field-scoring-schema-at-type-level)
+* [ADR-003: Externalized Declarative Configuration for Safety and Weights](#adr-003-externalized-declarative-configuration-for-safety-and-weights)
+* [ADR-004: Indicative Cost Range Modeling with Explicit Assumptions](#adr-004-indicative-cost-range-modeling-with-explicit-assumptions)
+* [ADR-005: Empirical Honesty Protocols and Explicit Provenance Badging](#adr-005-empirical-honesty-protocols-and-explicit-provenance-badging)
+* [ADR-006: Serverless Architecture Over Relational and PostGIS Infrastructure](#adr-006-serverless-architecture-over-relational-and-postgis-infrastructure)
+* [ADR-007: Complete Isolation of Quantitative Scoring from Generative AI](#adr-007-complete-isolation-of-quantitative-scoring-from-generative-ai)
 
-### D002: Score Schema — Five Mandatory Fields
-**Context**: Rule 4 requires every score to return value, class, drivers, confidence, data_quality_note.
-**Decision**: Pydantic `ScoreResult` model enforces this at the type level.
-**Rationale**: Compile-time safety > runtime checks. Any scoring function that doesn't return this shape will fail type checking and tests.
+---
 
-### D003: Safety Rules — Config-Driven, Not Hard-Coded
-**Context**: Safety thresholds (slope, seismic zone, flood buffer) could be constants in code or in config.
-**Decision**: All thresholds in `config/safety_rules.yaml`.
-**Rationale**: Domain experts can adjust thresholds without touching Python code. Easier to validate and audit.
+### ADR-001: Selection of Koraput District, Odisha as Demonstration Area
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: The hackathon evaluation demands a focused, high-impact demonstration rather than a broad, shallow multi-state prototype. The target landscape required complex topography, vulnerable indigenous demographics, acute dry-season water stress, and active perched springs.
+* **Decision**: Confine all demonstration pipelines, validations, and interactive visualizations to Koraput District in southern Odisha (bounding envelope: 82.05°E–83.40°E, 18.25°N–19.30°N).
+* **Consequences**:
+  * Positive: Enables deep hydrogeological modeling and high-fidelity contextual calibration against Eastern Ghats hard-rock geomorphology.
+  * Negative: The bounding envelope simplifies the political district boundary; multi-district scalability is deferred to post-MVP.
 
-### D004: Cost Estimates — Order-of-Magnitude Only
-**Context**: Intervention costs vary hugely by site. We can't produce BOQ-level estimates.
-**Decision**: Show cost as a range (low–high) in INR with explicit assumptions list and confidence level.
-**Rationale**: Honest presentation. UI will show "Indicative" badge.
+---
 
-### D005: Illustrative Data Tag for Demo
-**Context**: We don't have real field data for the demo villages.
-**Decision**: All demo site data tagged `DataTag.ILLUSTRATIVE`. UI will show a badge.
-**Rationale**: Rule 3 — never fabricate data. Synthetic stand-ins must be clearly labelled.
+### ADR-002: Enforcement of Five-Field Scoring Schema at Type Level
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: Watershed planners require complete visibility into why a particular score was assigned and how much confidence can be placed in it. Opaque scalar outputs risk misallocating public capital.
+* **Decision**: Mandate that all scoring functions emit a unified `ScoreResult` schema featuring five compulsory properties: `value`, `score_class`, `drivers` (factor, weight, contribution), `confidence` (level, numeric), and `data_quality_note`. Enforce this contract at the compile/type layer via Pydantic v2.
+* **Consequences**:
+  * Positive: Guarantees full auditability and explanatory transparency across all frontend views and report dossiers.
+  * Negative: Minor serialization overhead compared to raw floating-point scalar responses.
+
+---
+
+### ADR-003: Externalized Declarative Configuration for Safety and Weights
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: Civil safety limits (e.g., maximum buildable slope gradients) and hydrological weighting matrices must be reviewed and modified by geotechnical and watershed specialists without touching Python source code.
+* **Decision**: Externalize all factor weights, safety rules, intervention constraints, and costing schedules into structured YAML files within `config/`.
+* **Consequences**:
+  * Positive: Zero code modification required for domain parameter calibration; easily audited by external review panels.
+  * Negative: Requires robust schema validation on startup to prevent malformed YAML runtime exceptions.
+
+---
+
+### ADR-004: Indicative Cost Range Modeling with Explicit Assumptions
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: Topographical heterogeneity and variable haulage distances in remote hilly terrain make tender-grade bill-of-quantities (BOQ) calculations impossible without detailed on-site topographical surveys.
+* **Decision**: Represent financial projections strictly as indicative ranges (low–high in INR) accompanied by person-day labour allocations, required material categories, and explicit engineering assumptions calibrated to Odisha MGNREGA schedules of rates.
+* **Consequences**:
+  * Positive: Sets realistic expectations for administrative planners; transparently communicates pricing bounds.
+  * Negative: Requires explicit UI disclaimers that values are preliminary estimates rather than binding contracts.
+
+---
+
+### ADR-005: Empirical Honesty Protocols and Explicit Provenance Badging
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: Hackathon projects frequently synthesize ungrounded data and present it as empirical measurement, compromising scientific credibility.
+* **Decision**: Classify and visibly badge every data asset and model output as `real`, `proxy`, or `illustrative`. Prohibit the use of "AI" marketing terminology for standard multi-criteria weighted linear combinations.
+* **Consequences**:
+  * Positive: Establishes uncompromising scientific integrity and operational credibility with technical judges.
+  * Negative: Precludes marketing simplifications.
+
+---
+
+### ADR-006: Serverless Architecture Over Relational and PostGIS Infrastructure
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: Deploying, provisioning, and maintaining a relational database server with PostGIS extensions introduces substantial infrastructure complexity, idle costs, and deployment latency within a rapid development envelope.
+* **Decision**: Use an event-driven serverless topology combining AWS Lambda (FastAPI/Mangum), Amazon API Gateway, Amazon DynamoDB (on-demand observations ledger), and static S3/GeoJSON spatial datasets.
+* **Consequences**:
+  * Positive: Zero base idle costs, sub-second deployment cycles via AWS SAM, and infinite elastic scale.
+  * Negative: Complex ad-hoc spatial SQL queries are not supported; vector operations must be performed in-memory via Shapely/GeoPandas or pre-computed offline.
+
+---
+
+### ADR-007: Complete Isolation of Quantitative Scoring from Generative AI
+* **Date**: 2026-10-09
+* **Status**: Accepted
+* **Context**: Large Language Models are prone to stochastic hallucinations, making them unsafe for geotechnical safety vetoes or structural engineering clearances.
+* **Decision**: Confine all numerical evaluations, safety verdicts, and cost schedules strictly to deterministic algorithms. Deploy Amazon Bedrock (Claude 3 Sonnet) strictly downstream to compile deterministic outputs into human-readable planning briefs and administrative dossiers.
+* **Consequences**:
+  * Positive: Absolute mathematical reproducibility, zero hallucination of safety hazards, and auditable governance.
+  * Negative: Limits the generative model's scope to summarization and translation tasks.
