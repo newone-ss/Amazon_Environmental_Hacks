@@ -12,19 +12,17 @@ from fastapi.middleware.cors import CORSMiddleware
 from mangum import Mangum
 
 from backend.models import (
+    DataTag,
     MetaResponse,
-    Village,
-    Site,
-    ScoreResult,
-    SafetyVerdict,
-    Recommendation,
-    ScenarioRequest,
-    ScenarioResult,
-    ObservationCreate,
     Observation,
+    ObservationCreate,
+    Recommendation,
     ReportRequest,
     ReportResult,
-    DataTag,
+    ScenarioRequest,
+    ScenarioResult,
+    Site,
+    Village,
 )
 
 app = FastAPI(
@@ -75,7 +73,9 @@ async def get_site(site_id: str) -> Site:
 async def run_scenario(request: ScenarioRequest) -> ScenarioResult:
     """Run a what-if rainfall scenario."""
     # TODO: wire scenario simulator
-    raise HTTPException(status_code=501, detail="Scenario simulator not yet implemented")
+    raise HTTPException(
+        status_code=501, detail="Scenario simulator not yet implemented"
+    )
 
 
 @app.post("/recommendation", response_model=list[Recommendation])
@@ -89,7 +89,9 @@ async def get_recommendations(site_id: str) -> list[Recommendation]:
 async def create_observation(obs: ObservationCreate) -> Observation:
     """Submit a field observation."""
     # TODO: wire DynamoDB
-    raise HTTPException(status_code=501, detail="Observation storage not yet implemented")
+    raise HTTPException(
+        status_code=501, detail="Observation storage not yet implemented"
+    )
 
 
 @app.get("/observations", response_model=list[Observation])
