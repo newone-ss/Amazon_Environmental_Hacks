@@ -1,0 +1,69 @@
+# ──────────────────────────────────────────────
+# Safety Rules — Bhujal
+# Deterministic veto rules. If ANY rule triggers,
+# the site gets REJECTED or CONDITIONAL status.
+# Rules are evaluated in order; first REJECT wins.
+# ──────────────────────────────────────────────
+
+rules:
+  - id: SLOPE_STEEP
+    description: "Slope exceeds safe construction threshold"
+    condition: "slope_degrees > threshold"
+    threshold: 35                    # ASSUMPTION: 35° common cutoff for hill construction
+    verdict: REJECTED
+    reason: "Slope of {slope_degrees}° exceeds the 35° safety limit for earthwork structures"
+    source: "BIS guidelines, CGWB technical manual"
+
+  - id: LANDSLIDE_ZONE
+    description: "Site falls within a mapped landslide susceptibility zone (high or very high)"
+    condition: "landslide_susceptibility in ['high', 'very_high']"
+    threshold: null
+    verdict: REJECTED
+    reason: "Site is in a {landslide_susceptibility} landslide susceptibility zone"
+    source: "GSI Landslide Susceptibility Map"
+
+  - id: SEISMIC_HIGH
+    description: "Site is in seismic zone IV or V"
+    condition: "seismic_zone >= 4"
+    threshold: 4                     # Verified: BIS seismic zonation
+    verdict: CONDITIONAL
+    reason: "Seismic zone {seismic_zone} requires earthquake-resistant design"
+    source: "BIS IS 1893:2016 Seismic Zonation"
+
+  - id: FLOOD_ZONE
+    description: "Site is within a flood-prone buffer of a river"
+    condition: "distance_to_river_m < threshold AND elevation_above_river_m < elev_threshold"
+    threshold: 200                   # ASSUMPTION: 200m horizontal buffer
+    elev_threshold: 5                # ASSUMPTION: 5m vertical buffer
+    verdict: REJECTED
+    reason: "Site is {distance_to_river_m}m from river and only {elevation_above_river_m}m above riverbed"
+    source: "CWC flood maps, DEM analysis"
+
+  - id: FOREST_PROTECTED
+    description: "Site falls within protected forest or wildlife sanctuary"
+    condition: "protected_area_type is not null"
+    threshold: null
+    verdict: REJECTED
+    reason: "Site is inside {protected_area_type}: construction prohibited without clearance"
+    source: "WDPA / State forest department"
+
+  - id: SOIL_UNSTABLE
+    description: "Soil type is unsuitable for earthen structures (expansive clay or peat)"
+    condition: "soil_type in ['expansive_clay', 'peat', 'organic']"
+    threshold: null
+    verdict: CONDITIONAL
+    reason: "Soil type '{soil_type}' requires engineering treatment before construction"
+    source: "NBSS-LUP soil map"
+
+  - id: SLOPE_MODERATE
+    description: "Slope is moderate — construction possible with precautions"
+    condition: "slope_degrees > threshold"
+    threshold: 20                    # ASSUMPTION: 20-35° needs extra design
+    verdict: CONDITIONAL
+    reason: "Slope of {slope_degrees}° requires terracing and retaining walls"
+    source: "CGWB technical manual"
+
+# ── Verdict logic ──────────────────────────────
+# REJECTED: at least one REJECT rule triggered → do not build here
+# CONDITIONAL: no REJECT but at least one CONDITIONAL → build with modifications
+# SAFE: no rules triggered → site is suitable

@@ -1,0 +1,54 @@
+# ──────────────────────────────────────────────
+# Scenario Simulator Parameters — Bhujal
+# Controls the "what-if" rainfall slider.
+# ──────────────────────────────────────────────
+
+# Baseline monsoon rainfall for the demo AOI (mm)
+baseline_monsoon_rainfall_mm: 1400   # Verified: Koraput avg ~1400 mm (IMD)
+
+# Slider range (fraction of baseline)
+rainfall_slider:
+  min_fraction: 0.5                  # -50% (severe drought)
+  max_fraction: 1.5                  # +50% (excess rainfall)
+  step: 0.05                         # 5% increments
+  default: 1.0                       # Current normal
+
+# Simple linear sensitivity coefficients
+# delta_score = coefficient * (fraction - 1.0)
+# These are ASSUMPTIONS — crude first-order sensitivities
+sensitivities:
+  recharge_score:
+    rainfall_coefficient: 40         # ASSUMPTION: +40 points per +100% rainfall
+    description: "More rain → more recharge (linear approx)"
+
+  heat_water_stress:
+    rainfall_coefficient: -30        # ASSUMPTION: more rain → less stress
+    description: "More rain → less heat-water stress"
+
+  spring_drying_index:
+    rainfall_coefficient: -25        # ASSUMPTION: more rain → less drying risk
+    description: "More rain → springs are safer"
+
+# Post-intervention uplift (added after scenario adjustment)
+# These represent the expected improvement if the recommended intervention is built
+intervention_uplift:
+  check_dam:
+    recharge_score: 12               # ASSUMPTION: moderate uplift
+    spring_drying_index: -8          # Negative = reduces risk
+  percolation_tank:
+    recharge_score: 15
+    spring_drying_index: -10
+  contour_trench:
+    recharge_score: 8
+    spring_drying_index: -5
+  spring_shed_treatment:
+    recharge_score: 10
+    spring_drying_index: -15
+  rooftop_rainwater_harvesting:
+    heat_water_stress: -10
+  farm_pond:
+    recharge_score: 5
+    heat_water_stress: -8
+  gabion_structure:
+    recharge_score: 10
+    spring_drying_index: -6

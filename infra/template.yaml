@@ -1,0 +1,189 @@
+AWSTemplateFormatVersion: '2010-09-09'
+Transform: AWS::Serverless-2016-10-31
+Description: >
+  Bhujal — Decision-support tool for groundwater recharge planning.
+  SAM template for Lambda + API Gateway + DynamoDB + S3.
+
+Globals:
+  Function:
+    Timeout: 30
+    MemorySize: 512
+    Runtime: python3.11
+    Environment:
+      Variables:
+        DYNAMODB_TABLE_OBSERVATIONS: !Ref ObservationsTable
+        S3_BUCKET_UPLOADS: !Ref UploadsBucket
+        BEDROCK_MODEL_ID: anthropic.claude-3-sonnet-20240229-v1:0
+        LOG_LEVEL: INFO
+
+Parameters:
+  Stage:
+    Type: String
+    Default: prod
+    AllowedValues:
+      - dev
+      - prod
+
+Resources:
+
+  # ── API ────────────────────────────────────────
+  BhujalApi:
+    Type: AWS::Serverless::HttpApi
+    Properties:
+      StageName: !Ref Stage
+      CorsConfiguration:
+        AllowOrigins:
+          - "http://localhost:5173"
+          - !Sub "https://${FrontendDistribution.DomainName}"
+        AllowMethods:
+          - GET
+          - POST
+          - OPTIONS
+        AllowHeaders:
+          - Content-Type
+
+  # ── Lambda Function ────────────────────────────
+  BhujalFunction:
+    Type: AWS::Serverless::Function
+    Properties:
+      Handler: backend.app.handler
+      CodeUri: ../
+      Description: Bhujal FastAPI backend via Mangum
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Ref ObservationsTable
+        - S3CrudPolicy:
+            BucketName: !Ref UploadsBucket
+        - Statement:
+            - Effect: Allow
+              Action:
+                - bedrock:InvokeModel
+              Resource: "*"
+      Events:
+        ApiEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BhujalApi
+            Path: /{proxy+}
+            Method: ANY
+
+  # ── DynamoDB — Observations ────────────────────
+  ObservationsTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: bhujal-observations
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: observation_id
+          AttributeType: S
+        - AttributeName: site_id
+          AttributeType: S
+      KeySchema:
+        - AttributeName: observation_id
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: site-index
+          KeySchema:
+            - AttributeName: site_id
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
+  # ── S3 — File Uploads (photos, reports) ────────
+  UploadsBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "bhujal-uploads-${AWS::AccountId}"
+      CorsConfiguration:
+        CorsRules:
+          - AllowedOrigins:
+              - "*"
+            AllowedMethods:
+              - PUT
+              - GET
+            AllowedHeaders:
+              - "*"
+            MaxAge: 3600
+
+  # ── S3 — Frontend Static Hosting ──────────────
+  FrontendBucket:
+    Type: AWS::S3::Bucket
+    Properties:
+      BucketName: !Sub "bhujal-frontend-${AWS::AccountId}"
+      WebsiteConfiguration:
+        IndexDocument: index.html
+        ErrorDocument: index.html
+
+  FrontendBucketPolicy:
+    Type: AWS::S3::BucketPolicy
+    Properties:
+      Bucket: !Ref FrontendBucket
+      PolicyDocument:
+        Statement:
+          - Sid: AllowCloudFrontAccess
+            Effect: Allow
+            Principal:
+              Service: cloudfront.amazonaws.com
+            Action: s3:GetObject
+            Resource: !Sub "${FrontendBucket.Arn}/*"
+            Condition:
+              StringEquals:
+                AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${FrontendDistribution}"
+
+  # ── CloudFront — Frontend CDN ──────────────────
+  FrontendDistribution:
+    Type: AWS::CloudFront::Distribution
+    Properties:
+      DistributionConfig:
+        Enabled: true
+        DefaultRootObject: index.html
+        Origins:
+          - Id: S3Origin
+            DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            S3OriginConfig:
+              OriginAccessIdentity: ""
+            OriginAccessControlId: !Ref FrontendOAC
+        DefaultCacheBehavior:
+          TargetOriginId: S3Origin
+          ViewerProtocolPolicy: redirect-to-https
+          AllowedMethods:
+            - GET
+            - HEAD
+          CachedMethods:
+            - GET
+            - HEAD
+          ForwardedValues:
+            QueryString: false
+        CustomErrorResponses:
+          - ErrorCode: 403
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+          - ErrorCode: 404
+            ResponseCode: 200
+            ResponsePagePath: /index.html
+
+  FrontendOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: bhujal-frontend-oac
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
+
+Outputs:
+  ApiUrl:
+    Description: API Gateway endpoint URL
+    Value: !Sub "https://${BhujalApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
+
+  FrontendUrl:
+    Description: CloudFront distribution URL
+    Value: !Sub "https://${FrontendDistribution.DomainName}"
+
+  ObservationsTableName:
+    Description: DynamoDB table for observations
+    Value: !Ref ObservationsTable
+
+  UploadsBucketName:
+    Description: S3 bucket for uploads
+    Value: !Ref UploadsBucket

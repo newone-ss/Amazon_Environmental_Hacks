@@ -1,0 +1,109 @@
+# ──────────────────────────────────────────────
+# Scoring Weights — Bhujal
+# Each score is a weighted sum of normalised factors (0-1).
+# Final score = sum(factor_normalised * weight) * 100, clamped to [0,100].
+# ──────────────────────────────────────────────
+
+recharge_score:
+  # Groundwater recharge suitability
+  factors:
+    slope:
+      weight: 0.25           # ASSUMPTION: to verify with hydrogeologist
+      description: "Flatter slopes favour infiltration"
+      source: "DEM-derived"
+    soil_permeability:
+      weight: 0.20           # ASSUMPTION: coarse proxy from soil texture class
+      description: "Sandy/loamy soils drain faster"
+      source: "NBSS-LUP / SoilGrids"
+    rainfall_intensity:
+      weight: 0.20           # Verified: standard hydrological factor
+      description: "Moderate intensity favours recharge over runoff"
+      source: "IMD / CHIRPS"
+    lulc_perviousness:
+      weight: 0.15           # ASSUMPTION: pervious fraction from LULC class
+      description: "Forest/grassland > built-up for infiltration"
+      source: "ESRI LULC / ISRO Bhuvan"
+    lineament_density:
+      weight: 0.10           # ASSUMPTION: proxy for fracture permeability
+      description: "Higher lineament density = more fracture flow paths"
+      source: "ISRO Bhuvan lineament map"
+    drainage_density:
+      weight: 0.10           # Verified: inverse relationship with recharge
+      description: "Lower drainage density = longer infiltration time"
+      source: "DEM-derived"
+
+heat_water_stress:
+  # Combined heat exposure and water scarcity index
+  factors:
+    lst_summer_max:
+      weight: 0.25           # Verified: land surface temperature is primary heat signal
+      description: "Peak summer LST from satellite thermal band"
+      source: "MODIS LST / Landsat thermal"
+    ndvi_summer:
+      weight: 0.15           # Verified: low NDVI = less transpiration cooling
+      description: "Summer vegetation greenness (inverse stress)"
+      source: "MODIS NDVI"
+    rainfall_deficit:
+      weight: 0.20           # Verified: deviation from long-term mean
+      description: "Percentage departure of recent monsoon rainfall"
+      source: "IMD gridded / CHIRPS"
+    groundwater_depth:
+      weight: 0.20           # ASSUMPTION: static pre-monsoon depth as proxy
+      description: "Deeper water table = harder access"
+      source: "CGWB observation wells"
+    distance_to_perennial_water:
+      weight: 0.10           # ASSUMPTION: Euclidean distance as proxy
+      description: "Distance from village to nearest perennial stream"
+      source: "OSM waterways / HydroSHEDS"
+    population_density:
+      weight: 0.10           # ASSUMPTION: higher density = more demand
+      description: "People per sq km in village buffer"
+      source: "Census 2011 / WorldPop"
+
+spring_drying_index:
+  # Heuristic risk index (NOT a calibrated model)
+  # Higher score = higher risk of spring drying
+  factors:
+    spring_elevation:
+      weight: 0.15           # ASSUMPTION: higher springs more vulnerable
+      description: "Elevation of the spring outlet"
+      source: "DEM + spring locations from CGWB/State survey"
+    catchment_area:
+      weight: 0.20           # Verified: smaller catchments recharge less
+      description: "Contributing area upslope of the spring"
+      source: "DEM-derived flow accumulation"
+    forest_cover_change:
+      weight: 0.20           # Verified: deforestation reduces baseflow
+      description: "Forest loss in spring catchment (2010-2023)"
+      source: "Hansen Global Forest Change"
+    geology_permeability:
+      weight: 0.15           # ASSUMPTION: qualitative geology class
+      description: "Rock type permeability class"
+      source: "GSI geological map"
+    rainfall_trend:
+      weight: 0.15           # Verified: declining trend increases drying risk
+      description: "Mann-Kendall trend of monsoon rainfall (30-yr)"
+      source: "IMD / CHIRPS"
+    slope_of_catchment:
+      weight: 0.15           # ASSUMPTION: steeper = faster runoff, less recharge
+      description: "Mean slope of the spring's catchment"
+      source: "DEM-derived"
+
+# ── Classification thresholds ──────────────────
+# Applied to the 0-100 score
+classification:
+  recharge_score:
+    excellent: [75, 100]      # ASSUMPTION: thresholds to calibrate with field data
+    good: [50, 75]
+    moderate: [25, 50]
+    poor: [0, 25]
+  heat_water_stress:
+    critical: [75, 100]
+    high: [50, 75]
+    moderate: [25, 50]
+    low: [0, 25]
+  spring_drying_index:
+    very_high: [75, 100]
+    high: [50, 75]
+    moderate: [25, 50]
+    low: [0, 25]

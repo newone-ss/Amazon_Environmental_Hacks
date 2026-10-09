@@ -1,0 +1,119 @@
+# ──────────────────────────────────────────────
+# Interventions Catalog — Bhujal
+# Each intervention has suitability conditions,
+# dimensions, materials, and applicability constraints.
+# ──────────────────────────────────────────────
+
+interventions:
+  - id: check_dam
+    name: "Check Dam (Nala Bund)"
+    description: "Small barrier across a seasonal stream to slow flow and promote infiltration"
+    category: recharge
+    suitability:
+      min_slope_deg: 2             # ASSUMPTION: needs some gradient for flow
+      max_slope_deg: 15            # ASSUMPTION: too steep = scour risk
+      min_catchment_area_ha: 5     # ASSUMPTION: minimum upstream area
+      max_stream_order: 3          # Verified: only on low-order streams
+      soil_types: [sandy_loam, loam, gravelly]   # ASSUMPTION: must drain
+    default_dimensions:
+      length_m: 10                 # ASSUMPTION: typical for small nala
+      height_m: 2
+      width_m: 3
+    materials: ["stone masonry", "cement", "gabion wire"]
+    labour_days: 45                # ASSUMPTION: based on MGNREGA estimates
+    lifespan_years: 15             # ASSUMPTION
+
+  - id: percolation_tank
+    name: "Percolation Tank"
+    description: "Excavated pond in permeable soil to store runoff and recharge groundwater"
+    category: recharge
+    suitability:
+      min_slope_deg: 0
+      max_slope_deg: 8             # ASSUMPTION: flat to gentle slope
+      min_catchment_area_ha: 25    # ASSUMPTION: needs meaningful inflow
+      soil_types: [sandy_loam, loam, sandy]
+      geology: [weathered_granite, laterite, alluvium]   # ASSUMPTION
+    default_dimensions:
+      area_m2: 2500                # ASSUMPTION: 50m x 50m
+      depth_m: 3
+    materials: ["earthwork", "stone pitching", "inlet channel"]
+    labour_days: 120               # ASSUMPTION
+    lifespan_years: 20
+
+  - id: contour_trench
+    name: "Contour Trench"
+    description: "Trenches dug along contour lines to capture sheet runoff on hillslopes"
+    category: recharge
+    suitability:
+      min_slope_deg: 5
+      max_slope_deg: 33            # ASSUMPTION: up to 33° (1:1.5)
+      min_catchment_area_ha: 0     # Works on open slopes
+      soil_types: [loam, clay_loam, sandy_loam]
+    default_dimensions:
+      length_m: 30                 # Per trench segment
+      depth_m: 0.5
+      width_m: 0.6
+      spacing_m: 10                # ASSUMPTION: between trenches
+    materials: ["earthwork only"]
+    labour_days: 15                # Per hectare, ASSUMPTION
+    lifespan_years: 10
+
+  - id: spring_shed_treatment
+    name: "Springshed Management"
+    description: "Integrated treatment of a spring's catchment: trenches, plantation, protection"
+    category: spring_protection
+    suitability:
+      has_spring: true
+      min_catchment_area_ha: 1
+      max_slope_deg: 40
+    default_dimensions:
+      treatment_area_ha: 5         # ASSUMPTION
+    materials: ["contour trenches", "staggered trenches", "plantation", "stone bunds"]
+    labour_days: 200               # ASSUMPTION: for 5 ha
+    lifespan_years: 25
+
+  - id: rooftop_rainwater_harvesting
+    name: "Rooftop Rainwater Harvesting"
+    description: "Collection of roof runoff into a storage tank for domestic use"
+    category: water_supply
+    suitability:
+      min_roof_area_m2: 20         # ASSUMPTION
+      settlement: true             # Only in built-up areas
+    default_dimensions:
+      tank_litres: 10000           # ASSUMPTION: 10 kL tank
+    materials: ["PVC pipes", "first-flush diverter", "ferrocement tank"]
+    labour_days: 10
+    lifespan_years: 20
+
+  - id: farm_pond
+    name: "Farm Pond"
+    description: "Lined or unlined pond on farmland to store runoff for irrigation"
+    category: water_supply
+    suitability:
+      min_slope_deg: 0
+      max_slope_deg: 5
+      land_use: [agriculture, fallow]
+      soil_types: [clay, clay_loam, loam]    # Retains water
+    default_dimensions:
+      length_m: 20
+      width_m: 15
+      depth_m: 3
+    materials: ["earthwork", "HDPE liner (optional)", "inlet pipe"]
+    labour_days: 60
+    lifespan_years: 15
+
+  - id: gabion_structure
+    name: "Gabion Structure"
+    description: "Wire-mesh baskets filled with stones, used as check dams or retaining walls"
+    category: recharge
+    suitability:
+      min_slope_deg: 5
+      max_slope_deg: 25
+      stream_bed_material: [rocky, gravelly, boulder]   # ASSUMPTION
+    default_dimensions:
+      length_m: 8
+      height_m: 1.5
+      width_m: 1.0
+    materials: ["galvanised gabion wire", "local stone fill"]
+    labour_days: 30
+    lifespan_years: 20

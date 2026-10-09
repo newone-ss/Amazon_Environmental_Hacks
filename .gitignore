@@ -1,0 +1,53 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+*.egg-info/
+dist/
+build/
+*.egg
+
+# Virtual environment
+venv/
+.venv/
+env/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment
+.env
+
+# Data (raw and processed are large and not committed)
+data/raw/
+data/processed/
+data/export/
+*.tif
+*.tiff
+*.nc
+*.hdf
+*.hdf5
+
+# Frontend build
+frontend/node_modules/
+frontend/dist/
+
+# SAM build
+infra/.aws-sam/
+.aws-sam/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Pytest
+.pytest_cache/
+htmlcov/
+.coverage
+
+# Logs
+*.log

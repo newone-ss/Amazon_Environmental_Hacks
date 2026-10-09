@@ -1,0 +1,76 @@
+# ──────────────────────────────────────────────
+# Cost Tables — Bhujal
+# Indicative costs in INR. These are order-of-magnitude
+# estimates for planning, NOT tender-ready BOQs.
+# Source: MGNREGA schedule of rates, state SOR, field estimates.
+# ──────────────────────────────────────────────
+
+# Labour rate per person-day
+labour_rate_inr_per_day: 350       # ASSUMPTION: MGNREGA 2024 Odisha rate ~₹350
+
+# Material unit costs
+material_costs:
+  cement_bag_50kg: 400             # ASSUMPTION: rural Odisha retail
+  stone_masonry_m3: 3500           # ASSUMPTION: includes labour
+  gabion_wire_m2: 250              # ASSUMPTION
+  earthwork_m3: 180                # ASSUMPTION: manual excavation
+  hdpe_liner_m2: 80                # ASSUMPTION
+  pvc_pipe_per_m: 120              # ASSUMPTION: 4-inch PVC
+  ferrocement_tank_10kl: 25000     # ASSUMPTION: material only
+  plantation_per_ha: 15000         # ASSUMPTION: saplings + pits
+
+# Intervention-level cost ranges (INR)
+# low = minimum realistic, high = maximum with contingency
+intervention_costs:
+  check_dam:
+    low: 150000                    # ASSUMPTION: small nala, local stone
+    high: 500000
+    unit: "per structure"
+    confidence: medium
+    notes: "Varies widely with stream width and height"
+
+  percolation_tank:
+    low: 300000
+    high: 800000
+    unit: "per structure"
+    confidence: medium
+    notes: "Depends on excavation volume and lining needs"
+
+  contour_trench:
+    low: 20000
+    high: 50000
+    unit: "per hectare"
+    confidence: high
+    notes: "Primarily earthwork, well-estimated under MGNREGA"
+
+  spring_shed_treatment:
+    low: 200000
+    high: 600000
+    unit: "per spring catchment (5 ha)"
+    confidence: low
+    notes: "Highly site-specific; depends on treatment mix"
+
+  rooftop_rainwater_harvesting:
+    low: 15000
+    high: 40000
+    unit: "per household"
+    confidence: high
+    notes: "Standardised design, predictable cost"
+
+  farm_pond:
+    low: 80000
+    high: 250000
+    unit: "per pond"
+    confidence: medium
+    notes: "With/without HDPE liner makes big difference"
+
+  gabion_structure:
+    low: 100000
+    high: 350000
+    unit: "per structure"
+    confidence: medium
+    notes: "Wire cost is the main variable"
+
+# ── Contingency and overhead ──────────────────
+contingency_percent: 10              # ASSUMPTION: 10% contingency on all estimates
+supervision_percent: 5               # ASSUMPTION: 5% for technical supervision

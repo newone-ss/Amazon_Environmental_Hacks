@@ -1,0 +1,72 @@
+# ──────────────────────────────────────────────
+# Demo Sites — Bhujal
+# Pre-selected villages/sites in Koraput district
+# for the 3-minute demo. These have synthetic
+# feature values for illustration.
+# ──────────────────────────────────────────────
+
+sites:
+  - id: site_001
+    name: "Laxmipur"
+    block: "Koraput"
+    district: "Koraput"
+    state: "Odisha"
+    lat: 18.8124
+    lon: 82.7133
+    elevation_m: 580                  # ASSUMPTION: illustrative
+    population: 1200                  # ASSUMPTION: illustrative
+    has_spring: true
+    notes: "Village with known spring; moderate slope; good demo of recharge + spring scores"
+    data_tag: "illustrative"
+
+  - id: site_002
+    name: "Mundaguda"
+    block: "Semiliguda"
+    district: "Koraput"
+    state: "Odisha"
+    lat: 18.9456
+    lon: 82.8910
+    elevation_m: 720
+    population: 800
+    has_spring: false
+    notes: "Hilltop village; steep slopes; demonstrates REJECTED safety verdict"
+    data_tag: "illustrative"
+
+  - id: site_003
+    name: "Parajam"
+    block: "Nandapur"
+    district: "Koraput"
+    state: "Odisha"
+    lat: 18.5234
+    lon: 82.5678
+    elevation_m: 350
+    population: 2500
+    has_spring: true
+    notes: "Lowland village near river; demonstrates flood zone CONDITIONAL verdict and high heat stress"
+    data_tag: "illustrative"
+
+  - id: site_004
+    name: "Dukum"
+    block: "Dasmantpur"
+    district: "Koraput"
+    state: "Odisha"
+    lat: 19.0345
+    lon: 83.0123
+    elevation_m: 640
+    population: 600
+    has_spring: true
+    notes: "Tribal hamlet; spring drying observed; good demo of springshed intervention"
+    data_tag: "illustrative"
+
+  - id: site_005
+    name: "Kotpad Town"
+    block: "Kotpad"
+    district: "Koraput"
+    state: "Odisha"
+    lat: 19.1567
+    lon: 82.3456
+    elevation_m: 270
+    population: 5000
+    has_spring: false
+    notes: "Semi-urban; flat terrain; good candidate for percolation tank and rooftop RWH"
+    data_tag: "illustrative"

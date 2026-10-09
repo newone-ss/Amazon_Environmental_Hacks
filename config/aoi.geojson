@@ -1,0 +1,26 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "properties": {
+        "name": "Koraput District",
+        "state": "Odisha",
+        "description": "Hilly tribal district in southern Odisha, Eastern Ghats. Rich in springs, prone to heat-water stress. Selected as demo AOI for Bhujal.",
+        "area_km2": 8807
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [82.05, 18.25],
+            [83.40, 18.25],
+            [83.40, 19.30],
+            [82.05, 19.30],
+            [82.05, 18.25]
+          ]
+        ]
+      }
+    }
+  ]
+}
