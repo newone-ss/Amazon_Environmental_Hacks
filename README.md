@@ -154,19 +154,32 @@ Before any civil intervention is approved, the site is evaluated against determi
 .
 |-- .github/workflows/
 |   `-- ci.yml                  # GitHub Actions continuous integration workflow
-|-- agent/                      # Strands Agents SDK and Amazon Bedrock integration
+|-- agent/                      # Autonomous Multi-Agent Collective (Bedrock & Fallback)
+|   |-- base.py                 # Abstract base agent and Bedrock runtime wrapper
+|   |-- hydrogeology.py         # HydrogeologyAgent (Recharge Analyst)
+|   |-- heat_stress.py          # HeatWaterStressAgent (Vulnerability Diagnostician)
+|   |-- springshed.py           # SpringshedAgent (Catchment Sentry)
+|   |-- safety_auditor.py       # SafetyAuditorAgent (Geotechnical Safety Auditor)
+|   |-- intervention_composer.py# InterventionComposerAgent (Civil Structure & Costing Specialist)
+|   |-- scenario_simulator.py   # ScenarioSimulatorAgent (Climate Sensitivity Simulator)
+|   |-- telemetry.py            # TelemetryQAAgent (Field Telemetry QA Analyst)
+|   |-- orchestrator.py         # LeadPlannerOrchestratorAgent (Administrative Orchestrator)
+|   `-- report_generator.py     # Administrative Action Dossier HTML Generator
 |-- backend/
 |   |-- app.py                  # FastAPI application with Mangum AWS Lambda adapter
 |   `-- models.py               # Pydantic v2 domain schemas and data contracts
 |-- config/
-|   |-- aoi.geojson             # Geographic polygon boundary for Koraput District
-|   |-- costs.yaml              # Indicative civil rates, material unit costs, and bounds
-|   |-- demo_sites.yaml         # Curated representative sites across vulnerability tiers
+|   |-- aoi.geojson             # Multi-State Area of Interest boundaries (MP, Odisha, Jharkhand, Pan-India)
+|   |-- costs.yaml              # State-specific MGNREGA rates (Odisha, MP, Jharkhand) and civil material bounds
+|   |-- demo_sites.yaml         # 13 curated settlements across MP, Odisha, and Jharkhand
 |   |-- interventions.yaml      # Engineering intervention suitability matrix
 |   |-- safety_rules.yaml       # Deterministic geotechnical and regulatory veto logic
 |   |-- scenario.yaml           # Rainfall perturbation factors and intervention uplifts
 |   `-- weights.yaml            # Analytical scoring factor weights and classification tiers
 |-- data/
+|   |-- groundwater_level_cleaned_odisha_jharkhand_mp_2021_2025.csv # CGWB empirical telemetry (34,141 rows)
+|   |-- imd_max_temperature_odisha_jharkhand_mp_2021_2024.csv       # IMD gridded maximum temperature (109,575 rows)
+|   |-- rainfall_cleaned_odisha_jharkhand_mp.csv                    # IMD daily rainfall & departures (5,512 rows)
 |   `-- README.md               # Data manifest, licensing records, and provenance ledger
 |-- docs/
 |   |-- api.md                  # Comprehensive REST API specifications and contract documentation
@@ -181,10 +194,21 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- download/               # Raster and vector dataset retrieval modules
 |   |-- preprocess/             # Alignment, clipping, and coordinate transformation routines
 |   `-- features/               # Morphometric and hydro-climatic feature generators
-|-- scoring/                    # Deterministic scoring engine modules
+|-- scoring/                    # Deterministic spatial hydrogeology and safety veto engine
+|   |-- recharge.py             # Multi-criteria infiltration suitability overlay
+|   |-- stress.py               # Compound heat-water vulnerability calculator
+|   |-- springs.py              # Springhead desiccation risk index
+|   |-- safety.py               # Deterministic geotechnical veto engine
+|   |-- interventions.py        # Civil structure matching & state-calibrated costing
+|   |-- simulator.py            # Rainfall perturbation & intervention uplift simulator
+|   |-- engine.py               # Unified spatial evaluation engine
+|   `-- run.py                  # Standalone batch site evaluation runner
 |-- tests/
-|   `-- test_models.py          # Pytest verification suite for API and data contracts
-|-- .env.example                # Canonical environment variable specification
+|   |-- test_models.py          # Pytest verification suite for API and data contracts
+|   |-- test_scoring.py         # Pytest suite for scoring, safety veto, and simulation
+|   |-- test_agents.py          # Pytest suite for autonomous multi-agent collective
+|   `-- test_api.py             # Pytest suite for FastAPI REST endpoints and state filters
+|-- main.py                     # Unified Command-Line Interface (list, evaluate, simulate, report, server)
 |-- Makefile                    # Standardized automation interface
 |-- requirements.txt            # Python dependencies with pinned semver constraints
 `-- agent.md                    # Core operational directives and constraints
@@ -232,17 +256,22 @@ Before any civil intervention is approved, the site is evaluated against determi
 
 5. Command-Line Interface (CLI):
    ```bash
-   # Enumerate tracked demo settlements
+   # Enumerate settlements across all states, or filter by specific priority state
    python main.py list
+   python main.py list --state "Madhya Pradesh"
+   python main.py list --state "Jharkhand"
+   python main.py list --state "Odisha"
 
    # Perform comprehensive multi-criteria hydro-climatic analysis
-   python main.py evaluate site_001
+   python main.py evaluate site_001        # Odisha: Laxmipur (Safe, cleared for civil works)
+   python main.py evaluate site_mp_001     # Madhya Pradesh: Bichhiya (Safe, basaltic/alluvial recharge)
+   python main.py evaluate site_jh_004     # Jharkhand: Porahat Scarp (Vetoed: slope >35° and landslide hazard)
 
    # Execute climate scenario simulation (-20% rainfall with check dam)
    python main.py simulate site_001 --rainfall 0.8 --intervention check_dam
 
-   # Generate planner action dossier across demonstration sites
-   python main.py report --sites site_001,site_002,site_003
+   # Generate multi-state administrative action dossier across settlements
+   python main.py report --sites site_001,site_mp_001,site_jh_001
    ```
 
 6. Launch local API server:
@@ -257,23 +286,23 @@ Before any civil intervention is approved, the site is evaluated against determi
 Bhujal maintains a strict empirical honesty policy:
 * **No Fabricated Information**: All baseline data is retrieved from verified institutional sources or clearly tagged.
 * **Provenance Badging**:
-  * `real`: Measured, verified ground-truth data or high-resolution instrument observations.
-  * `proxy`: Spatially interpolated or indirect variables (e.g., IDW-interpolated well measurements).
-  * `illustrative`: Curated synthetic profiles demonstrating platform behavior during evaluation.
+  * `real`: Measured, verified ground-truth data or high-resolution instrument observations (e.g. CGWB 2021–2025 water levels, IMD 2021–2024 temperatures, IMD daily rainfall).
+  * `proxy`: Spatially interpolated or indirect variables (e.g., IDW-interpolated well surfaces).
+  * `illustrative`: Curated synthetic profiles demonstrating platform behavior during evaluation across edge cases.
 * **Transparent Terminology**: The platform describes multi-criteria overlays as *transparent deterministic scoring*, reserving AI terminology exclusively for natural language synthesis through Amazon Bedrock.
 
 ---
 
 ## 8. Acknowledgements and Data Sources
 
-* **Geological Survey of India (GSI)**: Regional lithology and national landslide susceptibility zonation.
-* **Central Ground Water Board (CGWB)**: Hydrogeological frameworks and pre-monsoon water depth monitoring.
-* **India Meteorological Department (IMD)**: Precipitation normals and gridded climatic records.
-* **ISRO Bhuvan**: National Land Use / Land Cover and structural lineament databases.
-* **NASA / USGS**: Shuttle Radar Topography Mission (SRTM 30m) DEM and MODIS radiometric observations.
-* **UC Santa Barbara Climate Hazards Center**: CHIRPS precipitation climatology.
-* **ISRIC World Soil Information**: SoilGrids 250m global soil property estimations.
-* **World Resources Institute / Hansen**: Global Forest Change datasets.
+* **Central Ground Water Board (CGWB)**: National hydrogeological frameworks and 34,141 validated observation well telemetry records (2021–2025) across Odisha, Jharkhand, and Madhya Pradesh.
+* **India Meteorological Department (IMD)**: Gridded daily maximum surface temperatures (109,575 records, 2021–2024), 5,512 daily rainfall departure observations, and long-term precipitation normals.
+* **Geological Survey of India (GSI)**: Regional lithological units (Eastern Ghats crystalline complex, Deccan Traps basalts, Chota Nagpur metamorphic belt) and national landslide susceptibility zonation.
+* **ISRO Bhuvan**: National Land Use / Land Cover (LULC) and structural lineament spatial databases.
+* **NASA / USGS**: Shuttle Radar Topography Mission (SRTM 30m) DEM and MODIS radiometric observations (LST MOD11A2, NDVI MOD13A2).
+* **UC Santa Barbara Climate Hazards Center**: CHIRPS precipitation climatology time series.
+* **ISRIC World Soil Information**: SoilGrids 250m global soil physical properties.
+* **World Resources Institute / Hansen**: Global Forest Change tree canopy disturbance datasets.
 
 ---
 

@@ -127,7 +127,7 @@ The AI layer is architected as an autonomous multi-agent collective consisting o
 2. Lambda retrieves village geographic metadata from `config/demo_sites.yaml` or scored GeoJSON.
 3. Scoring Engine loads active weights from `config/weights.yaml` and executes multi-criteria linear combinations.
 4. Safety Engine evaluates geotechnical conditions against `config/safety_rules.yaml`. If any `REJECTED` rule triggers, status is vetoed immediately.
-5. Intervention Composer matches topographic, soil, and catchment parameters against `config/interventions.yaml`, associating cost ranges from `config/costs.yaml`.
+5. Intervention Composer matches topographic, soil, and catchment parameters against `config/interventions.yaml`, associating state-calibrated MGNREGA cost ranges from `config/costs.yaml` based on settlement state (Odisha, Madhya Pradesh, Jharkhand, or Pan-India baseline).
 6. Aggregated Pydantic `Site` model is serialized to JSON and returned to the client.
 
 ### 4.2. Field Observation Ingestion (`POST /observations`)
@@ -136,6 +136,12 @@ The AI layer is architected as an autonomous multi-agent collective consisting o
 3. Lambda writes record to DynamoDB with a unique `observation_id` and timestamp.
 4. If a photograph filename is specified, Lambda signs an S3 presigned PUT URL and returns it in the response payload.
 5. Client uploads binary photograph directly to S3 via the presigned URL.
+
+### 4.3. Action Dossier Generation (`POST /report`)
+1. Planner submits portfolio of site IDs (covering single or multiple districts/states).
+2. Lead Planner Orchestrator Agent assesses each site, invoking domain specialists (`HydrogeologyAgent`, `HeatWaterStressAgent`, `SpringshedAgent`, `SafetyAuditorAgent`, `InterventionComposerAgent`).
+3. If Bedrock credentials are unavailable, high-performance deterministic fallback templates synthesize the administrative briefing.
+4. Publication-grade HTML action dossier is generated, saved to `data/reports/`, and served via `/reports/{filename}` or presigned S3 URL.
 
 ---
 

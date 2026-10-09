@@ -15,6 +15,7 @@
 * [ADR-005: Empirical Honesty Protocols and Explicit Provenance Badging](#adr-005-empirical-honesty-protocols-and-explicit-provenance-badging)
 * [ADR-006: Serverless Architecture Over Relational and PostGIS Infrastructure](#adr-006-serverless-architecture-over-relational-and-postgis-infrastructure)
 * [ADR-007: Complete Isolation of Quantitative Scoring from Generative AI](#adr-007-complete-isolation-of-quantitative-scoring-from-generative-ai)
+* [ADR-008: Expansion to Multi-State Focus (Odisha, Madhya Pradesh, Jharkhand) with Pan-India Extensibility](#adr-008-expansion-to-multi-state-focus-odisha-madhya-pradesh-jharkhand-with-pan-india-extensibility)
 
 ---
 
@@ -92,3 +93,18 @@
 * **Consequences**:
   * Positive: Absolute mathematical reproducibility, zero hallucination of safety hazards, and auditable governance.
   * Negative: Limits the generative model's scope to summarization and translation tasks.
+
+---
+
+### ADR-008: Expansion to Multi-State Focus (Odisha, Madhya Pradesh, Jharkhand) with Pan-India Extensibility
+* **Date**: 2026-10-10
+* **Status**: Accepted (Expands and operationalizes the single-district prototype of ADR-001)
+* **Context**: While Koraput District provided a rigorous testing ground for steep-relief granitic and charnockitic hard-rock terrains, indigenous water insecurity across India spans multiple distinct hydrogeological formations. In particular, the Deccan Traps weathered basalts in Madhya Pradesh (Mandla, Dindori, Jhabua) and the Chota Nagpur Precambrian crystalline metamorphic basement in Jharkhand (Khunti, West Singhbhum) present urgent, distinct hydrological dynamics. Administrative planners require an engine capable of handling variable state MGNREGA labour schedules and multi-regional lithological permeability matrices.
+* **Decision**:
+  1. Expand the primary operational Area of Interest to encompass representative priority watersheds across **Madhya Pradesh**, **Odisha**, and **Jharkhand**.
+  2. Maintain a Pan-India bounding envelope in `config/aoi.geojson` and design all spatial evaluation and safety routines to be extensible nationwide across all 700+ districts of India.
+  3. Externalize state-specific MGNREGA wage benchmarks into `config/costs.yaml` (Odisha: INR 350, MP: INR 243, Jharkhand: INR 255, All-India: INR 300) and support state filtering in REST endpoints (`GET /villages?state=<State>`).
+  4. Ingest 13 curated settlements across the three focus states into `config/demo_sites.yaml` covering all safety, lithological, and scoring branches.
+* **Consequences**:
+  * Positive: Delivers direct planning utility across three high-priority tribal states while demonstrating nationwide scalability for central government ministries (Jal Shakti, MoRD, MoTA).
+  * Negative: Requires maintenance of multi-state lithological matrices and state-specific labour wage tables.

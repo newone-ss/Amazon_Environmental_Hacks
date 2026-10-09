@@ -22,6 +22,7 @@ In accordance with empirical transparency standards, all subjective or uncalibra
 | **ASM-HYD-03** | Fracture Flow from Lineaments | Weight = 0.10 | Surface lineament density proxies subsurface fracture permeability. | Not all surface lineaments are open, transmissive fracture zones. | Pumping tests and 2D electrical resistivity tomography (ERT). |
 | **ASM-HYD-04** | Drainage Density Inversion | Weight = 0.10 | Low drainage density correlates with higher relative infiltration. | May be confounded by lithological resistance rather than permeability. | Hydrograph separation analysis on seasonal stream gauges. |
 | **ASM-HYD-05** | Quartile Classification Thresholds | [0–25, 25–50, 50–75, 75–100] | Linear quartile partition across normalized score spectrum. | Uniform intervals may not reflect non-linear recharge response. | Receiver Operating Characteristic (ROC) curve calibration against well yields. |
+| **ASM-HYD-06** | Multi-State Hard-Rock Lithology | Basalt = 0.60, Granite = 0.70, Alluvium = 0.90 | Permeability matrix accounts for weathered trap vesicularity (MP), granite saprolites (Jharkhand/Odisha). | Ignores unweathered massive crystalline core depth. | GSI 1:50k District Lithology and CGWB pumping tests. |
 
 ### 2.2. Geotechnical and Safety Veto Bounds
 
@@ -36,8 +37,8 @@ In accordance with empirical transparency standards, all subjective or uncalibra
 
 | Identifier | Cost Parameter | Assigned Value / Range | Baseline Rationale | Empirical Limitation | Governing Baseline |
 |---|---|---|---|---|---|
-| **ASM-CST-01** | Unskilled Labour Wage | INR 350 / person-day | Calibrated to 2024–2025 Odisha notified MGNREGA wage rates. | Market rates for skilled masons are significantly higher (INR 600–800). | Odisha MGNREGA Schedule of Rates (SoR). |
-| **ASM-CST-02** | Civil Cost Variance | Range low = base, high = $+200\%$ to $+300\%$ | Remote tribal terrain incurs substantial haulage premiums. | Does not model road accessibility or distance to stone quarries. | District Schedule of Rates (Koraput DSR). |
+| **ASM-CST-01** | Unskilled Labour Wage | Odisha: INR 350, MP: INR 243, Jharkhand: INR 255, All-India: INR 300 | Calibrated directly to notified state MGNREGA wage rates (2024–2025). | Skilled mason and machinery rates incur local market premiums. | State MGNREGA Schedules of Rates (SoR). |
+| **ASM-CST-02** | Civil Cost Variance | Range low = base, high = $+200\%$ to $+300\%$ | Remote tribal terrain incurs substantial haulage premiums. | Does not model road accessibility or distance to stone quarries. | District Schedules of Rates (DSR / SOR). |
 | **ASM-CST-03** | Engineering Contingency | 10% Contingency + 5% Supervision | Standard government administrative and engineering overhead. | Geological surprises during excavation may exceed 10%. | Central Public Works Department (CPWD) Manual. |
 
 ### 2.4. Climate Sensitivity and Scenario Perturbation

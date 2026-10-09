@@ -7,9 +7,9 @@
 
 ## 1. Scope Management Philosophy
 
-To achieve production-grade stability, sub-second query latency, and zero runtime failures during evaluation, the Bhujal MVP is strictly constrained to a single demonstration Area of Interest (Koraput District) with deterministic scoring and serverless ingestion. 
+To achieve production-grade stability, sub-second query latency, and zero runtime failures during evaluation, the Bhujal MVP is focused on three representative priority states—**Madhya Pradesh**, **Odisha**, and **Jharkhand**—with an architectural foundation engineered for Pan-India extensibility. 
 
-This document defines the structured evolution of the platform beyond the 48-hour submission window across three planned development horizons.
+This document defines the structured evolution of the platform beyond the hackathon submission window across three planned development horizons, scaling from multi-state demonstration to nationwide coverage across all 700+ districts of India.
 
 ---
 
@@ -18,13 +18,13 @@ This document defines the structured evolution of the platform beyond the 48-hou
 ```
 +---------------------------------------------------------------------------------------+
 | HORIZON 1: NEAR-TERM (Months 1–3)                                                      |
-| High-Fidelity Boundaries, Cloud-Optimized Geotiff (COG) Streaming, and Localization   |
+| Automated National Pipeline, Cloud-Optimized GeoTIFF (COG) Streaming, and Telemetry   |
 +---------------------------------------------------------------------------------------+
                                            |
                                            v
 +---------------------------------------------------------------------------------------+
 | HORIZON 2: MEDIUM-TERM (Months 4–6)                                                    |
-| In-Situ Sensor Telemetry, Calibrated Machine Learning, and Multi-District AOI          |
+| ML Hydrograph Inversion, 700+ District Onboarding, and Continuous CGWB/IMD Sync       |
 +---------------------------------------------------------------------------------------+
                                            |
                                            v

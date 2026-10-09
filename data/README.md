@@ -15,8 +15,10 @@
 | **MODIS-LST-1K** | Radiometric Surface Temperature | 1,000 m | 2020–2024 (Mar–Jun) | NASA LP DAAC (MOD11A2) | Empirical | Public Domain |
 | **MODIS-NDVI-1K** | Normalized Difference Vegetation | 1,000 m | 2020–2024 (Summer) | NASA LP DAAC (MOD13A2) | Empirical | Public Domain |
 | **HANSEN-GFC-30** | Forest Canopy Disturbance | 30 m | 2010–2023 Loss | Hansen / UMD / Google | Empirical | CC-BY-4.0 |
-| **CGWB-GWL-PTS** | Pre-Monsoon Water Table Depth | Point Interpolated | 2023 Pre-Monsoon | Central Ground Water Board | Proxy | Open Data (GoI) |
-| **BHUJAL-SPRINGS** | Springhead Locations & Outflow | Point Geometries | Demonstration Baseline | Curated Demo Baseline | Illustrative | CC0-1.0 |
+| **CGWB-GWL-CLEANED** | Monitored Groundwater Level (34,141 pts) | Station Coordinates | 2021–2025 | Central Ground Water Board (CGWB) | Empirical | Open Data (GoI) |
+| **IMD-TEMP-CLEANED** | Daily Maximum Temperature (109,575 pts) | Gridded Coordinates | 2021–2024 | India Meteorological Dept (IMD) | Empirical | Open Data (GoI) |
+| **IMD-RAIN-CLEANED** | Daily Rainfall & Departure (5,512 pts) | District Aggregates | 2021–2026 | India Meteorological Dept (IMD) | Empirical | Open Data (GoI) |
+| **BHUJAL-SITES-13** | Curated Settlement Benchmarks (13 sites) | Point Geometries | Demonstrator Baseline | Curated Multi-State Baseline | Illustrative | CC0-1.0 |
 
 ---
 
@@ -72,16 +74,41 @@
 * **Application**: Catchment degradation coefficient in springhead desiccation risk estimation.
 * **Limitations and Calibration Notes**: Quantifies stand-replacement disturbance; understory degradation without canopy opening is not captured.
 
-### 2.7. Groundwater Levels: CGWB Monitoring Wells
-* **Provider**: Central Ground Water Board (Government of India) National Water Informatics Centre.
-* **Data Status**: `proxy`
-* **Methodology**: Spatial inverse distance weighted (IDW) interpolation across regional observation wells to generate continuous pre-monsoon depth-to-water surfaces.
-* **Limitations and Calibration Notes**: Monitoring wells are predominantly sited in alluvial valley corridors and urban blocks, resulting in higher interpolation uncertainty in elevated crystalline tribal plateaus.
+### 2.7. Monitored Groundwater Levels: CGWB Observation Network
+* **File Path**: `data/groundwater_level_cleaned_odisha_jharkhand_mp_2021_2025.csv`
+* **Provider**: Central Ground Water Board (CGWB), Government of India (National Water Informatics Centre).
+* **Record Count**: 34,141 validated hydrograph readings (January 2021 to December 2025).
+* **Geographic Scope**: Extensive telemetry network covering Odisha, Jharkhand, and Madhya Pradesh.
+* **Schema**: `station`, `agency`, `state_lgd_code`, `state`, `district_lgd_code`, `district`, `tehsil`, `block`, `village`, `river`, `basin`, `tributary`, `latitude`, `longitude`, `elevation_msl_m`, `measurement_datetime`, `groundwater_level_m`.
+* **Application**: Serves as the empirical ground-truth benchmark for static water level (SWL) surfaces, validating simulated post-monsoon drawdowns and identifying chronic over-extraction blocks.
+* **Data Status**: `real`
 
-### 2.8. Demo Village and Spring Inventory
+### 2.8. Surface Thermal Observations: IMD Maximum Temperature Climatology
+* **File Path**: `data/imd_max_temperature_odisha_jharkhand_mp_2021_2024.csv`
+* **Provider**: India Meteorological Department (IMD), Ministry of Earth Sciences.
+* **Record Count**: 109,575 daily maximum temperature records (January 2021 to December 2024).
+* **Geographic Scope**: Gridded points and synoptic stations across Odisha, Jharkhand, and Madhya Pradesh.
+* **Schema**: `date`, `latitude`, `longitude`, `maximum_temperature_c`.
+* **Application**: Calibrates summer thermal anomaly thresholds, validating satellite-derived MODIS LST radiometric anomalies against ground-station air maximums.
+* **Data Status**: `real`
+
+### 2.9. Daily Rainfall and Precipitation Departures: IMD Station Network
+* **File Path**: `data/rainfall_cleaned_odisha_jharkhand_mp.csv`
+* **Provider**: India Meteorological Department (IMD).
+* **Record Count**: 5,512 daily observation entries across monitoring seasons (2021–2026).
+* **Geographic Scope**: District aggregations across Odisha, Jharkhand, and Madhya Pradesh.
+* **Schema**: `state`, `district`, `date`, `daily_rainfall_mm`, `daily_normal_mm`, `daily_departure_percent`, `daily_rainfall_category`.
+* **Application**: Informs the baseline precipitation normal inputs in `config/scenario.yaml` and grounds drought sensitivity stress tests (-50% to +50% perturbations).
+* **Data Status**: `real`
+
+### 2.10. Curated Demonstration Settlements and Spring Inventory
 * **Source**: `config/demo_sites.yaml`
+* **Count**: 13 curated settlements across priority agro-ecological zones:
+  * **Odisha (5)**: Laxmipur, Mundaguda, Parajam, Dukum, Kotpad Town (Koraput District).
+  * **Madhya Pradesh (4)**: Bichhiya (Mandla), Samnapur (Dindori), Meghnagar (Jhabua), Bajag Scarp (Dindori).
+  * **Jharkhand (4)**: Torpa (Khunti), Goilkera (West Singhbhum), Chaibasa Plain (West Singhbhum), Porahat Scarp (West Singhbhum).
 * **Data Status**: `illustrative`
-* **Methodology**: Synthetically attributed profiles based on typical micro-watershed characteristics of Koraput District to exercise and validate all decision branches of the scoring engine, safety veto system, and civil intervention composer.
+* **Methodology**: Curated representative profiles reflecting real regional physiography, soil textures, basaltic/granitic lithologies, and hazard zones, explicitly structured to exercise all deterministic scoring paths, geotechnical safety vetoes, and civil intervention matchers.
 
 ---
 
