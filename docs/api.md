@@ -53,16 +53,22 @@ Retrieves runtime system metadata, area of interest boundaries, and verification
 ```json
 {
   "version": "0.1.0",
-  "aoi_name": "Koraput District",
-  "aoi_state": "Odisha",
-  "total_villages": 5,
+  "aoi_name": "Priority Watersheds: Odisha, Madhya Pradesh, Jharkhand",
+  "aoi_state": "Multi-State (Odisha, Madhya Pradesh, Jharkhand; Pan-India Extensible)",
+  "total_villages": 13,
   "scoring_weights_hash": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855",
   "data_tags_in_use": [
     "real",
     "proxy",
     "illustrative"
   ],
-  "last_pipeline_run": "2026-10-09T12:00:00Z"
+  "last_pipeline_run": "2026-10-09T12:00:00Z",
+  "supported_states": [
+    "Odisha",
+    "Madhya Pradesh",
+    "Jharkhand",
+    "Pan-India"
+  ]
 }
 ```
 
@@ -71,10 +77,11 @@ Retrieves runtime system metadata, area of interest boundaries, and verification
 ### 2.2. Villages and Spatial Entities
 
 #### `GET /villages`
-Enumerates all tracked settlements and hamlets within the active Area of Interest.
+Enumerates all tracked settlements and hamlets within the active Area of Interest, optionally filtered by state.
 
 * **Method**: `GET`
-* **Query Parameters**: None
+* **Query Parameters**:
+  * `state` (*string, optional*): Filter settlements by state (e.g., `Odisha`, `Madhya Pradesh`, `Jharkhand`). Case-insensitive.
 
 **Response (`200 OK`)**:
 ```json

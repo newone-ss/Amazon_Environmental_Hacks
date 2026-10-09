@@ -17,18 +17,64 @@ class TestApiEndpoints:
         assert response.status_code == 200
         data = response.json()
         assert data["version"] == "0.1.0"
-        assert data["aoi_name"] == "Koraput District"
-        assert data["total_villages"] == 5
+        assert "Odisha" in data["aoi_name"]
+        assert data["total_villages"] == 13
+        assert "supported_states" in data
+        assert "Odisha" in data["supported_states"]
+        assert "Madhya Pradesh" in data["supported_states"]
+        assert "Jharkhand" in data["supported_states"]
         assert "scoring_weights_hash" in data
 
     def test_get_villages(self) -> None:
         response = client.get("/villages")
         assert response.status_code == 200
         data = response.json()
-        assert len(data) == 5
+        assert len(data) == 13
         village_names = [v["name"] for v in data]
         assert "Laxmipur" in village_names
         assert "Kotpad Town" in village_names
+        assert "Bichhiya" in village_names
+        assert "Torpa" in village_names
+
+    def test_get_villages_filter_by_state(self) -> None:
+        # Filter by Odisha
+        resp_od = client.get("/villages?state=Odisha")
+        assert resp_od.status_code == 200
+        data_od = resp_od.json()
+        assert len(data_od) == 5
+        assert all(v["state"] == "Odisha" for v in data_od)
+
+        # Filter by Madhya Pradesh
+        resp_mp = client.get("/villages?state=Madhya Pradesh")
+        assert resp_mp.status_code == 200
+        data_mp = resp_mp.json()
+        assert len(data_mp) == 4
+        assert all(v["state"] == "Madhya Pradesh" for v in data_mp)
+
+        # Filter by Jharkhand
+        resp_jh = client.get("/villages?state=Jharkhand")
+        assert resp_jh.status_code == 200
+        data_jh = resp_jh.json()
+        assert len(data_jh) == 4
+        assert all(v["state"] == "Jharkhand" for v in data_jh)
+
+    def test_get_site_madhya_pradesh(self) -> None:
+        # Bichhiya, Mandla (Safe site)
+        response = client.get("/sites/site_mp_001")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["village"]["state"] == "Madhya Pradesh"
+        assert data["safety"]["status"] == "SAFE"
+        assert len(data["recommendations"]) > 0
+
+    def test_get_site_jharkhand(self) -> None:
+        # Torpa, Khunti (Safe site)
+        response = client.get("/sites/site_jh_001")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["village"]["state"] == "Jharkhand"
+        assert data["safety"]["status"] == "SAFE"
+        assert len(data["recommendations"]) > 0
 
     def test_get_site_valid(self) -> None:
         response = client.get("/sites/site_001")

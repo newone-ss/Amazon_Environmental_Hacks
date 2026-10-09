@@ -29,7 +29,7 @@ Bhujal is a specialized decision-support platform designed for district magistra
 | **Springhead Vulnerability** | Index seasonal drying probabilities | Morphometric and hydrological catchment heuristics |
 | **Intervention Composer** | Recommend site-matched civil structures | Rule-based matrix matching site constraints |
 | **Safety Veto Engine** | Enforce geotechnical and regulatory safety boundaries | Deterministic boolean threshold evaluations |
-| **Indicative Costing** | Project preliminary capital and labour requirements | MGNREGA Schedule of Rates (Odisha 2024 calibrated) |
+| **Indicative Costing** | Project preliminary capital and labour requirements | MGNREGA Schedule of Rates (State-calibrated: Odisha, MP, Jharkhand, and Pan-India) |
 | **Uncertainty Quantification** | Deliver transparency on underlying data resolution | Structured confidence scoring and provenance badging |
 | **Action Dossier Generation** | Produce audit-ready briefing reports for planners | Grounded LLM narrative synthesis with deterministic fallback |
 
@@ -37,8 +37,8 @@ Bhujal is a specialized decision-support platform designed for district magistra
 
 ## 3. Mandatory Engineering Rules
 
-### Rule 1: Area of Interest Isolation
-The analytical pipeline must dynamically read spatial bounds from `config/aoi.geojson`. For the validation and hackathon submission scope, analytical execution and demonstrations are strictly bounded to **Koraput District, Odisha**.
+### Rule 1: Priority Regional Focus and Extensible AOI Isolation
+The analytical pipeline must dynamically read spatial bounds from `config/aoi.geojson`. Core validation and demonstration scopes prioritize vulnerable tribal hard-rock watersheds across **Madhya Pradesh** (Mandla, Dindori, Jhabua), **Odisha** (Koraput), and **Jharkhand** (Khunti, West Singhbhum), with architectural boundaries extensible across **Pan-India**.
 
 ### Rule 2: Absolute Separation of Scoring and Language Models
 * All indices, ratings, safety clearances, and financial projections must be produced exclusively by deterministic Python algorithms reading `config/*.yaml`.

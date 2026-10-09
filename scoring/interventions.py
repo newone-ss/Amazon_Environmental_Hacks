@@ -31,6 +31,7 @@ def compose_recommendations(
     features: dict[str, Any],
     has_spring: bool = False,
     is_rejected: bool = False,
+    state: str = "Odisha",
 ) -> list[Recommendation]:
     """
     Evaluate site parameters against candidate interventions and return matched recommendations.
@@ -46,6 +47,11 @@ def compose_recommendations(
 
     candidates = int_cfg.get("interventions", [])
     cost_tables = cost_cfg.get("intervention_costs", {})
+    labour_rates = cost_cfg.get("labour_rates_by_state", {})
+    labour_rate = labour_rates.get(
+        state,
+        labour_rates.get("All-India", cost_cfg.get("labour_rate_inr_per_day", 350)),
+    )
 
     slope = float(features.get("slope_degrees", 10.0))
     catchment = float(features.get("catchment_area_ha", 10.0))
@@ -154,6 +160,15 @@ def compose_recommendations(
                 "high": int(cost_info.get("high", 300000)),
             }
 
+            rec_assumptions = (
+                list(assumptions)
+                if assumptions
+                else [f"Design calibrated for {item['name']}"]
+            )
+            rec_assumptions.append(
+                f"Labour costing reflects {state} MGNREGA wage benchmark (INR {labour_rate}/person-day)."
+            )
+
             rec = Recommendation(
                 intervention_id=i_id,
                 intervention_name=item["name"],
@@ -162,7 +177,7 @@ def compose_recommendations(
                 materials=item.get("materials", []),
                 labour_days=int(item.get("labour_days", 30)),
                 cost_range_inr=cost_range,
-                assumptions=assumptions or [f"Design calibrated for {item['name']}"],
+                assumptions=rec_assumptions,
                 suitability_score=round(min(1.0, match_score), 2),
             )
             recommendations.append(rec)

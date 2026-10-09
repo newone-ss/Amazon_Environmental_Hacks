@@ -87,19 +87,29 @@ async def get_meta() -> MetaResponse:
     villages = get_all_villages()
     return MetaResponse(
         version="0.1.0",
-        aoi_name="Koraput District",
-        aoi_state="Odisha",
+        aoi_name="Priority Watersheds: Odisha, Madhya Pradesh, Jharkhand",
+        aoi_state="Multi-State (Odisha, Madhya Pradesh, Jharkhand; Pan-India Extensible)",
         total_villages=len(villages),
         scoring_weights_hash=_get_weights_hash(),
         data_tags_in_use=[DataTag.REAL, DataTag.PROXY, DataTag.ILLUSTRATIVE],
         last_pipeline_run=datetime.now(timezone.utc),
+        supported_states=["Odisha", "Madhya Pradesh", "Jharkhand", "Pan-India"],
     )
 
 
 @app.get("/villages", response_model=list[Village])
-async def list_villages() -> list[Village]:
-    """List all villages in the demonstration Area of Interest."""
-    return get_all_villages()
+async def list_villages(
+    state: str | None = Query(
+        None,
+        description="Filter settlements by state (e.g., 'Odisha', 'Madhya Pradesh', 'Jharkhand')",
+    ),
+) -> list[Village]:
+    """List all villages in the demonstration Area of Interest, optionally filtered by state."""
+    villages = get_all_villages()
+    if state:
+        state_norm = state.strip().lower()
+        villages = [v for v in villages if v.state.strip().lower() == state_norm]
+    return villages
 
 
 @app.get("/sites/{site_id}", response_model=Site)

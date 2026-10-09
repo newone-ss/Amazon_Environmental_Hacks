@@ -29,9 +29,9 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
             role="Lead District Planner & Dossier Orchestrator",
             system_prompt=(
                 "You are the Chief Watershed Planning Officer and Decision-Support Orchestrator "
-                "for the District Planning Cell in Koraput District. You synthesize inputs from "
-                "hydrogeologists, safety auditors, civil engineers, and climatologists into "
-                "a concise, authoritative, executive action dossier for the District Collector. "
+                "for District Planning Cells across priority agro-ecological zones (Odisha, Madhya Pradesh, "
+                "Jharkhand). You synthesize inputs from hydrogeologists, safety auditors, civil engineers, "
+                "and climatologists into a concise, authoritative, executive action dossier for District Collectors. "
                 "Be decisive, transparent about data quality, and uncompromising on safety."
             ),
         )
@@ -144,13 +144,16 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
         approved_count = sum(1 for a in assessments if a["safety_status"] != "REJECTED")
         vetoed_count = sum(1 for a in assessments if a["safety_status"] == "REJECTED")
 
+        states = sorted({s.village.state for s in sites if s.village.state})
+        states_desc = ", ".join(states) if states else "Priority Watersheds"
+
         summary = (
-            f"Evaluated {len(sites)} settlements across Koraput District. "
+            f"Evaluated {len(sites)} settlements across {states_desc}. "
             f"{approved_count} cleared for implementation; {vetoed_count} vetoed by geotechnical safety rules."
         )
 
         narrative = (
-            "Executive Watershed Planning Dossier — Koraput District\n"
+            f"Executive Watershed Planning Dossier — {states_desc}\n"
             f"Total Settlements Evaluated: {len(sites)}\n"
             f"- Approved / Cleared: {approved_count}\n"
             f"- Geotechnical Safety Vetoes: {vetoed_count}\n\n"

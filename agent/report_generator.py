@@ -27,6 +27,12 @@ def generate_action_dossier_html(
     """Render self-contained, publication-grade HTML action dossier."""
     timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
 
+    states = sorted({s.village.state for s in sites if s.village.state})
+    districts = sorted({s.village.district for s in sites if s.village.district})
+    aoi_label = ", ".join(districts) if districts else "Priority Watersheds"
+    if states:
+        aoi_label += f" ({', '.join(states)})"
+
     rows_html = ""
     for s in sites:
         v = s.village
@@ -52,7 +58,7 @@ def generate_action_dossier_html(
 
         rows_html += f"""
         <tr>
-            <td><strong>{v.name}</strong><br><small>{v.block} Block</small></td>
+            <td><strong>{v.name}</strong><br><small>{v.block}, {v.district} ({v.state})</small></td>
             <td><span class="badge" style="background: {safety_color}; color: #fff;">{safety_status}</span></td>
             <td>{recharge.value:.1f} <small>({recharge.score_class.value})</small></td>
             <td>{stress.value:.1f} <small>({stress.score_class.value})</small></td>
@@ -77,7 +83,7 @@ def generate_action_dossier_html(
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Bhujal Action Dossier — Koraput District</title>
+    <title>Bhujal Action Dossier — {aoi_label}</title>
     <style>
         body {{
             font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
@@ -169,7 +175,7 @@ def generate_action_dossier_html(
         <div class="header">
             <h1>Bhujal: Watershed Planning Action Dossier</h1>
             <div class="meta-line">
-                <strong>Area of Interest:</strong> Koraput District, Odisha &bull; 
+                <strong>Area of Interest:</strong> {aoi_label} &bull; 
                 <strong>Generated:</strong> {timestamp} &bull; 
                 <strong>Authority:</strong> District Watershed Management Cell
             </div>

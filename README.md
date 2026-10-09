@@ -10,23 +10,39 @@ Built for the **Amazon Environmental Hacks 2026 (Heat and Water Track)**.
 
 ## 1. Executive Summary and Problem Statement
 
-Mountainous tribal watersheds across India's Eastern Ghats—such as Koraput District in southern Odisha—experience severe hydro-climatic paradoxes. Despite receiving extensive annual monsoon precipitation (1,300 mm to 1,600 mm), steep topographic gradients, low secondary porosity in hard-rock granitic and charnockite basements, and high runoff velocities result in rapid drainage. Consequently, over 50% of the rural and indigenous population faces acute pre-monsoon drinking water insecurity, perched spring drying, and compounded summer heat stress.
+Mountainous and plateau tribal watersheds across central and eastern India—specifically in **Odisha**, **Madhya Pradesh**, and **Jharkhand**—suffer from severe hydro-climatic paradoxes. Despite receiving moderate to heavy annual monsoon precipitation (1,100 mm to 1,600 mm), steep topographic gradients, low secondary porosity in hard-rock granitic, basaltic, and gneissic basements, and rapid surface runoff velocity result in accelerated drainage. Consequently, over 50% of the rural and indigenous population faces acute pre-monsoon drinking water insecurity, perched spring drying, and compounded summer heat distress (MODIS LST >40°C).
 
 Traditional watershed development programs frequently suffer from two critical limitations:
-1. **Locational Blindness**: Interventions (such as check dams or percolation ponds) are placed without quantitative verification of slope stability, stream order constraints, fracture permeability, or downstream flood hazards.
+1. **Locational Blindness**: Interventions (such as check dams or percolation tanks) are placed without quantitative verification of slope stability, stream order constraints, fracture permeability, or downstream flood hazards.
 2. **False Precision and Unbounded Claims**: Planning software routinely conceals data sparsity or claims black-box "AI" infallibility without communicating hydrogeological confidence intervals.
 
-**Bhujal addresses this gap directly**: *It determines not only where vulnerability exists, but what structure is safe to build, what capital outlay is required, and what level of empirical confidence underpins the recommendation.*
+**Bhujal addresses this gap directly**: *It determines not only where vulnerability exists, but what structure is safe to build, what capital outlay is required under state MGNREGA schedules, and what level of empirical confidence underpins the recommendation.* While prioritizing the critical agro-ecological zones of Madhya Pradesh, Odisha, and Jharkhand, Bhujal's spatial and algorithmic architecture is fully extensible nationwide across All-India watersheds.
 
 ---
 
-## 2. Demonstration Area of Interest (AOI)
+## 2. Priority Geographic Focus and Areas of Interest (AOI)
 
-* **District**: Koraput District, Odisha, India
+Bhujal focuses primarily on three vulnerable agro-ecological zones, while maintaining an extensible architecture across Pan-India:
+
+### 2.1. Odisha (Koraput District)
 * **Physiography**: Eastern Ghats mobile belt; elevated plateaus (elevation 300 m to 1,300 m AMSL) dissected by seasonal river valleys.
 * **Hydrogeology**: Hard-rock crystalline basement comprising khondalites, charnockites, and granitic gneisses. Groundwater occurs predominantly in weathered zones and fractured networks with limited transmissivity.
-* **Demographics**: >50% Scheduled Tribe population; high dependency on gravity-fed springs (*jhola/jharna*) for domestic and agricultural water supply.
-* **Bounding Envelope**: Latitude 18.25°N to 19.30°N; Longitude 82.05°E to 83.40°E (Area: ~8,807 km²).
+* **Demographics and Water Dynamics**: High Scheduled Tribe concentration; deep reliance on gravity-fed springs (*jhola/jharna*) facing seasonal baseflow cessation.
+
+### 2.2. Madhya Pradesh (Mandla, Dindori, Jhabua Districts)
+* **Physiography**: Upper Narmada catchment, Satpura-Maikal ranges, and Western Malwa tribal plateau.
+* **Hydrogeology**: Deccan Traps layered basaltic lava flows and weathered granitic basements. Porosity and storage depend on vesicular horizons, columnar jointing, and weathered regolith.
+* **Demographics and Water Dynamics**: Severe pre-monsoon heat stress (MODIS LST exceeding 42°C), groundwater over-extraction in agricultural belts, and steep scarp runoff.
+
+### 2.3. Jharkhand (Khunti, West Singhbhum Districts)
+* **Physiography**: Chota Nagpur plateau and Kolhan upland; undulating terrain with remnant residual hills.
+* **Hydrogeology**: Precambrian metamorphic complexes (Singhbhum granite, mica schists, quartzites) with thin saprolite cover and tight fracture networks.
+* **Demographics and Water Dynamics**: Significant forest loss in upper recharge zones, rapid post-monsoon water table decline, and extensive tribal rainfed cultivation.
+
+### 2.4. Pan-India Extensibility
+* **Unified Geographic Boundary**: Extensible bounding envelope defined in `config/aoi.geojson`.
+* **State-Calibrated Parameters**: MGNREGA wage benchmarks (Odisha: INR 350, MP: INR 243, Jharkhand: INR 255, All-India: INR 300) dynamically sourced from `config/costs.yaml`.
+* **Lithological Agility**: Scoring engine dynamically handles granites, charnockites, weathered basalts, schists, and alluvial deposits.
 
 ---
 

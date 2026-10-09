@@ -268,6 +268,7 @@ class MetaResponse(BaseModel):
     )
     data_tags_in_use: list[DataTag] = Field(default_factory=list)
     last_pipeline_run: datetime | None = None
+    supported_states: list[str] = Field(default_factory=list)
 
 
 # Forward reference update (Site references Recommendation which is defined after)

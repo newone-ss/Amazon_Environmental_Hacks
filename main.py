@@ -17,17 +17,25 @@ from scoring import evaluate_site, get_all_villages, run_site_scenario
 
 def cmd_list(args: argparse.Namespace) -> None:
     villages = get_all_villages()
+    if getattr(args, "state", None):
+        st_norm = args.state.strip().lower()
+        villages = [v for v in villages if v.state.strip().lower() == st_norm]
+
     print(
-        f"\nBhujal AOI: Koraput District, Odisha ({len(villages)} Settlements Tracked)"
+        f"\nBhujal AOI: Priority Watersheds (Odisha, Madhya Pradesh, Jharkhand) — {len(villages)} Settlements"
     )
-    print("-" * 75)
-    print(f"{'ID':<10} {'Name':<18} {'Block':<15} {'Elev (m)':<10} {'Spring'}")
-    print("-" * 75)
+    print("-" * 88)
+    print(
+        f"{'ID':<13} {'Name':<16} {'District':<16} {'State':<18} {'Elev (m)':<10} {'Spring'}"
+    )
+    print("-" * 88)
     for v in villages:
         spring_str = "Yes" if v.has_spring else "No"
         elev_str = f"{v.elevation_m:.0f}" if v.elevation_m is not None else "N/A"
-        print(f"{v.id:<10} {v.name:<18} {v.block:<15} {elev_str:<10} {spring_str}")
-    print("-" * 75)
+        print(
+            f"{v.id:<13} {v.name:<16} {v.district:<16} {v.state:<18} {elev_str:<10} {spring_str}"
+        )
+    print("-" * 88)
 
 
 def cmd_evaluate(args: argparse.Namespace) -> None:
@@ -130,6 +138,11 @@ def main() -> None:
     # list
     p_list = subparsers.add_parser(
         "list", help="List tracked villages in the Area of Interest"
+    )
+    p_list.add_argument(
+        "--state",
+        default=None,
+        help="Filter settlements by state (e.g. Odisha, Madhya Pradesh, Jharkhand)",
     )
     p_list.set_defaults(func=cmd_list)
 

@@ -82,6 +82,7 @@ def calculate_spring_drying_index(
     geo_risk_map = {
         "alluvium": 0.2,
         "laterite": 0.35,
+        "weathered_basalt": 0.45,
         "weathered_granite": 0.50,
         "khondalite": 0.65,
         "charnockite": 0.85,

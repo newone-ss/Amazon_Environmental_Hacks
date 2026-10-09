@@ -124,6 +124,7 @@ def evaluate_site(site_id: str) -> Site | None:
         features,
         has_spring=village.has_spring,
         is_rejected=is_rejected,
+        state=village.state,
     )
 
     return Site(
