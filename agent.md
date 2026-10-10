@@ -1,269 +1,170 @@
-# Bhujal — AI Agent Instructions
+# Bhujal: Autonomous Engineering Directives and Governance
 
-> **Purpose**: This file is the single source of truth for any AI agent working on this codebase. Read it fully before writing any code.
-
----
-
-## 1. Context
-
-- **Event**: Amazon Environmental Hacks 2026 — Heat and Water track
-- **Time constraint**: 48-hour hackathon build
-- **Judging criteria**: Idea & Impact, Built on AWS (mandatory for any prize), Design & Usability, Execution (one working feature beats five half-working ones), 3-minute recorded demo video (no live demo)
+> **Document Status**: Canonical Specification and Agent Instructions  
+> **Target Audience**: Autonomous Software Engineers, Contributing Developers, and System Architects
 
 ---
 
-## 2. Product — Bhujal
+## 1. Project Context and Evaluation Constraints
 
-Bhujal is a **decision-support tool for block and district planners in hilly and tribal areas**.
-
-For one demonstration area (**Odisha / Jharkhand / Madhya Pradesh**) it shows:
-
-| Capability | Description |
-|---|---|
-| Recharge suitability | Where monsoon water can be recharged |
-| Heat-water stress | Which villages face heat-water stress |
-| Spring-drying risk | Which springs risk drying (heuristic index) |
-| Intervention composer | Which intervention suits a site |
-| Safety veto | Whether it is safe to build there |
-| Indicative cost | An approximate cost for the intervention |
-| Confidence level | How sure we are about each score |
-| Action report | A planner-ready downloadable report |
-
-### One-line pitch
-
-> Not just where the problem is, but what is safe to build and how sure we are.
+* **Initiative**: Amazon Environmental Hacks 2026 — Heat and Water Track
+* **Operational Time Window**: 48-Hour Hackathon Delivery Lifecycle
+* **Evaluation Criteria**: 
+  1. **Impact and Hydrogeological Validity**: Measurable utility for district-level planning and resilience.
+  2. **AWS Architecture Compliance**: Mandatory utilization of core AWS services.
+  3. **Usability and Engineering Polish**: Intuitive spatial interaction with zero layout or runtime anomalies.
+  4. **Execution Integrity**: Complete, hardened end-to-end functionality across core features.
+  5. **Auditable Demonstration**: Structured 3-minute technical recording with deterministic replication steps.
 
 ---
 
-## 3. Non-Negotiable Rules
+## 2. Product Specification
 
-### Rule 1 — One Area Only
-The pipeline reads the area of interest from `config/aoi.geojson` so other areas can be loaded later, but we **demo and validate one area only**.
+Bhujal is a specialized decision-support platform designed for district magistrates, block development officers, and watershed engineers in mountainous tribal regions of India. The platform analyzes complex multi-spectral, morphometric, and climatic data to deliver eight core capabilities:
 
-### Rule 2 — Determinism and Safety
-- Scores, safety verdicts, and costs are computed by **deterministic code** driven by `config/*.yaml`.
-- The LLM **never decides** scores, safety verdicts, or costs.
-- The LLM **only explains and writes narratives** from numbers returned by tools.
+| Capability | Engineering Objective | Methodological Foundation |
+|---|---|---|
+| **Recharge Suitability** | Identify high-potential infiltration corridors | Multi-criteria weighted linear combination |
+| **Heat-Water Stress** | Map compound thermal and moisture vulnerabilities | Thermal radiometric anomalies + precipitation deficit |
+| **Springhead Vulnerability** | Index seasonal drying probabilities | Morphometric and hydrological catchment heuristics |
+| **Intervention Composer** | Recommend site-matched civil structures | Rule-based matrix matching site constraints |
+| **Safety Veto Engine** | Enforce geotechnical and regulatory safety boundaries | Deterministic boolean threshold evaluations |
+| **Indicative Costing** | Project preliminary capital and labour requirements | MGNREGA Schedule of Rates (State-calibrated: Odisha, MP, Jharkhand, and Pan-India) |
+| **Uncertainty Quantification** | Deliver transparency on underlying data resolution | Structured confidence scoring and provenance badging |
+| **Action Dossier Generation** | Produce audit-ready briefing reports for planners | Grounded LLM narrative synthesis with deterministic fallback |
 
-### Rule 3 — Honesty
-- **Never fabricate data.**
-- If a real dataset is unavailable, use a clearly labelled **proxy or synthetic stand-in**.
-- Tag it in the data manifest.
-- Show an **"Illustrative"** or **"Proxy"** badge in the UI and report.
-- Do not call weighted overlays "AI"; call them **transparent scoring**.
-- Spring-drying risk is a **heuristic index** unless real discharge time series exist.
+---
 
-### Rule 4 — Score Schema
-Every score **must** return:
+## 3. Mandatory Engineering Rules
+
+### Rule 1: Priority Regional Focus and Extensible AOI Isolation
+The analytical pipeline must dynamically read spatial bounds from `config/aoi.geojson`. Core validation and demonstration scopes prioritize vulnerable tribal hard-rock watersheds across **Madhya Pradesh** (Mandla, Dindori, Jhabua), **Odisha** (Koraput), and **Jharkhand** (Khunti, West Singhbhum), with architectural boundaries extensible across **Pan-India**.
+
+### Rule 2: Absolute Separation of Scoring and Language Models
+* All indices, ratings, safety clearances, and financial projections must be produced exclusively by deterministic Python algorithms reading `config/*.yaml`.
+* The Large Language Model (LLM) must never calculate, adjust, or arbitrate numerical outputs, costs, or safety statuses.
+* The LLM is restricted entirely to translating deterministic metrics into administrative narratives and contextual summaries.
+
+### Rule 3: Empirical Honesty and Provenance Badging
+* Synthetic or fabricated data masquerading as empirical observations is strictly prohibited.
+* If a primary dataset cannot be retrieved, a documented proxy or synthetic stand-in must be used and recorded in `data/README.md`.
+* Every response and interface element must display an appropriate provenance badge:
+  * `real`: Validated empirical observation or direct satellite measurement.
+  * `proxy`: Spatially interpolated or secondary derived index.
+  * `illustrative`: Curated synthetic record for demonstration and stress testing.
+* Multi-criteria overlays must be designated as *transparent deterministic scoring*, never as *artificial intelligence*.
+
+### Rule 4: Mandatory Score Schema
+Every score generated across the platform must conform to the unified contractual schema:
 
 ```json
 {
-  "value": 0-100,
-  "class": "string",
+  "score_type": "string",
+  "value": 0.0,
+  "score_class": "string",
   "drivers": [
-    { "factor": "string", "weight": 0.0, "contribution": 0.0 }
+    {
+      "factor": "string",
+      "weight": 0.0,
+      "contribution": 0.0
+    }
   ],
   "confidence": {
     "level": "low | medium | high",
     "numeric": 0.0
   },
-  "data_quality_note": "string"
+  "data_quality_note": "string",
+  "data_tag": "real | proxy | illustrative"
 }
 ```
 
-### Rule 5 — AWS is Required
+### Rule 5: Required AWS Services
+The platform must utilize the following AWS serverless building blocks:
 
-| Component | AWS Service |
-|---|---|
-| Frontend hosting | S3 + CloudFront |
-| API | Lambda behind API Gateway (or Lambda function URL) |
-| Field observations | DynamoDB |
-| Photo uploads | S3 via presigned URLs |
-| AI explanations & reports | Strands Agents SDK + Amazon Bedrock |
-| Infrastructure as Code | AWS SAM |
-| Region | Verify Bedrock model access before deploying |
+| Component | AWS Resource | Deployment Role |
+|---|---|---|
+| Static Client Delivery | Amazon S3 + Amazon CloudFront | Global edge distribution with Origin Access Control (OAC) |
+| Application Ingress | Amazon API Gateway HTTP API | Low-latency RESTful API gateway |
+| Compute Runtime | AWS Lambda (Python 3.11) via Mangum | Serverless execution of the FastAPI application |
+| Field Data Storage | Amazon DynamoDB | On-demand table storage for ground-truth observations |
+| Media / Document Store | Amazon S3 | Presigned URL uploads for field images and generated dossiers |
+| Generative AI Layer | Amazon Bedrock (Anthropic Claude 3 Sonnet) | LLM narrative synthesis orchestrated via Strands Agents SDK |
+| Infrastructure as Code | AWS Serverless Application Model (SAM) | Declarative cloud formation templates in `infra/template.yaml` |
 
-### Rule 6 — Scope Guard
-Anything outside the MVP list goes to `docs/future.md`, **not into code**.
+### Rule 6: Strict Scope Enforcement
+Any capability not enumerated in the minimum viable product (MVP) specification below must be documented in `docs/future.md` and excluded from current implementation:
 
-**MVP features (exhaustive list):**
-1. Map with layers
-2. Recharge score
-3. Heat-water stress score
-4. Spring drying index
-5. Safety veto
-6. Intervention composer with indicative cost
-7. Scenario simulator (rainfall slider)
-8. Field observation form
-9. Action report (downloadable)
-10. Validation panel
+1. Interactive geospatial map with layered scoring visualizers.
+2. Groundwater recharge suitability calculation module.
+3. Heat-water vulnerability scoring module.
+4. Heuristic springhead desiccation risk index.
+5. Deterministic safety veto evaluator.
+6. Civil intervention composer with MGNREGA cost schedule.
+7. Dynamic rainfall scenario slider with real-time score perturbation.
+8. Ground-truth field observation capture with photo upload capability.
+9. Downloadable planner action dossier (HTML/PDF format).
+10. Scientific validation and calibration panel.
 
-### Rule 7 — Process
-- Work **phase by phase**.
-- Small commits with clear messages.
-- At the end of each phase print: `done / not done / risks / next`.
-- Ask a question **only when truly blocked**; otherwise choose the simplest option and log it in `docs/DECISIONS.md`.
+### Rule 7: Development and Committing Protocol
+* Work sequentially according to the phased implementation plan.
+* Commit code frequently using standardized conventional commit messages.
+* When completing a phase, log structured status: `Completed / Pending / Risks / Next Phase`.
+* Resolve blocking ambiguities by selecting the simplest viable architectural option, immediately documenting the rationale in `docs/DECISIONS.md`.
 
-### Rule 8 — Quality
-- Python **type hints** everywhere.
-- **Unit tests** for scoring, safety rules, and the simulator.
-- Thresholds and weights in **config files**, not hard-coded.
-- **No secrets in the repo.** Use `.env.example`.
-- Data licences and sources in `data/README.md` using the dataset record template:
+### Rule 8: Code Quality and Documentation Integrity
+* Complete Python 3.11 static type annotations across all modules.
+* Unit test coverage for scoring algorithms, safety veto rules, and simulation routines.
+* Zero hard-coded operational thresholds; all variables must reside in `config/*.yaml`.
+* Zero committed credentials or environment keys; maintain `.env.example` as the canonical reference.
+* Maintain structured dataset attribution records in `data/README.md`.
 
-```yaml
-- name: "Dataset Name"
-  source: "URL or provider"
-  version: "v1.0"
-  resolution: "30m / 1km / etc."
-  licence: "CC-BY-4.0 / etc."
-  download_method: "GEE export / direct download / API"
-  preprocessing: "Steps applied"
-  features: "What it provides"
-  limitations: "Known issues"
-```
-
-### Rule 9 — Time-boxing
-If a task exceeds its time box by **50%**, cut scope, record it in `docs/DECISIONS.md`, and move on.
+### Rule 9: Time-Box Management
+If any feature implementation exceeds 150% of its designated time window, immediately trim non-essential sub-features, record the modification in `docs/DECISIONS.md`, and advance to the next priority.
 
 ---
 
-## 4. Fixed Tech Choices
+## 4. Technology Stack Specification
 
-### Pipeline
-- Python 3.11
-- `rasterio`, `rioxarray`, `geopandas`, `numpy`
-- `pysheds` or `whitebox` for flow accumulation
-- Google Earth Engine allowed for climate and vegetation rasters if faster → export results to COG
-
-### Backend
-- **FastAPI** on Lambda via **Mangum**
-- **AWS SAM** template
-- **pytest** for testing
-
-### Frontend
-- **Vite + React + TypeScript**
-- **MapLibre GL** for maps
-- **GeoJSON or PMTiles** for vector tiles
-- **Recharts** for charts
-- ❌ No Next.js
-- ❌ No PostGIS
-- ❌ No auth
-
-### AI Layer
-- **Strands Agents SDK + Amazon Bedrock**
-- Template fallback if Bedrock is unavailable
+* **Geospatial Pipeline**: Python 3.11, `numpy`, `geopandas`, `rasterio`, `rioxarray`, `shapely`, `pyproj`, `pysheds`.
+* **Backend Application**: FastAPI, Mangum, Pydantic v2, Boto3, PyYAML.
+* **Testing and Tooling**: Pytest, Ruff (linter and formatter), Mypy.
+* **Client Interface**: React 18, TypeScript, Vite, MapLibre GL, Recharts.
+* **Infrastructure**: AWS SAM CLI, CloudFormation.
+* **Prohibited Technologies**: Next.js, PostGIS / relational database servers, user authentication layers (unnecessary overhead for 48-hour submission).
 
 ---
 
-## 5. Repository Layout
+## 5. Phased Delivery Roadmap
 
-```
-/
-├── config/
-│   ├── aoi.geojson          # Area of interest (one area for demo)
-│   ├── weights.yaml          # Scoring weights
-│   ├── safety_rules.yaml     # Safety veto rules
-│   ├── interventions.yaml    # Intervention types and logic
-│   ├── costs.yaml            # Indicative cost tables
-│   ├── scenario.yaml         # Scenario simulator parameters
-│   └── demo_sites.yaml       # Pre-selected demo villages/sites
-│
-├── pipeline/
-│   ├── download/             # Data acquisition scripts
-│   ├── preprocess/           # Cleaning, reprojection, alignment
-│   └── features/             # Feature extraction (slope, TWI, etc.)
-│
-├── scoring/                  # Deterministic scoring modules
-│
-├── backend/                  # FastAPI + Mangum
-│
-├── agent/                    # Strands Agents SDK integration
-│
-├── frontend/                 # Vite + React + TypeScript
-│
-├── infra/                    # AWS SAM templates
-│
-├── data/
-│   └── README.md             # Data manifest (no raw data committed)
-│
-├── tests/                    # pytest test suite
-│
-├── docs/
-│   ├── DECISIONS.md          # Design decisions log
-│   ├── assumptions.md        # Assumptions made
-│   ├── validation.md         # Validation methodology
-│   ├── future.md             # Out-of-scope ideas
-│   └── architecture.md       # System architecture
-│
-├── .env.example              # Environment variable template
-├── agent.md                  # ← THIS FILE
-└── README.md                 # Project overview and reproduction steps
-```
+### Phase 0: System Scaffolding and Interface Contracts (Completed)
+* Establish repository directory layout and configuration schemas.
+* Define Pydantic models in `backend/models.py`.
+* Draft AWS SAM infrastructure template in `infra/template.yaml`.
+* Implement initial contract validation tests in `tests/test_models.py`.
+* Configure automated GitHub Actions CI pipeline.
 
----
+### Phase 1: Data Pipeline and Scoring Engine (Completed)
+* Implemented deterministic scoring modules: `scoring/recharge.py`, `scoring/stress.py`, `scoring/springs.py`.
+* Implemented deterministic safety veto engine in `scoring/safety.py`.
+* Implemented intervention matching and costing engine in `scoring/interventions.py`.
+* Implemented climate scenario simulator in `scoring/simulator.py`.
+* Built unified evaluation engine in `scoring/engine.py` and CLI in `main.py`.
 
-## 6. Phased Build Plan
+### Phase 2: Application API and Multi-Agent Collective (Completed)
+* Integrated all endpoints into FastAPI application in `backend/app.py`.
+* Implemented 7 specialized autonomous domain agents and Lead Orchestrator in `agent/`.
+* Implemented Amazon Bedrock Claude 3 Sonnet integration with deterministic template fallback.
+* Implemented publication-grade HTML action dossier report generator in `agent/report_generator.py`.
+* Created comprehensive test suite (41 tests passing across models, scoring, agents, and API).
 
-### Phase 0 — Scaffold & Config
-- Create the full repo layout (all directories and stub files).
-- Write all config YAMLs with realistic defaults for the demo AOI.
-- Create `.env.example` and all docs stubs.
-- **Exit criteria**: Everything imports, nothing runs yet.
+### Phase 3: Client Interface Development (Current)
+* Initialize React + TypeScript application in `frontend/`.
+* Integrate MapLibre GL for raster overlay and village point visualization.
+* Build interactive inspection panels for scores, safety verdicts, and cost breakdowns.
+* Integrate dynamic rainfall simulation controls and observation capture forms.
+* Implement client-side export for action reports.
 
-### Phase 1 — Data Pipeline & Scoring
-- Build the raster/vector pipeline: DEM, rainfall, LULC, soil, slope, lineaments for the demo AOI.
-- Implement deterministic scoring modules:
-  - Recharge score
-  - Heat-water stress score
-  - Spring-drying index
-  - Safety veto
-- All scores return the schema from Rule 4.
-- Unit tests for all scoring functions.
-- **Exit criteria**: `pytest` passes, scores are computed for the demo AOI.
-
-### Phase 2 — Backend & Agent
-- FastAPI app with Mangum adapter.
-- Endpoints: `/scores`, `/interventions`, `/simulate`, `/observations`, `/report`.
-- DynamoDB integration for field observations.
-- S3 presigned URL generation for photo uploads.
-- Strands Agents SDK + Bedrock integration for narrative generation (with template fallback).
-- **Exit criteria**: All endpoints return valid responses locally.
-
-### Phase 3 — Frontend
-- Vite + React + TypeScript project.
-- MapLibre GL map with scored layers.
-- Click-a-village detail panel (scores, drivers, confidence).
-- Intervention composer with indicative cost display.
-- Rainfall scenario slider → summer water change visualization.
-- Field observation form (text + photo upload).
-- Downloadable action report (PDF or HTML).
-- Proxy/Illustrative badges on synthetic data.
-- Validation panel.
-- **Exit criteria**: Full user flow works against backend.
-
-### Phase 4 — Deploy & Demo
-- SAM deploy: S3 + CloudFront, Lambda, API Gateway, DynamoDB.
-- End-to-end smoke test on deployed URL.
-- Record 3-minute demo video.
-- Finalize README with reproduction steps.
-- **Exit criteria**: A stranger can open the URL and complete the full flow.
-
----
-
-## 7. Definition of Done
-
-> A stranger opens the deployed URL, clicks a village, sees scores with reasons and confidence, sees a hazardous site rejected with the rule that rejected it, moves a rainfall slider and watches summer water change, submits a field observation, and downloads a report. The README explains how to reproduce the data pipeline.
-
----
-
-## 8. Key Reminders for the Agent
-
-1. **Never hallucinate data.** Use proxy data with badges if real data is unavailable.
-2. **Never let the LLM compute scores.** Scores are deterministic Python code + config YAML.
-3. **Always return the full score schema** (value, class, drivers, confidence, data_quality_note).
-4. **Log every non-trivial decision** in `docs/DECISIONS.md`.
-5. **Stay within MVP scope.** Extras go to `docs/future.md`.
-6. **AWS services are mandatory** for any prize eligibility.
-7. **One working feature beats five half-working ones.** Prioritize depth over breadth.
-8. **Cut scope at 150% time-box**, document why, and move on.
+### Phase 4: Cloud Deployment and Final Validation
+* Build and deploy AWS SAM stack across API Gateway, Lambda, DynamoDB, S3, and CloudFront.
+* Conduct end-to-end operational verification against deployed HTTPS endpoints.
+* Finalize comprehensive reproduction instructions and record the 3-minute demonstration video.

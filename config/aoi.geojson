@@ -3,10 +3,13 @@
   "features": [
     {
       "type": "Feature",
+      "id": "aoi_odisha_koraput",
       "properties": {
         "name": "Koraput District",
         "state": "Odisha",
-        "description": "Hilly tribal district in southern Odisha, Eastern Ghats. Rich in springs, prone to heat-water stress. Selected as demo AOI for Bhujal.",
+        "region_type": "Primary Focus AOI",
+        "physiography": "Eastern Ghats crystalline mobile belt, elevated plateau dissected by seasonal river valleys.",
+        "hydrogeology": "Hard-rock charnockites and khondalites; groundwater in weathered residuum and fracture systems; extensive perched mountain springs.",
         "area_km2": 8807
       },
       "geometry": {
@@ -18,6 +21,78 @@
             [83.40, 19.30],
             [82.05, 19.30],
             [82.05, 18.25]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "aoi_mp_mandla_dindori",
+      "properties": {
+        "name": "Mandla and Dindori Districts",
+        "state": "Madhya Pradesh",
+        "region_type": "Primary Focus AOI",
+        "physiography": "Central Indian tribal plateau, Upper Narmada basin and Satpura-Maikal range.",
+        "hydrogeology": "Deccan Trap vesicular and amygdaloidal basalts with inter-trappean beds; high summer radiometric heat anomalies; rapid runoff on trap scarps.",
+        "area_km2": 14945
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [80.00, 22.20],
+            [81.75, 22.20],
+            [81.75, 23.40],
+            [80.00, 23.40],
+            [80.00, 22.20]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "aoi_jharkhand_khunti_singhbhum",
+      "properties": {
+        "name": "Khunti and West Singhbhum Districts",
+        "state": "Jharkhand",
+        "region_type": "Primary Focus AOI",
+        "physiography": "Chota Nagpur granite-gneiss plateau and Kolhan basin, undulating upland ridges (tanr) and low-gradient valleys (don).",
+        "hydrogeology": "Archaean granite-gneiss complex and Singhbhum shear zone rocks; fracture permeability in weathered crystalline basement; acute pre-monsoon water depletion.",
+        "area_km2": 10226
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [84.90, 22.00],
+            [86.10, 22.00],
+            [86.10, 23.30],
+            [84.90, 23.30],
+            [84.90, 22.00]
+          ]
+        ]
+      }
+    },
+    {
+      "type": "Feature",
+      "id": "aoi_pan_india",
+      "properties": {
+        "name": "Pan-India Extensible Framework",
+        "state": "All-India",
+        "region_type": "National Extensibility Envelope",
+        "physiography": "Covers all hydro-climatic zones across Peninsular India hard rocks, Indo-Gangetic alluvium, and Himalayan watersheds.",
+        "hydrogeology": "Dynamic nationwide multi-criteria model ingestion using SRTM 30m, CHIRPS climatology, SoilGrids, and CGWB monitoring networks.",
+        "area_km2": 3287263
+      },
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [68.10, 6.75],
+            [97.40, 6.75],
+            [97.40, 37.10],
+            [68.10, 37.10],
+            [68.10, 6.75]
           ]
         ]
       }

@@ -32,7 +32,7 @@ interventions:
       max_slope_deg: 8             # ASSUMPTION: flat to gentle slope
       min_catchment_area_ha: 25    # ASSUMPTION: needs meaningful inflow
       soil_types: [sandy_loam, loam, sandy]
-      geology: [weathered_granite, laterite, alluvium]   # ASSUMPTION
+      geology: [weathered_granite, laterite, alluvium, weathered_basalt]   # ASSUMPTION
     default_dimensions:
       area_m2: 2500                # ASSUMPTION: 50m x 50m
       depth_m: 3

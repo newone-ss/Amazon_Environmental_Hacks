@@ -5,8 +5,14 @@
 # Source: MGNREGA schedule of rates, state SOR, field estimates.
 # ──────────────────────────────────────────────
 
-# Labour rate per person-day
-labour_rate_inr_per_day: 350       # ASSUMPTION: MGNREGA 2024 Odisha rate ~₹350
+# Labour rate per person-day calibrated to state MGNREGA schedules (2024-2025)
+labour_rates_by_state:
+  Odisha: 350
+  Madhya Pradesh: 243
+  Jharkhand: 255
+  All-India: 300
+
+labour_rate_inr_per_day: 350       # Default baseline rate
 
 # Material unit costs
 material_costs:

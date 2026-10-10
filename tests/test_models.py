@@ -3,9 +3,8 @@ Tests for Pydantic models and API contract.
 Validates that all models can be instantiated and serialised.
 """
 
-from datetime import datetime
-
 import pytest
+from pydantic import ValidationError
 
 from backend.models import (
     Confidence,
@@ -13,22 +12,17 @@ from backend.models import (
     DataTag,
     Driver,
     MetaResponse,
-    Observation,
     ObservationCreate,
     Recommendation,
-    ReportRequest,
-    ReportResult,
     SafetyRuleResult,
     SafetyStatus,
     SafetyVerdict,
     ScenarioRequest,
-    ScenarioResult,
     ScoreClass,
     ScoreResult,
     Site,
     Village,
 )
-
 
 # ── ScoreResult ────────────────────────────────
 
@@ -53,7 +47,7 @@ class TestScoreResult:
         assert score.confidence.level == ConfidenceLevel.MEDIUM
 
     def test_score_value_bounds(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             ScoreResult(
                 score_type="test",
                 value=150.0,  # Out of bounds
@@ -146,7 +140,7 @@ class TestScenario:
         assert req.rainfall_fraction == 0.7
 
     def test_scenario_request_out_of_bounds(self) -> None:
-        with pytest.raises(Exception):
+        with pytest.raises(ValidationError):
             ScenarioRequest(site_id="site_001", rainfall_fraction=2.0)
 
 
