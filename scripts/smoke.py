@@ -1,4 +1,3 @@
-#!/usr/bin/env python3
 """
 Smoke test script for Bhujal deployed API.
 Tests all major endpoints to ensure the deployment is working correctly.
