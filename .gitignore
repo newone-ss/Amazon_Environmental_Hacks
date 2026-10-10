@@ -38,6 +38,18 @@ data/reports/
 # Frontend (kept local only, excluded from GitHub repo)
 frontend/
 
+# Local workspace configs and documentation (kept local only, excluded from GitHub repo)
+/TEST_CHECKLIST.md
+/agent.md
+/pytest.ini
+/.python-version
+/.awssamignore
+/requirements-pipeline.txt
+/scripts/
+pipeline/download/
+pipeline/features/
+pipeline/preprocess/
+
 # SAM build
 infra/.aws-sam/
 .aws-sam/
