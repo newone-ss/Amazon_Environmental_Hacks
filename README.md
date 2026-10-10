@@ -193,10 +193,12 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- TEST_CHECKLIST.md       # Concrete testing checklist and Definition of Done
 |   `-- validation.md           # Verification, testing, and validation methodology
 |-- infra/
+|   |-- .awssamignore           # Artifact exclusion rules for AWS SAM builds
 |   `-- template.yaml           # AWS Serverless Application Model (SAM) CloudFormation template
 |-- pipeline/                   # Offline empirical telemetry aggregation and packaging
 |   |-- build_derived.py        # Precomputes compact derived JSONs from raw CSVs
-|   `-- package.py              # AWS SAM Lambda bundle packager (build/lambda)
+|   |-- package.py              # AWS SAM Lambda bundle packager (build/lambda)
+|   `-- requirements.txt        # Offline geospatial pipeline dependencies
 |-- scoring/                    # Deterministic spatial hydrogeology and safety veto engine
 |   |-- recharge.py             # Multi-criteria infiltration suitability overlay
 |   |-- stress.py               # Compound heat-water vulnerability calculator
@@ -207,6 +209,7 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- engine.py               # Unified spatial evaluation engine
 |   `-- run.py                  # Standalone batch site evaluation runner
 |-- tests/
+|   |-- smoke.py                # End-to-end deployed API smoke verification
 |   |-- test_models.py          # Pytest verification suite for API and data contracts
 |   |-- test_scoring.py         # Pytest suite for scoring, safety veto, and simulation
 |   |-- test_agents.py          # Pytest suite for autonomous multi-agent collective
@@ -214,8 +217,7 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   `-- test_derived_data.py    # Pytest suite for Phase 4 derived schemas and sign convention
 |-- main.py                     # Unified Command-Line Interface (list, evaluate, simulate, report, server)
 |-- Makefile                    # Standardized automation interface
-|-- requirements.txt            # Python dependencies with pinned semver constraints
-`-- requirements-pipeline.txt   # Offline geospatial pipeline dependencies
+`-- requirements.txt            # Python dependencies with pinned semver constraints
 ```
 
 ---
