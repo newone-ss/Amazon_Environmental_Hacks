@@ -2,7 +2,7 @@
 Bhujal — Pydantic Models (API Contract)
 ========================================
 These models define the data contract between frontend, backend,
-and scoring engine. All scores follow Rule 4 of agent.md.
+and scoring engine. All scores follow Rule 4 of docs/agent_governance.md.
 """
 
 from __future__ import annotations
@@ -72,7 +72,7 @@ class Confidence(BaseModel):
 
 class ScoreResult(BaseModel):
     """
-    Standard score output — Rule 4 of agent.md.
+    Standard score output — Rule 4 of docs/agent_governance.md.
     Every scoring function MUST return this shape.
     """
 

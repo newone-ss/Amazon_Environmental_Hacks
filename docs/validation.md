@@ -79,4 +79,4 @@ All 47 automated tests across Tier 1, Tier 2, Tier 3, and Tier 4 are executed au
 * `tests/test_agents.py`: Domain specialist agents, Bedrock LLM synthesis, and administrative orchestrator (7 tests).
 * `tests/test_api.py`: FastAPI REST endpoint operations, multi-state filtering, HTML dossier generation, and DPR package generation (15 tests).
 
-Pull requests failing any test or linter constraint (`ruff check`, `ruff format`) are strictly blocked from merging. See [TEST_CHECKLIST.md](../TEST_CHECKLIST.md) for the mandatory concrete verification procedure and Definition of Done.
+Pull requests failing any test or linter constraint (`ruff check`, `ruff format`) are strictly blocked from merging. See [TEST_CHECKLIST.md](TEST_CHECKLIST.md) for the mandatory concrete verification procedure and Definition of Done.

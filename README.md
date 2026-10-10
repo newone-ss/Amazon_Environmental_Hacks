@@ -183,11 +183,14 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- rainfall_cleaned_odisha_jharkhand_mp.csv                    # IMD daily rainfall & departures (5,512 rows)
 |   `-- README.md               # Data manifest, licensing records, and provenance ledger
 |-- docs/
+|   |-- agent_governance.md     # Core operational directives, mathematical schemas, and rules
 |   |-- api.md                  # Comprehensive REST API specifications and contract documentation
 |   |-- architecture.md         # Detailed AWS infrastructure and component flow specifications
 |   |-- assumptions.md          # Scientific and engineering assumptions registry
+|   |-- data_provenance.md      # Settlement-to-telemetry empirical mapping and assumptions
 |   |-- DECISIONS.md            # Formal architectural decision records (ADR)
 |   |-- future.md               # Post-MVP enhancement roadmap
+|   |-- TEST_CHECKLIST.md       # Concrete testing checklist and Definition of Done
 |   `-- validation.md           # Verification, testing, and validation methodology
 |-- infra/
 |   `-- template.yaml           # AWS Serverless Application Model (SAM) CloudFormation template
@@ -207,11 +210,12 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- test_models.py          # Pytest verification suite for API and data contracts
 |   |-- test_scoring.py         # Pytest suite for scoring, safety veto, and simulation
 |   |-- test_agents.py          # Pytest suite for autonomous multi-agent collective
-|   `-- test_api.py             # Pytest suite for FastAPI REST endpoints and state filters
+|   |-- test_api.py             # Pytest suite for FastAPI REST endpoints and state filters
+|   `-- test_derived_data.py    # Pytest suite for Phase 4 derived schemas and sign convention
 |-- main.py                     # Unified Command-Line Interface (list, evaluate, simulate, report, server)
 |-- Makefile                    # Standardized automation interface
 |-- requirements.txt            # Python dependencies with pinned semver constraints
-`-- agent.md                    # Core operational directives and constraints
+`-- requirements-pipeline.txt   # Offline geospatial pipeline dependencies
 ```
 
 ---
