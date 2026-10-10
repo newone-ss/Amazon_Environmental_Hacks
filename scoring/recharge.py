@@ -3,32 +3,24 @@ Bhujal — Groundwater Recharge Scoring Engine
 =============================================
 Calculates multi-criteria recharge suitability (0-100) using
 deterministic weighted overlays driven by config/weights.yaml.
-Adheres strictly to Rule 4 of agent.md.
 """
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
-import yaml
-
 from backend.models import (
-    Confidence,
     ConfidenceLevel,
     DataTag,
-    Driver,
-    ScoreClass,
     ScoreResult,
 )
-
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-
-
-def load_weights_config() -> dict[str, Any]:
-    weights_path = CONFIG_DIR / "weights.yaml"
-    with open(weights_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from scoring.base import (
+    build_score_result,
+    clamp,
+    compute_weighted_score,
+    get_weights_config,
+    normalize_linear,
+)
 
 
 def calculate_recharge_score(
@@ -46,22 +38,20 @@ def calculate_recharge_score(
       - lineament_density: float (0.0 - 1.0)
       - drainage_density: float (0.0 - 1.0)
     """
-    cfg = load_weights_config()
+    cfg = get_weights_config()
     weights_spec = cfg.get("recharge_score", {}).get("factors", {})
 
-    # 1. Normalize individual factors to [0.0, 1.0]
+    # Normalize individual factors to [0.0, 1.0]
     raw_slope = float(features.get("slope_degrees", 10.0))
-    # Flatter slopes favor infiltration: 0 deg -> 1.0, >= 35 deg -> 0.0
-    norm_slope = max(0.0, min(1.0, 1.0 - (raw_slope / 35.0)))
+    norm_slope = normalize_linear(raw_slope, 0.0, 35.0, inverse=True)
 
-    norm_soil = max(0.0, min(1.0, float(features.get("soil_permeability", 0.5))))
-    norm_rain = max(0.0, min(1.0, float(features.get("rainfall_intensity", 0.6))))
-    norm_lulc = max(0.0, min(1.0, float(features.get("lulc_perviousness", 0.7))))
-    norm_lineament = max(0.0, min(1.0, float(features.get("lineament_density", 0.5))))
+    norm_soil = clamp(float(features.get("soil_permeability", 0.5)))
+    norm_rain = clamp(float(features.get("rainfall_intensity", 0.6)))
+    norm_lulc = clamp(float(features.get("lulc_perviousness", 0.7)))
+    norm_lineament = clamp(float(features.get("lineament_density", 0.5)))
 
     raw_drainage = float(features.get("drainage_density", 0.5))
-    # Lower drainage density favors longer infiltration opportunity
-    norm_drainage = max(0.0, min(1.0, 1.0 - raw_drainage))
+    norm_drainage = normalize_linear(raw_drainage, 0.0, 1.0, inverse=True)
 
     normalized_map = {
         "slope": norm_slope,
@@ -72,36 +62,17 @@ def calculate_recharge_score(
         "drainage_density": norm_drainage,
     }
 
-    # 2. Weighted summation
-    drivers: list[Driver] = []
-    total_score = 0.0
+    score_val, drivers = compute_weighted_score(normalized_map, weights_spec)
 
-    for factor_name, factor_cfg in weights_spec.items():
-        w = float(factor_cfg.get("weight", 0.0))
-        val = normalized_map.get(factor_name, 0.5)
-        contrib = round(val * w * 100.0, 2)
-        total_score += contrib
-        drivers.append(Driver(factor=factor_name, weight=w, contribution=contrib))
-
-    final_val = round(max(0.0, min(100.0, total_score)), 1)
-
-    # 3. Classification tier
-    tiers = cfg.get("classification", {}).get("recharge_score", {})
-    if final_val >= tiers.get("excellent", [75, 100])[0]:
-        s_class = ScoreClass.EXCELLENT
-    elif final_val >= tiers.get("good", [50, 75])[0]:
-        s_class = ScoreClass.GOOD
-    elif final_val >= tiers.get("moderate", [25, 50])[0]:
-        s_class = ScoreClass.MODERATE
-    else:
-        s_class = ScoreClass.POOR
-
-    return ScoreResult(
+    return build_score_result(
         score_type="recharge_score",
-        value=final_val,
-        score_class=s_class,
+        value=score_val,
         drivers=drivers,
-        confidence=Confidence(level=ConfidenceLevel.MEDIUM, numeric=0.72),
-        data_quality_note="Multi-criteria overlay derived from SRTM 30m DEM, SoilGrids 250m, and CHIRPS precipitation.",
+        confidence_level=ConfidenceLevel.MEDIUM,
+        confidence_numeric=0.72,
+        data_quality_note=(
+            "Multi-criteria overlay derived from SRTM 30m DEM, "
+            "SoilGrids 250m, and CHIRPS precipitation."
+        ),
         data_tag=data_tag,
     )

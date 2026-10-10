@@ -7,24 +7,13 @@ and estimates indicative MGNREGA cost bounds from config/costs.yaml.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
 
-import yaml
-
 from backend.models import Recommendation
-
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-
-
-def load_interventions_config() -> dict[str, Any]:
-    with open(CONFIG_DIR / "interventions.yaml", "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-
-def load_costs_config() -> dict[str, Any]:
-    with open(CONFIG_DIR / "costs.yaml", "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from scoring.base import (
+    get_costs_config,
+    get_interventions_config,
+)
 
 
 def compose_recommendations(
@@ -42,15 +31,15 @@ def compose_recommendations(
     if is_rejected:
         return []
 
-    int_cfg = load_interventions_config()
-    cost_cfg = load_costs_config()
+    int_cfg = get_interventions_config()
+    cost_cfg = get_costs_config()
 
     candidates = int_cfg.get("interventions", [])
     cost_tables = cost_cfg.get("intervention_costs", {})
     labour_rates = cost_cfg.get("labour_rates_by_state", {})
+    default_labour_rate = cost_cfg.get("labour_rate_inr_per_day", 350)
     labour_rate = labour_rates.get(
-        state,
-        labour_rates.get("All-India", cost_cfg.get("labour_rate_inr_per_day", 350)),
+        state, labour_rates.get("All-India", default_labour_rate)
     )
 
     slope = float(features.get("slope_degrees", 10.0))
@@ -68,7 +57,7 @@ def compose_recommendations(
         i_id = item["id"]
         suit = item.get("suitability", {})
         matched = True
-        match_score = 0.5  # Base match
+        match_score = 0.5
         assumptions: list[str] = []
 
         # Check slope bounds
@@ -110,7 +99,8 @@ def compose_recommendations(
         # Check soil types
         req_soils = suit.get("soil_types")
         if req_soils is not None:
-            if soil_type not in [s.lower() for s in req_soils]:
+            req_soils_lower = [s.lower() for s in req_soils]
+            if soil_type not in req_soils_lower:
                 matched = False
             else:
                 match_score += 0.1
@@ -119,7 +109,8 @@ def compose_recommendations(
         # Check geology
         req_geology = suit.get("geology")
         if req_geology is not None:
-            if geology not in [g.lower() for g in req_geology]:
+            req_geology_lower = [g.lower() for g in req_geology]
+            if geology not in req_geology_lower:
                 matched = False
             else:
                 match_score += 0.1
@@ -136,7 +127,8 @@ def compose_recommendations(
         # Check land use (e.g. farm pond)
         req_lu = suit.get("land_use")
         if req_lu is not None:
-            if lulc_class not in [lu.lower() for lu in req_lu]:
+            req_lu_lower = [lu.lower() for lu in req_lu]
+            if lulc_class not in req_lu_lower:
                 matched = False
             else:
                 assumptions.append(
@@ -146,7 +138,8 @@ def compose_recommendations(
         # Check stream bed material (e.g. gabions)
         req_bed = suit.get("stream_bed_material")
         if req_bed is not None:
-            if stream_bed not in [b.lower() for b in req_bed]:
+            req_bed_lower = [b.lower() for b in req_bed]
+            if stream_bed not in req_bed_lower:
                 matched = False
             else:
                 assumptions.append(
@@ -182,6 +175,5 @@ def compose_recommendations(
             )
             recommendations.append(rec)
 
-    # Sort descending by suitability score
     recommendations.sort(key=lambda r: r.suitability_score, reverse=True)
     return recommendations

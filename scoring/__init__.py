@@ -5,6 +5,21 @@ Provides deterministic, config-driven hydrogeological scoring, safety veto evalu
 civil intervention matching, and climate scenario simulation.
 """
 
+from scoring.base import (
+    ConfigError,
+    FeatureError,
+    ScoringError,
+    clamp,
+    classify_score,
+    compute_weighted_score,
+    get_costs_config,
+    get_demo_sites_config,
+    get_interventions_config,
+    get_safety_config,
+    get_scenario_config,
+    get_weights_config,
+    normalize_linear,
+)
 from scoring.engine import (
     evaluate_site,
     get_all_villages,
@@ -19,14 +34,27 @@ from scoring.springs import calculate_spring_drying_index
 from scoring.stress import calculate_heat_water_stress
 
 __all__ = [
+    "ConfigError",
+    "FeatureError",
+    "ScoringError",
     "calculate_heat_water_stress",
     "calculate_recharge_score",
     "calculate_spring_drying_index",
+    "clamp",
+    "classify_score",
     "compose_recommendations",
+    "compute_weighted_score",
     "evaluate_safety_rules",
     "evaluate_site",
     "get_all_villages",
+    "get_costs_config",
+    "get_demo_sites_config",
+    "get_interventions_config",
+    "get_safety_config",
+    "get_scenario_config",
     "get_site_recommendations",
+    "get_weights_config",
+    "normalize_linear",
     "run_site_scenario",
     "simulate_scenario",
 ]

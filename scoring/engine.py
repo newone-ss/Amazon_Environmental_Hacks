@@ -7,6 +7,7 @@ and civil intervention composition.
 
 from __future__ import annotations
 
+from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
@@ -30,14 +31,15 @@ from scoring.stress import calculate_heat_water_stress
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
 
-def load_demo_sites_config() -> dict[str, Any]:
+@lru_cache(maxsize=1)
+def _load_demo_sites_config() -> dict[str, Any]:
     with open(CONFIG_DIR / "demo_sites.yaml", "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+        return yaml.safe_load(f) or {}
 
 
 def get_all_villages() -> list[Village]:
     """Retrieve all villages in the demonstration Area of Interest."""
-    cfg = load_demo_sites_config()
+    cfg = _load_demo_sites_config()
     villages: list[Village] = []
     for s in cfg.get("sites", []):
         dtag = DataTag(s.get("data_tag", "illustrative"))
@@ -64,7 +66,7 @@ def get_all_villages() -> list[Village]:
 
 def get_site_raw_data(site_id: str) -> dict[str, Any] | None:
     """Find a demo site raw record by identifier."""
-    cfg = load_demo_sites_config()
+    cfg = _load_demo_sites_config()
     for s in cfg.get("sites", []):
         if s["id"] == site_id:
             return s
@@ -100,7 +102,6 @@ def evaluate_site(site_id: str) -> Site | None:
     )
 
     features = raw.get("features", {})
-    # Ensure elevation and spring metadata are present in features
     if "elevation_m" not in features and village.elevation_m is not None:
         features["elevation_m"] = village.elevation_m
 
@@ -159,3 +160,8 @@ def get_site_recommendations(site_id: str) -> list[Recommendation] | None:
     if not site:
         return None
     return site.recommendations
+
+
+def clear_caches() -> None:
+    """Clear all LRU caches (useful for testing or config reload)."""
+    _load_demo_sites_config.cache_clear()

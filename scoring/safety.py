@@ -7,24 +7,14 @@ Any REJECTED rule immediately vetoes civil intervention clearances.
 
 from __future__ import annotations
 
-from pathlib import Path
 from typing import Any
-
-import yaml
 
 from backend.models import (
     SafetyRuleResult,
     SafetyStatus,
     SafetyVerdict,
 )
-
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-
-
-def load_safety_rules_config() -> dict[str, Any]:
-    rules_path = CONFIG_DIR / "safety_rules.yaml"
-    with open(rules_path, "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
+from scoring.base import get_safety_config
 
 
 def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
@@ -40,7 +30,7 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
       - protected_area_type: str | None
       - soil_type: str
     """
-    cfg = load_safety_rules_config()
+    cfg = get_safety_config()
     rule_definitions = cfg.get("rules", [])
 
     rules_evaluated: list[SafetyRuleResult] = []
@@ -58,7 +48,7 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
     soil_type = str(features.get("soil_type", "loam")).lower()
 
     for rule in rule_definitions:
-        r_id = rule.get("id")
+        r_id = rule.get("id", "UNKNOWN")
         verdict_str = rule.get("verdict", "CONDITIONAL").upper()
         verdict = SafetyStatus(verdict_str)
         triggered = False
@@ -68,10 +58,10 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
             thresh = float(rule.get("threshold", 35))
             if slope > thresh:
                 triggered = True
-                reason = f"Slope of {slope}° exceeds the {thresh}° safety limit for earthwork structures."
+                reason = f"Slope of {slope:.1f}° exceeds the {thresh}° safety limit for earthwork structures."
 
         elif r_id == "LANDSLIDE_ZONE":
-            if landslide in ["high", "very_high"]:
+            if landslide in ("high", "very_high"):
                 triggered = True
                 reason = f"Site is in a {landslide} landslide susceptibility zone."
 
@@ -86,24 +76,35 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
             e_thresh = float(rule.get("elev_threshold", 5))
             if dist_river < d_thresh and elev_river < e_thresh:
                 triggered = True
-                reason = f"Site is {dist_river:.1f}m from active river channel and only {elev_river:.1f}m above riverbed."
+                reason = (
+                    f"Site is {dist_river:.1f}m from active river channel "
+                    f"and only {elev_river:.1f}m above riverbed."
+                )
 
         elif r_id == "FOREST_PROTECTED":
             if protected_area and str(protected_area).strip():
                 triggered = True
-                reason = f"Site is inside protected conservation boundary ({protected_area}): construction prohibited without clearance."
+                reason = (
+                    f"Site is inside protected conservation boundary ({protected_area}): "
+                    "construction prohibited without clearance."
+                )
 
         elif r_id == "SOIL_UNSTABLE":
-            if soil_type in ["expansive_clay", "peat", "organic"]:
+            if soil_type in ("expansive_clay", "peat", "organic"):
                 triggered = True
-                reason = f"Soil type '{soil_type}' requires engineering stabilization before civil construction."
+                reason = (
+                    f"Soil type '{soil_type}' requires engineering stabilization "
+                    "before civil construction."
+                )
 
         elif r_id == "SLOPE_MODERATE":
             thresh = float(rule.get("threshold", 20))
-            # Only trigger if not already steep (> 35) to prevent duplicate slope rules
             if thresh < slope <= 35:
                 triggered = True
-                reason = f"Slope of {slope}° requires terracing, berms, and reinforced retaining walls."
+                reason = (
+                    f"Slope of {slope:.1f}° requires terracing, berms, "
+                    "and reinforced retaining walls."
+                )
 
         rule_result = SafetyRuleResult(
             rule_id=r_id,
@@ -121,7 +122,6 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
                 triggered_conditional_ids.append(r_id)
                 triggered_conditional_reasons.append(reason)
 
-    # Verdict hierarchy: REJECTED wins over CONDITIONAL, which wins over SAFE
     if triggered_reject_ids:
         final_status = SafetyStatus.REJECTED
         active_ids = triggered_reject_ids

@@ -7,59 +7,15 @@ driven by config/scenario.yaml.
 
 from __future__ import annotations
 
-from pathlib import Path
-from typing import Any
-
-import yaml
-
 from backend.models import (
     ScenarioResult,
-    ScoreClass,
     ScoreResult,
 )
-
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-
-
-def load_scenario_config() -> dict[str, Any]:
-    with open(CONFIG_DIR / "scenario.yaml", "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-
-def load_weights_config() -> dict[str, Any]:
-    with open(CONFIG_DIR / "weights.yaml", "r", encoding="utf-8") as f:
-        return yaml.safe_load(f)
-
-
-def classify_score(
-    score_type: str, value: float, weights_cfg: dict[str, Any]
-) -> ScoreClass:
-    tiers = weights_cfg.get("classification", {}).get(score_type, {})
-    if score_type == "recharge_score":
-        if value >= tiers.get("excellent", [75, 100])[0]:
-            return ScoreClass.EXCELLENT
-        if value >= tiers.get("good", [50, 75])[0]:
-            return ScoreClass.GOOD
-        if value >= tiers.get("moderate", [25, 50])[0]:
-            return ScoreClass.MODERATE
-        return ScoreClass.POOR
-    elif score_type == "heat_water_stress":
-        if value >= tiers.get("critical", [75, 100])[0]:
-            return ScoreClass.CRITICAL
-        if value >= tiers.get("high", [50, 75])[0]:
-            return ScoreClass.HIGH
-        if value >= tiers.get("moderate", [25, 50])[0]:
-            return ScoreClass.MODERATE
-        return ScoreClass.LOW
-    elif score_type == "spring_drying_index":
-        if value >= tiers.get("very_high", [75, 100])[0]:
-            return ScoreClass.VERY_HIGH
-        if value >= tiers.get("high", [50, 75])[0]:
-            return ScoreClass.HIGH
-        if value >= tiers.get("moderate", [25, 50])[0]:
-            return ScoreClass.MODERATE
-        return ScoreClass.LOW
-    return ScoreClass.MODERATE
+from scoring.base import (
+    classify_score,
+    get_scenario_config,
+    get_weights_config,
+)
 
 
 def simulate_scenario(
@@ -74,8 +30,8 @@ def simulate_scenario(
     Adjusts baseline scores using linear sensitivity coefficients and adds
     post-intervention uplifts if an approved intervention is specified.
     """
-    cfg = load_scenario_config()
-    weights_cfg = load_weights_config()
+    cfg = get_scenario_config()
+    weights_cfg = get_weights_config()
 
     baseline_rainfall = float(cfg.get("baseline_monsoon_rainfall_mm", 1400.0))
     adjusted_rainfall = round(baseline_rainfall * rainfall_fraction, 1)
@@ -112,7 +68,9 @@ def simulate_scenario(
         uplift = float(applied_uplifts.get(stype, 0.0))
 
         new_val = round(max(0.0, min(100.0, score.value + delta + uplift)), 1)
-        new_class = classify_score(stype, new_val, weights_cfg)
+        new_class = classify_score(
+            stype, new_val, weights_cfg.get("classification", {})
+        )
 
         adj_score = ScoreResult(
             score_type=stype,
