@@ -187,4 +187,3 @@ class TestApiEndpoints:
         assert response.status_code == 200
         assert response.headers["content-type"] == "application/zip"
         assert response.content[:4] == b"PK\x03\x04"
-
