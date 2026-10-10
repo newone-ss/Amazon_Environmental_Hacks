@@ -45,7 +45,6 @@ Each field in the demo sites is classified as:
 | soil_type | curated | Hand-entered from known site soil type (ISRIC SoilGrids or field knowledge) |
 | state | curated | Hand-entered based on site location |
 | stream_order | assumed | Derived from DEM flow accumulation; assumed |
-
 ## Application to Confidence and Data Quality Note
 
 The provenance tags are used to adjust the confidence level and data quality note in the scoring engine:
@@ -54,3 +53,34 @@ The provenance tags are used to adjust the confidence level and data quality not
 - The data quality note includes a summary of field provenances to inform users of data limitations.
 
 For example, a score with many curated or assumed fields will have lower confidence and a note indicating reliance on hand-entered or inferred data.
+
+---
+
+## Settlement-to-Telemetry Empirical Mapping (Phase 4)
+
+Each of the 13 demonstration settlements is mapped to its administrative district, nearest CGWB observation well, and nearest IMD 1.0° temperature grid centroid via geodesic distance calculation. All hydro-climatic inputs derived from these associations are formally tagged with provenance `derived`.
+
+### Mapping Matrix
+
+| Site ID | Settlement Name | District | State | Nearest CGWB Well (Dist) | Nearest IMD Temp Grid (Dist) | Mapped IMD Rain District | Provenance |
+|:---|:---|:---|:---|:---|:---|:---|:---:|
+| `site_001` | Laxmipur | Koraput | Odisha | Koraput-i (0.9 km) | (18.5°N, 82.5°E) (41.4 km) | KORAPUT | `derived` |
+| `site_002` | Mundaguda | Koraput | Odisha | Panchada (7.5 km) | (18.5°N, 82.5°E) (64.4 km) | KORAPUT | `derived` |
+| `site_003` | Parajam | Koraput | Odisha | Soguru (5.2 km) | (18.5°N, 82.5°E) (7.6 km) | KORAPUT | `derived` |
+| `site_004` | Dukum | Koraput | Odisha | Kusumguda (7.9 km) | (19.5°N, 83.5°E) (72.8 km) | KORAPUT | `derived` |
+| `site_005` | Kotpad Town | Koraput | Odisha | Miriguda (5.9 km) | (19.5°N, 82.5°E) (41.5 km) | KORAPUT | `derived` |
+| `site_mp_001` | Bichhiya | Mandla | Madhya Pradesh | Bichhia1 (1.3 km) | (22.5°N, 80.5°E) (22.5 km) | MANDLA | `derived` |
+| `site_mp_002` | Samnapur | Dindori | Madhya Pradesh | Bijhauri (5.0 km) | (22.5°N, 81.5°E) (44.1 km) | DINDORI | `derived` |
+| `site_mp_003` | Meghnagar | Jhabua | Madhya Pradesh | Meghnagar New (1.2 km) | (22.5°N, 74.5°E) (44.1 km) | JHABUA | `derived` |
+| `site_mp_004` | Bajag Scarp | Dindori | Madhya Pradesh | Gorakhpur (8.5 km) | (22.5°N, 81.5°E) (19.7 km) | DINDORI | `derived` |
+| `site_jh_001` | Torpa | Khunti | Jharkhand | Dorma (7.3 km) | (22.5°N, 85.5°E) (63.3 km) | KHUNTI | `derived` |
+| `site_jh_002` | Goilkera | West Singhbhum | Jharkhand | Sonua (20.3 km) | (22.5°N, 85.5°E) (12.5 km) | WEST SINGHBHUM | `derived` |
+| `site_jh_003` | Chaibasa Plain | West Singhbhum | Jharkhand | Chaibasa (0.7 km) | (22.5°N, 85.5°E) (31.5 km) | WEST SINGHBHUM | `derived` |
+| `site_jh_004` | Porahat Scarp | West Singhbhum | Jharkhand | Sonua (15.6 km) | (22.5°N, 85.5°E) (31.2 km) | WEST SINGHBHUM | `derived` |
+
+### Methodological Assumptions
+
+1. **Hydrogeological Proximity**: In fractured hard-rock crystalline and basaltic terrains, static water level measurements exhibit spatial correlation within an unconfined sub-watershed radius of 15–25 km. Where a direct village-level well exists (e.g. `Chaibasa`, `Koraput-i`, `Bichhia1`, `Meghnagar New`), station-level pre/post-monsoon levels are used directly; otherwise, the normalized district-level mean groundwater depth is applied.
+2. **Thermal Grid Interpolation**: Surface air temperature gradients across plateau terrain follow synoptic airmass patterns. Settlement coordinates are associated with the nearest 1.0° regular grid centroid from the IMD dataset (spatial distance $<75\text{ km}$).
+3. **Precipitation Homogeneity**: Daily precipitation departures and monsoon cumulative totals are sourced from district-level rain gauge networks reporting via IMD daily bulletins.
+4. **Sign Convention Invariance**: Seasonal water table fluctuation is computed as $\text{Rise} = \text{Pre-monsoon Depth} - \text{Post-monsoon Depth}$. Because readings measure depth below ground surface (m bgl), a deeper water level in post-monsoon yields a negative value, denoting aquifer depletion.

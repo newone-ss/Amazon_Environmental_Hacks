@@ -1,13 +1,15 @@
 # Bhujal Makefile
 # ──────────────────────────────────────────────
 
-.PHONY: data score test dev deploy lint format clean
+.PHONY: data package score test dev deploy lint format clean
 
 # ── Data pipeline ──────────────────────────────
 data:
-	python -m pipeline.download.run
-	python -m pipeline.preprocess.run
-	python -m pipeline.features.run
+	python -m pipeline.build_derived
+
+# ── Package (SAM Lambda bundle) ────────────────
+package:
+	python -m pipeline.package
 
 # ── Scoring ────────────────────────────────────
 score:

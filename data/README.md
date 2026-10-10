@@ -119,3 +119,65 @@ All API responses and user interface indicators enforce strict taxonomic classif
 * **Empirical (`real`)**: Primary data acquired from peer-reviewed, satellite, or institutional telemetry with documented sensor calibration.
 * **Proxy (`proxy`)**: Geostatistically interpolated, downscaled, or indirect physical variables where direct telemetry is geographically sparse.
 * **Illustrative (`illustrative`)**: Synthesized representative records engineered to stress-test platform algorithms and demonstrate edge-case behaviors (e.g., active hazard rejections).
+
+---
+
+## 4. Phase 4 Data Inspection & Preprocessing Specification
+
+In compliance with Phase 4 data handling directives, **the three raw CSVs (~8.9 MB total) must never be loaded by AWS Lambda or at module import time**. Instead, `pipeline/build_derived.py` precomputes lightweight derived summaries into `data/derived/` that are lazily loaded by runtime components.
+
+### 4.1. Comparative Dataset Inspection Matrix
+
+| Parameter | CGWB Groundwater Levels | IMD Maximum Temperature | IMD Daily Rainfall |
+|:---|:---|:---|:---|
+| **File Path** | `data/groundwater_level_cleaned_odisha_jharkhand_mp_2021_2025.csv` | `data/imd_max_temperature_odisha_jharkhand_mp_2021_2024.csv` | `data/rainfall_cleaned_odisha_jharkhand_mp.csv` |
+| **File Size** | 4,213,483 bytes (~4.02 MB) | 4,426,049 bytes (~4.22 MB) | 267,428 bytes (~261 KB) |
+| **Total Rows** | 34,141 rows | 109,575 rows | 5,512 rows |
+| **Spatial Granularity** | **Station-level** (3,637 discrete observation wells) | **1.0° Regular Grid** (75 grid centroids) | **District-level** (106 reporting districts) |
+| **Temporal Granularity** | Seasonal / Periodic hydrograph readings | Daily maximum surface air temperature | Daily precipitation aggregates |
+| **Date Range** | `2021-01-10` to `2025-01-10` (4 complete hydrological cycles) | `2021-01-01` to `2024-12-31` (4 full calendar years) | `2026-08-19` to `2026-10-09` (SW Monsoon monitoring window) |
+| **Primary Units** | Meters below ground level (**m bgl**) | Degrees Celsius (**°C**) | Millimeters (**mm**); Departure in **%** |
+| **Geographic Envelope** | Odisha, Madhya Pradesh, Jharkhand | Lat: `18.5°N`–`26.5°N`, Lon: `74.5°E`–`88.5°E` | Odisha, Madhya Pradesh, Jharkhand |
+
+### 4.2. Column Schemas, Units, and Null Value Profiles
+
+#### 1. CGWB Groundwater (`34,141` rows, 20 columns)
+* `station` (*string*): Observation well name. **0 nulls (100% complete)**.
+* `agency` (*string*): Monitoring authority (`CGWB`). **0 nulls (100% complete)**.
+* `state_lgd_code` (*int*): Local Government Directory state code. **0 nulls (100% complete)**.
+* `state` (*string*): State name (`Odisha`, `Madhya Pradesh`, `Jharkhand`). **0 nulls (100% complete)**.
+* `district_lgd_code` (*int*): LGD district code. **0 nulls (100% complete)**.
+* `district` (*string*): Administrative district (106 distinct names). **0 nulls (100% complete)**.
+* `tehsil` (*string*): Sub-district name. **808 nulls (2.4%)**.
+* `block` (*string*): Development block name. **1,407 nulls (4.1%)**.
+* `village` (*string*): Revenue village name. **1,407 nulls (4.1%)**.
+* `river`, `basin`, `tributary`, `subtributary`, `sub_subtributary`, `local_river`: Drainage network identifiers. **34,141 nulls (100% unpopulated in this extraction)**.
+* `latitude`, `longitude` (*float*): Decimal coordinates (WGS84). **0 nulls (100% complete)**.
+* `elevation_msl_m` (*float*): Station elevation above mean sea level in meters. **34,103 nulls (99.9%)**.
+* `measurement_datetime` (*string/datetime*): Timestamp of water table sounding. **0 nulls (100% complete)**.
+* `groundwater_level_m` (*float*): Static water level depth below surface (**m bgl**). **418 nulls (1.2%)**. Mean: 4.77 m, Min: -1.20 m (artesian/overflow), 25%: 2.11 m, 50%: 3.70 m, 75%: 6.10 m, Max: 302.0 m (sensor anomaly, filtered at 150 m).
+
+#### 2. IMD Maximum Temperature (`109,575` rows, 4 columns)
+* `date` (*string/date*): Observation date (`YYYY-MM-DD`). **0 nulls (100% complete)**.
+* `latitude` (*float*): Grid centroid latitude (`18.5` to `26.5` with 1.0° spacing). **0 nulls (100% complete)**.
+* `longitude` (*float*): Grid centroid longitude (`74.5` to `88.5` with 1.0° spacing). **0 nulls (100% complete)**.
+* `maximum_temperature_c` (*float*): 24-hour peak surface air temperature in **°C**. **0 nulls (100% complete)**. Mean: 32.22°C, Std: 4.97°C, Min: 13.06°C, 25%: 29.03°C, 50%: 32.06°C, 75%: 35.19°C, Max: 47.72°C.
+
+#### 3. IMD Daily Rainfall (`5,512` rows, 7 columns)
+* `state` (*string*): Administrative state (`JHARKHAND`, `MADHYA PRADESH`, `ODISHA`). **0 nulls (100% complete)**.
+* `district` (*string*): Monitored district (106 distinct names). **0 nulls (100% complete)**.
+* `date` (*string/date*): Telemetry date (`YYYY-MM-DD`). **0 nulls (100% complete)**.
+* `daily_rainfall_mm` (*float*): 24-hour recorded cumulative precipitation in **mm**. **0 nulls (100% complete)**. Mean: 7.45 mm, Max: 231.90 mm.
+* `daily_normal_mm` (*float*): Climatological 30-year normal precipitation in **mm**. **0 nulls (100% complete)**. Mean: 6.95 mm, Max: 25.10 mm.
+* `daily_departure_percent` (*float*): Deviation from normal fraction/percent. **63 nulls (1.1%)**.
+* `daily_rainfall_category` (*string*): Categorical classification code (`LE`=Large Excess, `LD`=Large Deficient, `NR`=No Rain, `D`=Deficient, `N`=Normal, `E`=Excess). **0 nulls (100% complete)**.
+
+### 4.3. Derived Artifact Specifications (`data/derived/`)
+
+| Artifact | Content & Mathematical Formulation | Target Size |
+|:---|:---|:---|
+| `groundwater.json` | Pre-monsoon depth (months 4-5), post-monsoon depth (months 8-11), **seasonal rise** $= \text{pre} - \text{post}$ (sign convention: deeper post-monsoon yields negative rise), lean-season depth (max mean), 2021–2025 linear rate ($\text{m/year}$). | ~1.0 MB |
+| `temperature.json` | 12-month temperature climatology per 1° cell, summer mean maximum (March–June), annual days exceeding configurable threshold ($\ge 40^\circ\text{C}$), 2021–2024 slope ($\text{°C/year}$). | ~44 KB |
+| `rainfall.json` | Monthly precipitation climatology (August–October), cumulative monsoon total ($\text{mm}$), normal baseline ($\text{mm}$), overall departure ($\%$), categorical distribution. | ~84 KB |
+| `settlements.json` | Explicit geodesic mapping of all 13 demo settlements to their administrative district, nearest CGWB well station, and nearest IMD 1° temperature centroid. | ~16 KB |
+| `unmatched_names.json` | Audit log of normalized district aliases and unmapped administrative variants. | ~1.4 KB |

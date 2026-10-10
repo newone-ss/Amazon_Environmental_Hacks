@@ -57,6 +57,18 @@ def simulate_scenario(
             f"Simulating civil structure intervention: '{include_intervention}'."
         )
 
+    # Lazily check empirical telemetry from derived data (never raw CSV)
+    from scoring.derived_loader import get_settlement_derived_data
+
+    settlement_telemetry = get_settlement_derived_data(site_id)
+    if settlement_telemetry and settlement_telemetry.get("rainfall"):
+        rain_info = settlement_telemetry["rainfall"]
+        dist_rain = rain_info.get("district_monsoon_total_mm")
+        if dist_rain:
+            notes.append(
+                f"Empirical derived rainfall baseline for {settlement_telemetry.get('norm_district')}: {dist_rain:.1f} mm."
+            )
+
     adjusted_scores: list[ScoreResult] = []
 
     for score in baseline_scores:

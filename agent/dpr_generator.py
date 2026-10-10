@@ -13,27 +13,54 @@ import json
 import zipfile
 from dataclasses import dataclass
 from datetime import datetime, timezone
+from typing import TYPE_CHECKING, Any, TypeAlias
 
-try:
-    from datetime import UTC
-except ImportError:
-    UTC = timezone.utc  # noqa: UP017
+# UTC is available in Python 3.11+; use timezone.utc as fallback for type checking
+UTC_TZ = timezone.utc  # type: ignore[assignment]  # noqa: UP017
 from pathlib import Path
-from typing import Any
+
+if TYPE_CHECKING:
+    from docx.document import Document as DocxDocument
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.shared import Inches, Pt, RGBColor
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.utils import get_column_letter
+
+    # Proper type alias for mypy - use the actual Document class
+    Document: TypeAlias = DocxDocument  # noqa: UP040
+else:
+    # Runtime fallback - functions using Document check DOCX_AVAILABLE first
+    Document: TypeAlias = object  # noqa: UP040
 
 try:
-    from docx import Document
+    from docx import Document as _Document
     from docx.enum.table import WD_TABLE_ALIGNMENT
     from docx.enum.text import WD_ALIGN_PARAGRAPH
     from docx.shared import Inches, Pt, RGBColor
 
     DOCX_AVAILABLE = True
 except ImportError:
-    Document = None  # type: ignore[assignment,misc]
+    _Document = None  # type: ignore[assignment,misc]
     WD_TABLE_ALIGNMENT = None  # type: ignore[assignment,misc]
     WD_ALIGN_PARAGRAPH = None  # type: ignore[assignment,misc]
     Inches = Pt = RGBColor = None  # type: ignore[assignment,misc]
     DOCX_AVAILABLE = False
+
+try:
+    from openpyxl import Workbook as _Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.utils import get_column_letter
+
+    OPENPYXL_AVAILABLE = True
+except ImportError:
+    _Workbook = None  # type: ignore[assignment,misc]
+    Alignment = Border = Font = PatternFill = Side = None  # type: ignore[assignment,misc]
+    get_column_letter = None  # type: ignore[assignment,misc]
+    OPENPYXL_AVAILABLE = False
+
+Workbook = _Workbook  # type: ignore[misc]
 
 try:
     from openpyxl import Workbook
@@ -49,6 +76,8 @@ except ImportError:
 
 
 from backend.models import (
+    Recommendation,  # noqa: F401
+    SafetyRuleResult,  # noqa: F401
     SafetyStatus,
     ScoreClass,
     Site,
@@ -219,9 +248,9 @@ def _add_table_with_style(
 
 def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) -> bytes:
     """Generate the main DPR document in .docx format."""
-    if not DOCX_AVAILABLE or Document is None:
+    if not DOCX_AVAILABLE or _Document is None:
         raise RuntimeError("python-docx is required for Word document generation")
-    doc = Document()
+    doc = _Document()  # type: ignore[misc]
 
     # Styles
     style = doc.styles["Normal"]
@@ -253,7 +282,8 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
     info.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = info.add_run(f"Project ID: {project_id}\n")
     run.font.size = Pt(12)
-    run = info.add_run(f"Generated: {datetime.now(UTC).strftime('%d %B %Y')}\n")
+    generated_date = datetime.now(UTC_TZ).strftime("%d %B %Y")  # type: ignore[attr-defined]
+    run = info.add_run(f"Generated: {generated_date}\n")
     run.font.size = Pt(12)
     run = info.add_run("Bhujal Decision Support System\n")
     run.font.size = Pt(12)
@@ -295,8 +325,12 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
         sum(r.cost_range_inr.get("high", 0) for r in s.recommendations) for s in sites
     )
     total_labour = sum(sum(r.labour_days for r in s.recommendations) for s in sites)
-    approved_sites = [s for s in sites if s.safety.status != SafetyStatus.REJECTED]
-    vetoed_sites = [s for s in sites if s.safety.status == SafetyStatus.REJECTED]
+    approved_sites = [
+        s for s in sites if s.safety and s.safety.status != SafetyStatus.REJECTED
+    ]
+    vetoed_sites = [
+        s for s in sites if s.safety and s.safety.status == SafetyStatus.REJECTED
+    ]
 
     exec_text = (
         f"This Detailed Project Report (DPR) presents the hydro-climatic assessment, "
@@ -432,13 +466,13 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
             # Rules evaluated table
             if s.safety.rules_evaluated:
                 rule_rows = []
-                for r in s.safety.rules_evaluated:
+                for rule in s.safety.rules_evaluated:
                     rule_rows.append(
                         [
-                            r.rule_id,
-                            "Yes" if r.triggered else "No",
-                            r.verdict.value,
-                            r.reason or "—",
+                            rule.rule_id,
+                            "Yes" if rule.triggered else "No",
+                            rule.verdict.value,
+                            rule.reason or "—",
                         ]
                     )
                 _add_table_with_style(
@@ -533,15 +567,15 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
         if s.safety and s.safety.status == SafetyStatus.REJECTED:
             cost_rows.append([s.village.name, "SAFETY VETO", "—", "—", "—", "—"])
             continue
-        for r in s.recommendations:
-            scheme_info = SCHEME_MAPPING.get(r.intervention_id, {})
+        for rec in s.recommendations:
+            scheme_info = SCHEME_MAPPING.get(rec.intervention_id, {})
             cost_rows.append(
                 [
                     s.village.name,
-                    r.intervention_name,
-                    _format_inr(r.cost_range_inr.get("low", 0)),
-                    _format_inr(r.cost_range_inr.get("high", 0)),
-                    str(r.labour_days),
+                    rec.intervention_name,
+                    _format_inr(rec.cost_range_inr.get("low", 0)),
+                    _format_inr(rec.cost_range_inr.get("high", 0)),
+                    str(rec.labour_days),
                     scheme_info.get("primary_scheme", "MGNREGA"),
                 ]
             )
@@ -595,10 +629,10 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
     _add_heading(doc, "9. Scheme Convergence and Funding Plan", level=1)
     scheme_summary: dict[str, float] = {}
     for s in sites:
-        for r in s.recommendations:
-            scheme_info = SCHEME_MAPPING.get(r.intervention_id, {})
+        for rec in s.recommendations:
+            scheme_info = SCHEME_MAPPING.get(rec.intervention_id, {})
             primary = scheme_info.get("primary_scheme", "MGNREGA")
-            cost = r.cost_range_inr.get("high", 0)
+            cost = rec.cost_range_inr.get("high", 0)
             scheme_summary[primary] = scheme_summary.get(primary, 0) + cost
 
     scheme_rows = [["Scheme", "Estimated Allocation (INR)", "Share"]]
@@ -642,7 +676,7 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
             _add_heading(doc, f"{s.village.name}", level=3)
             if s.safety.rules_evaluated:
                 rule_rows = [["Rule ID", "Triggered", "Verdict", "Reason"]]
-                for r in s.safety.rules_evaluated:
+                for r in s.safety.rules_evaluated:  # type: SafetyRuleResult
                     rule_rows.append(
                         [
                             r.rule_id,
@@ -657,10 +691,10 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
     for s in sites:
         if s.recommendations:
             _add_heading(doc, f"{s.village.name}", level=3)
-            for r in s.recommendations:
-                p = doc.add_paragraph(f"{r.intervention_name}")
+            for rec in s.recommendations:
+                p = doc.add_paragraph(f"{rec.intervention_name}")
                 p.runs[0].bold = True
-                for k, v in r.dimensions.items():
+                for k, v in rec.dimensions.items():
                     doc.add_paragraph(
                         f"{k.replace('_', ' ').title()}: {v}", style="List Bullet"
                     )
@@ -788,16 +822,16 @@ def _generate_dpr_xlsx(sites: list[Site]) -> bytes:
             row += 1
             continue
 
-        for r in s.recommendations:
-            scheme_info = SCHEME_MAPPING.get(r.intervention_id, {})
+        for rec in s.recommendations:
+            scheme_info = SCHEME_MAPPING.get(rec.intervention_id, {})
             ws1.cell(row=row, column=1, value=s.village.name)
             ws1.cell(row=row, column=2, value=s.village.district)
             ws1.cell(row=row, column=3, value=s.village.state)
-            ws1.cell(row=row, column=4, value=r.intervention_name)
-            ws1.cell(row=row, column=5, value=r.category)
-            ws1.cell(row=row, column=6, value=r.cost_range_inr.get("low", 0))
-            ws1.cell(row=row, column=7, value=r.cost_range_inr.get("high", 0))
-            ws1.cell(row=row, column=8, value=r.labour_days)
+            ws1.cell(row=row, column=4, value=rec.intervention_name)
+            ws1.cell(row=row, column=5, value=rec.category)
+            ws1.cell(row=row, column=6, value=rec.cost_range_inr.get("low", 0))
+            ws1.cell(row=row, column=7, value=rec.cost_range_inr.get("high", 0))
+            ws1.cell(row=row, column=8, value=rec.labour_days)
             ws1.cell(
                 row=row, column=9, value=scheme_info.get("primary_scheme", "MGNREGA")
             )
@@ -805,7 +839,7 @@ def _generate_dpr_xlsx(sites: list[Site]) -> bytes:
 
     # Totals
     total_low = sum(
-        r.cost_range_inr.get("low", 0) for s in sites for r in s.recommendations
+        rec.cost_range_inr.get("low", 0) for s in sites for rec in s.recommendations
     )
     total_high = sum(
         r.cost_range_inr.get("high", 0) for s in sites for r in s.recommendations
@@ -858,10 +892,10 @@ def _generate_dpr_xlsx(sites: list[Site]) -> bytes:
 
     scheme_summary: dict[str, float] = {}
     for s in sites:
-        for r in s.recommendations:
-            scheme_info = SCHEME_MAPPING.get(r.intervention_id, {})
+        for rec in s.recommendations:
+            scheme_info = SCHEME_MAPPING.get(rec.intervention_id, {})
             primary = scheme_info.get("primary_scheme", "MGNREGA")
-            cost = r.cost_range_inr.get("high", 0)
+            cost = rec.cost_range_inr.get("high", 0)
             scheme_summary[primary] = scheme_summary.get(primary, 0) + cost
 
     row = 2
@@ -869,10 +903,10 @@ def _generate_dpr_xlsx(sites: list[Site]) -> bytes:
         scheme_info = SCHEME_MAPPING.get(
             next(
                 (
-                    r.intervention_id
+                    rec.intervention_id
                     for s in sites
-                    for r in s.recommendations
-                    if SCHEME_MAPPING.get(r.intervention_id, {}).get("primary_scheme")
+                    for rec in s.recommendations
+                    if SCHEME_MAPPING.get(rec.intervention_id, {}).get("primary_scheme")
                     == scheme
                 ),
                 "",
@@ -1063,9 +1097,9 @@ def _generate_dpr_kml(sites: list[Site]) -> bytes:
         kml_parts.append(f"        <b>Safety Status:</b> {status}<br/>")
         if s.recommendations:
             kml_parts.append("        <b>Recommended Interventions:</b><br/>")
-            for r in s.recommendations:
+            for rec in s.recommendations:
                 kml_parts.append(
-                    f"        - {r.intervention_name} ({_format_inr(r.cost_range_inr.get('high', 0))})<br/>"
+                    f"        - {rec.intervention_name} ({_format_inr(rec.cost_range_inr.get('high', 0))})<br/>"
                 )
         kml_parts.append("      ]]></description>")
         kml_parts.append(f"      <styleUrl>#{style_ref}</styleUrl>")
@@ -1107,13 +1141,16 @@ def generate_dpr_package(
 
     Returns DPRPackage with docx, xlsx, kml, and optional pdf bytes.
     """
-    sites = [evaluate_site(sid) for sid in site_ids]
-    sites = [s for s in sites if s is not None]
+
+    sites_raw: list[Site | None] = [evaluate_site(sid) for sid in site_ids]
+    sites: list[Site] = [s for s in sites_raw if s is not None]
 
     if not sites:
         raise ValueError("No valid sites found")
 
-    project_id = f"DPR_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}_{len(sites)}sites"
+    project_id = (
+        f"DPR_{datetime.now(UTC_TZ).strftime('%Y%m%d_%H%M%S')}_{len(sites)}sites"  # type: ignore[attr-defined]
+    )
     if project_name is None:
         project_name = (
             f"Bhujal Watershed DPR — {', '.join(s.village.name for s in sites[:3])}"
@@ -1133,7 +1170,7 @@ def generate_dpr_package(
     manifest = {
         "project_id": project_id,
         "project_name": project_name,
-        "generated_at": datetime.now(UTC).isoformat(),
+        "generated_at": datetime.now(UTC_TZ).isoformat(),  # type: ignore[attr-defined]
         "sites": [s.village.id for s in sites],
         "site_count": len(sites),
         "total_cost_high_inr": sum(
@@ -1155,7 +1192,7 @@ def generate_dpr_package(
         project_id=project_id,
         project_name=project_name,
         sites=sites,
-        generated_at=datetime.now(UTC),
+        generated_at=datetime.now(UTC_TZ),  # type: ignore[attr-defined]
         docx_bytes=docx_bytes,
         xlsx_bytes=xlsx_bytes,
         kml_bytes=kml_bytes,

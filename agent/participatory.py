@@ -14,17 +14,14 @@ import re
 import uuid
 from datetime import datetime, timezone
 
-try:
-    from datetime import UTC
-except ImportError:
-    UTC = timezone.utc  # noqa: UP017
+UTC_TZ = timezone.utc  # noqa: UP017
 from pathlib import Path
 from typing import Any
 
 import boto3
 from botocore.exceptions import ClientError
 
-from agent.base import BaseAgent
+from agent.base import AgentResponse, BaseAgent
 from backend.models import (
     DataTag,
     Observation,
@@ -114,7 +111,7 @@ class ParticipatoryMonitoringAgent(BaseAgent):
         except Exception as exc:  # noqa: BLE001
             logger.debug("AWS clients not initialized (local mode): %s", exc)
 
-    def execute(self, context: dict[str, Any]) -> dict[str, Any]:
+    def execute(self, context: dict[str, Any]) -> AgentResponse:
         """
         Process a community observation.
 
@@ -135,10 +132,26 @@ class ParticipatoryMonitoringAgent(BaseAgent):
         if audio_s3_uri and not text:
             text = self._transcribe_audio(audio_s3_uri, language_code)
             if not text:
-                return {"success": False, "error": "Transcription failed or empty"}
+                return AgentResponse(
+                    agent_name=self.name,
+                    role=self.role,
+                    summary="Transcription failed",
+                    details={"error": "Transcription failed or empty"},
+                    narrative="Audio transcription failed.",
+                    recommendations=[],
+                    mode="deterministic_fallback",
+                )
 
         if not text:
-            return {"success": False, "error": "No text or audio provided"}
+            return AgentResponse(
+                agent_name=self.name,
+                role=self.role,
+                summary="No input provided",
+                details={"error": "No text or audio provided"},
+                narrative="No observation text or audio was provided.",
+                recommendations=[],
+                mode="deterministic_fallback",
+            )
 
         # Extract structured data using LLM
         extracted = self._extract_observation(text)
@@ -152,16 +165,22 @@ class ParticipatoryMonitoringAgent(BaseAgent):
         # Update observer stats / badges
         badge_info = self._update_observer_stats(observer_id, observer_name)
 
-        return {
-            "success": True,
-            "observation_id": stored.observation_id,
-            "extracted": extracted,
-            "validated": validated.model_dump()
-            if hasattr(validated, "model_dump")
-            else validated,
-            "badge": badge_info,
-            "message": f"Observation recorded. {badge_info.get('message', '')}",
-        }
+        return AgentResponse(
+            agent_name=self.name,
+            role=self.role,
+            summary=f"Observation recorded: {stored.observation_id}",
+            details={
+                "observation_id": stored.observation_id,
+                "extracted": extracted,
+                "validated": validated.model_dump()
+                if hasattr(validated, "model_dump")
+                else validated,
+                "badge": badge_info,
+            },
+            narrative=f"Observation recorded. {badge_info.get('message', '')}",
+            recommendations=[],
+            mode="deterministic_fallback",
+        )
 
     def _transcribe_audio(self, s3_uri: str, language_code: str) -> str:
         """Transcribe audio from S3 using Amazon Transcribe."""
@@ -348,7 +367,7 @@ JSON:"""
     def _store_observation(self, obs_create: ObservationCreate) -> Observation:
         """Store observation in DynamoDB and return Observation object."""
         obs_id = f"obs_{uuid.uuid4().hex[:12]}"
-        now = datetime.now(UTC)
+        now = datetime.now(UTC_TZ)
 
         stored = Observation(
             observation_id=obs_id,
@@ -419,6 +438,6 @@ JSON:"""
             },
         ][:limit]
 
-    def fallback_execute(self, context: dict[str, Any]) -> dict[str, Any]:
+    def fallback_execute(self, context: dict[str, Any]) -> AgentResponse:
         """Deterministic fallback when Bedrock unavailable."""
         return self.execute(context)

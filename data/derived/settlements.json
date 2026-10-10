@@ -1,0 +1,620 @@
+{
+  "metadata": {
+    "description": "Mapping of 13 Bhujal demonstration settlements to nearest derived empirical indicators",
+    "total_settlements": 13,
+    "provenance_tag": "derived"
+  },
+  "settlements": {
+    "site_001": {
+      "name": "Laxmipur",
+      "district": "Koraput",
+      "norm_district": "KORAPUT",
+      "state": "Odisha",
+      "lat": 18.8124,
+      "lon": 82.7133,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Odisha",
+          "station_count": 64,
+          "reading_count": 734,
+          "pre_monsoon_mean_depth_m": 6.24,
+          "post_monsoon_mean_depth_m": 3.44,
+          "seasonal_rise_m": 2.8,
+          "lean_season_depth_m": 5.16,
+          "trend_2021_2025_m_per_year": 0.292
+        },
+        "nearest_station": {
+          "station_name": "Koraput-i",
+          "distance_km": 0.9,
+          "pre_monsoon_depth_m": 9.8,
+          "post_monsoon_depth_m": 6.71,
+          "seasonal_rise_m": 3.09
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 18.5,
+        "nearest_grid_lon": 82.5,
+        "distance_km": 41.4,
+        "summer_mean_max_c": 35.16,
+        "days_above_40c_per_year": 0.8,
+        "trend_c_per_year": 0.064
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 835.9,
+        "district_departure_pct": 82.6,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 835.9,
+            "monsoon_normal_mm": 457.7,
+            "percent_departure": 82.6
+          }
+        }
+      }
+    },
+    "site_002": {
+      "name": "Mundaguda",
+      "district": "Koraput",
+      "norm_district": "KORAPUT",
+      "state": "Odisha",
+      "lat": 18.9456,
+      "lon": 82.891,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Odisha",
+          "station_count": 64,
+          "reading_count": 734,
+          "pre_monsoon_mean_depth_m": 6.24,
+          "post_monsoon_mean_depth_m": 3.44,
+          "seasonal_rise_m": 2.8,
+          "lean_season_depth_m": 5.16,
+          "trend_2021_2025_m_per_year": 0.292
+        },
+        "nearest_station": {
+          "station_name": "Panchada",
+          "distance_km": 7.5,
+          "pre_monsoon_depth_m": 6.64,
+          "post_monsoon_depth_m": 5.8,
+          "seasonal_rise_m": 0.84
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 18.5,
+        "nearest_grid_lon": 82.5,
+        "distance_km": 64.4,
+        "summer_mean_max_c": 35.16,
+        "days_above_40c_per_year": 0.8,
+        "trend_c_per_year": 0.064
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 835.9,
+        "district_departure_pct": 82.6,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 835.9,
+            "monsoon_normal_mm": 457.7,
+            "percent_departure": 82.6
+          }
+        }
+      }
+    },
+    "site_003": {
+      "name": "Parajam",
+      "district": "Koraput",
+      "norm_district": "KORAPUT",
+      "state": "Odisha",
+      "lat": 18.5234,
+      "lon": 82.5678,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Odisha",
+          "station_count": 64,
+          "reading_count": 734,
+          "pre_monsoon_mean_depth_m": 6.24,
+          "post_monsoon_mean_depth_m": 3.44,
+          "seasonal_rise_m": 2.8,
+          "lean_season_depth_m": 5.16,
+          "trend_2021_2025_m_per_year": 0.292
+        },
+        "nearest_station": {
+          "station_name": "Soguru",
+          "distance_km": 5.2,
+          "pre_monsoon_depth_m": 8.34,
+          "post_monsoon_depth_m": 4.42,
+          "seasonal_rise_m": 3.92
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 18.5,
+        "nearest_grid_lon": 82.5,
+        "distance_km": 7.6,
+        "summer_mean_max_c": 35.16,
+        "days_above_40c_per_year": 0.8,
+        "trend_c_per_year": 0.064
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 835.9,
+        "district_departure_pct": 82.6,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 835.9,
+            "monsoon_normal_mm": 457.7,
+            "percent_departure": 82.6
+          }
+        }
+      }
+    },
+    "site_004": {
+      "name": "Dukum",
+      "district": "Koraput",
+      "norm_district": "KORAPUT",
+      "state": "Odisha",
+      "lat": 19.0345,
+      "lon": 83.0123,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Odisha",
+          "station_count": 64,
+          "reading_count": 734,
+          "pre_monsoon_mean_depth_m": 6.24,
+          "post_monsoon_mean_depth_m": 3.44,
+          "seasonal_rise_m": 2.8,
+          "lean_season_depth_m": 5.16,
+          "trend_2021_2025_m_per_year": 0.292
+        },
+        "nearest_station": {
+          "station_name": "Kusumguda",
+          "distance_km": 7.9,
+          "pre_monsoon_depth_m": 8.97,
+          "post_monsoon_depth_m": 6.41,
+          "seasonal_rise_m": 2.56
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 19.5,
+        "nearest_grid_lon": 83.5,
+        "distance_km": 72.8,
+        "summer_mean_max_c": 36.1,
+        "days_above_40c_per_year": 4.5,
+        "trend_c_per_year": 0.118
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 835.9,
+        "district_departure_pct": 82.6,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 835.9,
+            "monsoon_normal_mm": 457.7,
+            "percent_departure": 82.6
+          }
+        }
+      }
+    },
+    "site_005": {
+      "name": "Kotpad Town",
+      "district": "Koraput",
+      "norm_district": "KORAPUT",
+      "state": "Odisha",
+      "lat": 19.1567,
+      "lon": 82.3456,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Odisha",
+          "station_count": 64,
+          "reading_count": 734,
+          "pre_monsoon_mean_depth_m": 6.24,
+          "post_monsoon_mean_depth_m": 3.44,
+          "seasonal_rise_m": 2.8,
+          "lean_season_depth_m": 5.16,
+          "trend_2021_2025_m_per_year": 0.292
+        },
+        "nearest_station": {
+          "station_name": "Miriguda",
+          "distance_km": 5.9,
+          "pre_monsoon_depth_m": 6.14,
+          "post_monsoon_depth_m": 1.72,
+          "seasonal_rise_m": 4.42
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 19.5,
+        "nearest_grid_lon": 82.5,
+        "distance_km": 41.5,
+        "summer_mean_max_c": 35.68,
+        "days_above_40c_per_year": 3.0,
+        "trend_c_per_year": 0.12
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 835.9,
+        "district_departure_pct": 82.6,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 835.9,
+            "monsoon_normal_mm": 457.7,
+            "percent_departure": 82.6
+          }
+        }
+      }
+    },
+    "site_mp_001": {
+      "name": "Bichhiya",
+      "district": "Mandla",
+      "norm_district": "MANDLA",
+      "state": "Madhya Pradesh",
+      "lat": 22.4512,
+      "lon": 80.7123,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Madhya Pradesh",
+          "station_count": 34,
+          "reading_count": 301,
+          "pre_monsoon_mean_depth_m": 5.26,
+          "post_monsoon_mean_depth_m": 2.11,
+          "seasonal_rise_m": 3.15,
+          "lean_season_depth_m": 4.22,
+          "trend_2021_2025_m_per_year": 0.101
+        },
+        "nearest_station": {
+          "station_name": "Bichhia1",
+          "distance_km": 1.3,
+          "pre_monsoon_depth_m": 6.69,
+          "post_monsoon_depth_m": 4.08,
+          "seasonal_rise_m": 2.61
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 80.5,
+        "distance_km": 22.5,
+        "summer_mean_max_c": 37.18,
+        "days_above_40c_per_year": 34.2,
+        "trend_c_per_year": -0.003
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 515.7,
+        "district_departure_pct": 42.5,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 515.7,
+            "monsoon_normal_mm": 362.0,
+            "percent_departure": 42.5
+          }
+        }
+      }
+    },
+    "site_mp_002": {
+      "name": "Samnapur",
+      "district": "Dindori",
+      "norm_district": "DINDORI",
+      "state": "Madhya Pradesh",
+      "lat": 22.8123,
+      "lon": 81.2345,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Madhya Pradesh",
+          "station_count": 16,
+          "reading_count": 154,
+          "pre_monsoon_mean_depth_m": 5.31,
+          "post_monsoon_mean_depth_m": 2.62,
+          "seasonal_rise_m": 2.69,
+          "lean_season_depth_m": 4.5,
+          "trend_2021_2025_m_per_year": 0.117
+        },
+        "nearest_station": {
+          "station_name": "Bijhauri",
+          "distance_km": 5.0,
+          "pre_monsoon_depth_m": 3.43,
+          "post_monsoon_depth_m": 0.81,
+          "seasonal_rise_m": 2.62
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 81.5,
+        "distance_km": 44.1,
+        "summer_mean_max_c": 37.0,
+        "days_above_40c_per_year": 31.2,
+        "trend_c_per_year": 0.157
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 454.4,
+        "district_departure_pct": 24.9,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 454.4,
+            "monsoon_normal_mm": 363.9,
+            "percent_departure": 24.9
+          }
+        }
+      }
+    },
+    "site_mp_003": {
+      "name": "Meghnagar",
+      "district": "Jhabua",
+      "norm_district": "JHABUA",
+      "state": "Madhya Pradesh",
+      "lat": 22.8945,
+      "lon": 74.5412,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Madhya Pradesh",
+          "station_count": 14,
+          "reading_count": 128,
+          "pre_monsoon_mean_depth_m": 7.59,
+          "post_monsoon_mean_depth_m": 3.25,
+          "seasonal_rise_m": 4.34,
+          "lean_season_depth_m": 5.55,
+          "trend_2021_2025_m_per_year": 0.222
+        },
+        "nearest_station": {
+          "station_name": "Meghnagar New",
+          "distance_km": 1.2,
+          "pre_monsoon_depth_m": 6.19,
+          "post_monsoon_depth_m": 1.81,
+          "seasonal_rise_m": 4.38
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 74.5,
+        "distance_km": 44.1,
+        "summer_mean_max_c": 37.58,
+        "days_above_40c_per_year": 27.2,
+        "trend_c_per_year": -0.032
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 111.2,
+        "district_departure_pct": -63.1,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 111.2,
+            "monsoon_normal_mm": 301.4,
+            "percent_departure": -63.1
+          }
+        }
+      }
+    },
+    "site_mp_004": {
+      "name": "Bajag Scarp",
+      "district": "Dindori",
+      "norm_district": "DINDORI",
+      "state": "Madhya Pradesh",
+      "lat": 22.6712,
+      "lon": 81.4523,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Madhya Pradesh",
+          "station_count": 16,
+          "reading_count": 154,
+          "pre_monsoon_mean_depth_m": 5.31,
+          "post_monsoon_mean_depth_m": 2.62,
+          "seasonal_rise_m": 2.69,
+          "lean_season_depth_m": 4.5,
+          "trend_2021_2025_m_per_year": 0.117
+        },
+        "nearest_station": {
+          "station_name": "Gorakhpur",
+          "distance_km": 8.5,
+          "pre_monsoon_depth_m": 5.17,
+          "post_monsoon_depth_m": 2.84,
+          "seasonal_rise_m": 2.33
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 81.5,
+        "distance_km": 19.7,
+        "summer_mean_max_c": 37.0,
+        "days_above_40c_per_year": 31.2,
+        "trend_c_per_year": 0.157
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 454.4,
+        "district_departure_pct": 24.9,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 454.4,
+            "monsoon_normal_mm": 363.9,
+            "percent_departure": 24.9
+          }
+        }
+      }
+    },
+    "site_jh_001": {
+      "name": "Torpa",
+      "district": "Khunti",
+      "norm_district": "KHUNTI",
+      "state": "Jharkhand",
+      "lat": 22.9512,
+      "lon": 85.1234,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Jharkhand",
+          "station_count": 11,
+          "reading_count": 54,
+          "pre_monsoon_mean_depth_m": 5.93,
+          "post_monsoon_mean_depth_m": 2.57,
+          "seasonal_rise_m": 3.36,
+          "lean_season_depth_m": 4.81,
+          "trend_2021_2025_m_per_year": -0.727
+        },
+        "nearest_station": {
+          "station_name": "Dorma",
+          "distance_km": 7.3,
+          "pre_monsoon_depth_m": 5.3,
+          "post_monsoon_depth_m": 2.67,
+          "seasonal_rise_m": 2.63
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 85.5,
+        "distance_km": 63.3,
+        "summer_mean_max_c": 36.24,
+        "days_above_40c_per_year": 15.0,
+        "trend_c_per_year": 0.358
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 304.3,
+        "district_departure_pct": -25.8,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 304.3,
+            "monsoon_normal_mm": 409.9,
+            "percent_departure": -25.8
+          }
+        }
+      }
+    },
+    "site_jh_002": {
+      "name": "Goilkera",
+      "district": "West Singhbhum",
+      "norm_district": "WEST SINGHBHUM",
+      "state": "Jharkhand",
+      "lat": 22.5234,
+      "lon": 85.3812,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Jharkhand",
+          "station_count": 30,
+          "reading_count": 233,
+          "pre_monsoon_mean_depth_m": 7.19,
+          "post_monsoon_mean_depth_m": 2.43,
+          "seasonal_rise_m": 4.76,
+          "lean_season_depth_m": 5.68,
+          "trend_2021_2025_m_per_year": -0.179
+        },
+        "nearest_station": {
+          "station_name": "Sonua",
+          "distance_km": 20.3,
+          "pre_monsoon_depth_m": 2.5,
+          "post_monsoon_depth_m": 2.5,
+          "seasonal_rise_m": 0.0
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 85.5,
+        "distance_km": 12.5,
+        "summer_mean_max_c": 36.24,
+        "days_above_40c_per_year": 15.0,
+        "trend_c_per_year": 0.358
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 460.7,
+        "district_departure_pct": 33.2,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 460.7,
+            "monsoon_normal_mm": 345.9,
+            "percent_departure": 33.2
+          }
+        }
+      }
+    },
+    "site_jh_003": {
+      "name": "Chaibasa Plain",
+      "district": "West Singhbhum",
+      "norm_district": "WEST SINGHBHUM",
+      "state": "Jharkhand",
+      "lat": 22.5512,
+      "lon": 85.8012,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Jharkhand",
+          "station_count": 30,
+          "reading_count": 233,
+          "pre_monsoon_mean_depth_m": 7.19,
+          "post_monsoon_mean_depth_m": 2.43,
+          "seasonal_rise_m": 4.76,
+          "lean_season_depth_m": 5.68,
+          "trend_2021_2025_m_per_year": -0.179
+        },
+        "nearest_station": {
+          "station_name": "Chaibasa",
+          "distance_km": 0.7,
+          "pre_monsoon_depth_m": 12.25,
+          "post_monsoon_depth_m": 6.12,
+          "seasonal_rise_m": 6.13
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 85.5,
+        "distance_km": 31.5,
+        "summer_mean_max_c": 36.24,
+        "days_above_40c_per_year": 15.0,
+        "trend_c_per_year": 0.358
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 460.7,
+        "district_departure_pct": 33.2,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 460.7,
+            "monsoon_normal_mm": 345.9,
+            "percent_departure": 33.2
+          }
+        }
+      }
+    },
+    "site_jh_004": {
+      "name": "Porahat Scarp",
+      "district": "West Singhbhum",
+      "norm_district": "WEST SINGHBHUM",
+      "state": "Jharkhand",
+      "lat": 22.6123,
+      "lon": 85.2212,
+      "provenance_tag": "derived",
+      "groundwater": {
+        "district_summary": {
+          "state": "Jharkhand",
+          "station_count": 30,
+          "reading_count": 233,
+          "pre_monsoon_mean_depth_m": 7.19,
+          "post_monsoon_mean_depth_m": 2.43,
+          "seasonal_rise_m": 4.76,
+          "lean_season_depth_m": 5.68,
+          "trend_2021_2025_m_per_year": -0.179
+        },
+        "nearest_station": {
+          "station_name": "Sonua",
+          "distance_km": 15.6,
+          "pre_monsoon_depth_m": 2.5,
+          "post_monsoon_depth_m": 2.5,
+          "seasonal_rise_m": 0.0
+        }
+      },
+      "temperature": {
+        "nearest_grid_lat": 22.5,
+        "nearest_grid_lon": 85.5,
+        "distance_km": 31.2,
+        "summer_mean_max_c": 36.24,
+        "days_above_40c_per_year": 15.0,
+        "trend_c_per_year": 0.358
+      },
+      "rainfall": {
+        "district_monsoon_total_mm": 460.7,
+        "district_departure_pct": 33.2,
+        "district_departure_by_year": {
+          "2026": {
+            "monsoon_total_mm": 460.7,
+            "monsoon_normal_mm": 345.9,
+            "percent_departure": 33.2
+          }
+        }
+      }
+    }
+  }
+}

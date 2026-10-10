@@ -13,10 +13,7 @@ import os
 import uuid
 from datetime import datetime, timezone
 
-try:
-    from datetime import UTC
-except ImportError:
-    UTC = timezone.utc  # noqa: UP017
+UTC_TZ = timezone.utc  # noqa: UP017
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -30,6 +27,7 @@ try:
 except ImportError:
     Mangum = None  # type: ignore
 
+from agent.base import AgentResponse
 from agent.dpr_generator import create_dpr_zip, generate_dpr_package
 from agent.orchestrator import LeadPlannerOrchestratorAgent
 from agent.participatory import ParticipatoryMonitoringAgent
@@ -104,7 +102,7 @@ async def get_meta() -> MetaResponse:
         total_villages=len(villages),
         scoring_weights_hash=_get_weights_hash(),
         data_tags_in_use=[DataTag.REAL, DataTag.PROXY, DataTag.ILLUSTRATIVE],
-        last_pipeline_run=datetime.now(UTC),
+        last_pipeline_run=datetime.now(UTC_TZ),
         supported_states=["Odisha", "Madhya Pradesh", "Jharkhand", "Pan-India"],
     )
 
@@ -163,7 +161,7 @@ async def get_recommendations(
 async def create_observation(obs: ObservationCreate) -> Observation:
     """Submit a field observation."""
     obs_id = f"obs_{uuid.uuid4().hex[:12]}"
-    now = datetime.now(UTC)
+    now = datetime.now(UTC_TZ)
 
     # Generate photo URL if filename provided
     photo_url = None
@@ -233,6 +231,36 @@ async def list_observations(site_id: str | None = Query(None)) -> list[Observati
     return list(_local_observations)
 
 
+# ── Phase 4 Derived Telemetry Routes ─────────────────────────────────
+
+
+@app.get("/telemetry/{site_id}", response_model=dict)
+async def get_site_telemetry(site_id: str) -> dict:
+    """Retrieve lazy cached derived empirical telemetry mapping for a settlement."""
+    from scoring.derived_loader import get_settlement_derived_data
+
+    data = get_settlement_derived_data(site_id)
+    if not data:
+        raise HTTPException(
+            status_code=404, detail=f"No derived telemetry for site '{site_id}'"
+        )
+    return data
+
+
+@app.get("/telemetry/districts/{district}/groundwater", response_model=dict)
+async def get_district_groundwater(district: str) -> dict:
+    """Retrieve lazy cached derived groundwater statistics for a district."""
+    from scoring.derived_loader import get_district_groundwater_summary
+
+    data = get_district_groundwater_summary(district)
+    if not data:
+        raise HTTPException(
+            status_code=404,
+            detail=f"District '{district}' not found in derived groundwater",
+        )
+    return data
+
+
 # ── Participatory Monitoring Routes ─────────────────────────────────
 
 
@@ -258,7 +286,7 @@ async def submit_text_observation(
     observer_id: str = Form(...),
     observer_name: str = Form(""),
     language_code: str = Form("en-IN"),
-) -> dict:
+) -> AgentResponse:
     """Submit a community observation via text (WhatsApp message)."""
     result = _participatory_agent.execute(
         {
@@ -268,9 +296,9 @@ async def submit_text_observation(
             "language_code": language_code,
         }
     )
-    if not result.get("success"):
+    if result.details.get("error"):
         raise HTTPException(
-            status_code=400, detail=result.get("error", "Processing failed")
+            status_code=400, detail=result.details.get("error", "Processing failed")
         )
     return result
 
@@ -281,13 +309,13 @@ async def submit_voice_observation(
     observer_id: str = Form(...),
     observer_name: str = Form(""),
     language_code: str = Form("en-IN"),
-) -> dict:
+) -> AgentResponse:
     """Submit a community observation via voice note (WhatsApp voice message)."""
     # Upload audio to S3 first
     bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
     region = os.getenv("AWS_REGION", "ap-south-1")
     audio_key = (
-        f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{audio.filename.split('.')[-1]}"
+        f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{(audio.filename or 'audio').split('.')[-1]}"
     )
 
     try:
@@ -311,9 +339,9 @@ async def submit_voice_observation(
             "language_code": language_code,
         }
     )
-    if not result.get("success"):
+    if result.details.get("error"):
         raise HTTPException(
-            status_code=400, detail=result.get("error", "Processing failed")
+            status_code=400, detail=result.details.get("error", "Processing failed")
         )
     return result
 
@@ -324,7 +352,7 @@ async def whatsapp_webhook(
     From: str = Form(...),
     MediaUrl0: str = Form(""),
     MediaContentType0: str = Form(""),
-) -> dict:
+) -> Response:
     """
     WhatsApp Business API webhook endpoint.
 
@@ -356,7 +384,7 @@ async def whatsapp_webhook(
 
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Message>Thank you! Your observation has been recorded. {result.get("message", "")}</Message>
+    <Message>Thank you! Your observation has been recorded. {result.narrative}</Message>
 </Response>"""
     return Response(content=twiml, media_type="application/xml")
 

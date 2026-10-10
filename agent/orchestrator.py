@@ -91,22 +91,17 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
         )
 
         # 2. Executive Synthesis
-        recharge_val = (
-            scores_by_type.get("recharge_score").value
-            if scores_by_type.get("recharge_score")
-            else 0.0
-        )
-        stress_val = (
-            scores_by_type.get("heat_water_stress").value
-            if scores_by_type.get("heat_water_stress")
-            else 0.0
-        )
+        recharge_score = scores_by_type.get("recharge_score")
+        stress_score = scores_by_type.get("heat_water_stress")
+        recharge_val = recharge_score.value if recharge_score else 0.0
+        stress_val = stress_score.value if stress_score else 0.0
         safety_status = site.safety.status.value if site.safety else "SAFE"
 
         if is_rejected:
+            safety_rule_ids = site.safety.rule_ids if site.safety else []
             exec_decision = (
                 f"ACTION PROHIBITED: {vname} has been issued a formal SAFETY VETO. "
-                f"Construction of heavy civil structures is strictly rejected ({'; '.join(site.safety.rule_ids)}). "
+                f"Construction of heavy civil structures is strictly rejected ({'; '.join(safety_rule_ids)}). "
                 f"No watershed civil capital may be allocated."
             )
         elif site.recommendations:

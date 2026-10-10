@@ -11,10 +11,7 @@ from __future__ import annotations
 import uuid
 from datetime import datetime, timezone
 
-try:
-    from datetime import UTC
-except ImportError:
-    UTC = timezone.utc  # noqa: UP017
+UTC_TZ = timezone.utc  # noqa: UP017
 from pathlib import Path
 from typing import Any
 
@@ -30,7 +27,7 @@ def generate_action_dossier_html(
     scenario_info: dict[str, Any] | None = None,
 ) -> str:
     """Render self-contained, publication-grade HTML action dossier."""
-    timestamp = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
+    timestamp = datetime.now(UTC_TZ).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     states = sorted({s.village.state for s in sites if s.village.state})
     districts = sorted({s.village.district for s in sites if s.village.district})
@@ -61,13 +58,21 @@ def generate_action_dossier_html(
         else:
             rec_text = "<span>Bio-engineering only</span>"
 
+        recharge_val = f"{recharge.value:.1f} <small>({recharge.score_class.value})</small>" if recharge else "N/A"
+        stress_val = f"{stress.value:.1f} <small>({stress.score_class.value})</small>" if stress else "N/A"
+        spring_val = (
+            f"{spring.value:.1f} <small>({spring.score_class.value})</small>"
+            if spring and v.has_spring
+            else ("N/A (No Spring)" if not v.has_spring else "N/A")
+        )
+
         rows_html += f"""
         <tr>
             <td><strong>{v.name}</strong><br><small>{v.block}, {v.district} ({v.state})</small></td>
             <td><span class="badge" style="background: {safety_color}; color: #fff;">{safety_status}</span></td>
-            <td>{recharge.value:.1f} <small>({recharge.score_class.value})</small></td>
-            <td>{stress.value:.1f} <small>({stress.score_class.value})</small></td>
-            <td>{f"{spring.value:.1f} ({spring.score_class.value})" if v.has_spring else "N/A (No Spring)"}</td>
+            <td>{recharge_val}</td>
+            <td>{stress_val}</td>
+            <td>{spring_val}</td>
             <td>{rec_text}</td>
             <td><span class="badge badge-subtle">{v.data_tag.value.upper()}</span></td>
         </tr>
@@ -247,7 +252,7 @@ def create_report(
     return ReportResult(
         report_id=report_id,
         title="Bhujal Comprehensive Watershed Planning Dossier",
-        generated_at=datetime.now(UTC),
+        generated_at=datetime.now(UTC_TZ),
         site_count=len(sites),
         download_url=f"/reports/{filename}",
         format="html",

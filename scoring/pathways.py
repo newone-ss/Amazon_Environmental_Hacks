@@ -113,8 +113,12 @@ def load_pathway_config() -> PathwayConfig:
         with open(config_path, "r", encoding="utf-8") as f:
             data = yaml.safe_load(f) or {}
             raw = _RawPathwayConfig(**data)
+            # Convert list[list[int]] to list[tuple[int, int]] with type assertion
+            periods: list[tuple[int, int]] = [
+                (p[0], p[1]) for p in raw.periods if len(p) == 2
+            ]
             return PathwayConfig(
-                periods=[tuple(p) for p in raw.periods],
+                periods=periods,
                 ssp_scenarios=raw.ssp_scenarios,
                 intervention_lifespan_years=raw.intervention_lifespan_years,
                 decision_triggers=raw.decision_triggers,

@@ -1,0 +1,4230 @@
+{
+  "metadata": {
+    "source": "India Meteorological Department (IMD)",
+    "date_range": [
+      "2026-08-19",
+      "2026-10-09"
+    ],
+    "units": "millimeters (mm)",
+    "total_districts": 106
+  },
+  "districts": {
+    "AGAR-MALWA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 158.8,
+          "daily_mean_mm": 12.22,
+          "daily_normal_mean_mm": 9.81
+        },
+        "9": {
+          "total_mm": 253.8,
+          "daily_mean_mm": 8.46,
+          "daily_normal_mean_mm": 4.96
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.6
+        }
+      },
+      "monsoon_total_mm": 412.6,
+      "monsoon_normal_mm": 290.8,
+      "overall_departure_pct": 41.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 412.6,
+          "monsoon_normal_mm": 290.8,
+          "percent_departure": 41.9
+        }
+      },
+      "mean_daily_departure_pct": 0.92,
+      "categories": {
+        "NR": 34,
+        "LE": 10,
+        "LD": 4,
+        "E": 2,
+        "D": 1,
+        "N": 1
+      }
+    },
+    "ALIRAJPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 17.7,
+          "daily_mean_mm": 1.36,
+          "daily_normal_mean_mm": 8.33
+        },
+        "9": {
+          "total_mm": 101.3,
+          "daily_mean_mm": 3.38,
+          "daily_normal_mean_mm": 5.45
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.77
+        }
+      },
+      "monsoon_total_mm": 119.0,
+      "monsoon_normal_mm": 287.8,
+      "overall_departure_pct": -58.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 119.0,
+          "monsoon_normal_mm": 287.8,
+          "percent_departure": -58.7
+        }
+      },
+      "mean_daily_departure_pct": -0.57,
+      "categories": {
+        "NR": 34,
+        "LD": 9,
+        "LE": 4,
+        "N": 3,
+        "D": 2
+      }
+    },
+    "ANUGUL": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 102.8,
+          "daily_mean_mm": 7.91,
+          "daily_normal_mean_mm": 10.9
+        },
+        "9": {
+          "total_mm": 162.0,
+          "daily_mean_mm": 5.4,
+          "daily_normal_mean_mm": 7.4
+        },
+        "10": {
+          "total_mm": 0.7,
+          "daily_mean_mm": 0.08,
+          "daily_normal_mean_mm": 4.4
+        }
+      },
+      "monsoon_total_mm": 265.5,
+      "monsoon_normal_mm": 403.3,
+      "overall_departure_pct": -34.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 265.5,
+          "monsoon_normal_mm": 403.3,
+          "percent_departure": -34.2
+        }
+      },
+      "mean_daily_departure_pct": -0.26,
+      "categories": {
+        "NR": 18,
+        "LD": 15,
+        "LE": 7,
+        "N": 5,
+        "D": 5,
+        "E": 2
+      }
+    },
+    "ANUPPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 177.1,
+          "daily_mean_mm": 13.62,
+          "daily_normal_mean_mm": 8.92
+        },
+        "9": {
+          "total_mm": 235.2,
+          "daily_mean_mm": 7.84,
+          "daily_normal_mean_mm": 6.38
+        },
+        "10": {
+          "total_mm": 6.3,
+          "daily_mean_mm": 0.7,
+          "daily_normal_mean_mm": 2.79
+        }
+      },
+      "monsoon_total_mm": 418.6,
+      "monsoon_normal_mm": 332.4,
+      "overall_departure_pct": 25.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 418.6,
+          "monsoon_normal_mm": 332.4,
+          "percent_departure": 25.9
+        }
+      },
+      "mean_daily_departure_pct": 0.21,
+      "categories": {
+        "LD": 15,
+        "LE": 12,
+        "NR": 9,
+        "D": 7,
+        "N": 5,
+        "E": 4
+      }
+    },
+    "ASHOKNAGAR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 111.5,
+          "daily_mean_mm": 8.58,
+          "daily_normal_mean_mm": 8.92
+        },
+        "9": {
+          "total_mm": 193.2,
+          "daily_mean_mm": 6.44,
+          "daily_normal_mean_mm": 5.1
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.68
+        }
+      },
+      "monsoon_total_mm": 304.7,
+      "monsoon_normal_mm": 284.0,
+      "overall_departure_pct": 7.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 304.7,
+          "monsoon_normal_mm": 284.0,
+          "percent_departure": 7.3
+        }
+      },
+      "mean_daily_departure_pct": -0.07,
+      "categories": {
+        "NR": 22,
+        "LE": 10,
+        "LD": 7,
+        "D": 7,
+        "N": 4,
+        "E": 2
+      }
+    },
+    "BALAGHAT": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 130.2,
+          "daily_mean_mm": 10.02,
+          "daily_normal_mean_mm": 11.83
+        },
+        "9": {
+          "total_mm": 227.2,
+          "daily_mean_mm": 7.57,
+          "daily_normal_mean_mm": 6.75
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.79
+        }
+      },
+      "monsoon_total_mm": 357.4,
+      "monsoon_normal_mm": 381.4,
+      "overall_departure_pct": -6.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 357.4,
+          "monsoon_normal_mm": 381.4,
+          "percent_departure": -6.3
+        }
+      },
+      "mean_daily_departure_pct": 0.02,
+      "categories": {
+        "LD": 13,
+        "NR": 13,
+        "D": 10,
+        "LE": 7,
+        "N": 6,
+        "E": 3
+      }
+    },
+    "BALANGIR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 77.8,
+          "daily_mean_mm": 5.98,
+          "daily_normal_mean_mm": 11.54
+        },
+        "9": {
+          "total_mm": 213.0,
+          "daily_mean_mm": 7.1,
+          "daily_normal_mean_mm": 6.89
+        },
+        "10": {
+          "total_mm": 8.2,
+          "daily_mean_mm": 0.91,
+          "daily_normal_mean_mm": 3.06
+        }
+      },
+      "monsoon_total_mm": 299.0,
+      "monsoon_normal_mm": 384.1,
+      "overall_departure_pct": -22.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 299.0,
+          "monsoon_normal_mm": 384.1,
+          "percent_departure": -22.2
+        }
+      },
+      "mean_daily_departure_pct": -0.05,
+      "categories": {
+        "NR": 17,
+        "LD": 16,
+        "LE": 11,
+        "D": 5,
+        "N": 2,
+        "E": 1
+      }
+    },
+    "BALESHWAR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 194.3,
+          "daily_mean_mm": 14.95,
+          "daily_normal_mean_mm": 10.62
+        },
+        "9": {
+          "total_mm": 411.9,
+          "daily_mean_mm": 13.73,
+          "daily_normal_mean_mm": 10.27
+        },
+        "10": {
+          "total_mm": 16.0,
+          "daily_mean_mm": 1.78,
+          "daily_normal_mean_mm": 9.2
+        }
+      },
+      "monsoon_total_mm": 622.2,
+      "monsoon_normal_mm": 528.9,
+      "overall_departure_pct": 17.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 622.2,
+          "monsoon_normal_mm": 528.9,
+          "percent_departure": 17.6
+        }
+      },
+      "mean_daily_departure_pct": 0.26,
+      "categories": {
+        "LE": 16,
+        "LD": 13,
+        "NR": 12,
+        "D": 8,
+        "N": 2,
+        "E": 1
+      }
+    },
+    "BARGARH": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 113.3,
+          "daily_mean_mm": 8.72,
+          "daily_normal_mean_mm": 12.25
+        },
+        "9": {
+          "total_mm": 167.6,
+          "daily_mean_mm": 5.59,
+          "daily_normal_mean_mm": 7.19
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.9
+        }
+      },
+      "monsoon_total_mm": 280.9,
+      "monsoon_normal_mm": 401.0,
+      "overall_departure_pct": -30.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 280.9,
+          "monsoon_normal_mm": 401.0,
+          "percent_departure": -30.0
+        }
+      },
+      "mean_daily_departure_pct": -0.02,
+      "categories": {
+        "NR": 19,
+        "LD": 15,
+        "LE": 9,
+        "N": 4,
+        "D": 4,
+        "E": 1
+      }
+    },
+    "BARWANI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 10.3,
+          "daily_mean_mm": 0.79,
+          "daily_normal_mean_mm": 6.86
+        },
+        "9": {
+          "total_mm": 125.2,
+          "daily_mean_mm": 4.17,
+          "daily_normal_mean_mm": 4.56
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.61
+        }
+      },
+      "monsoon_total_mm": 135.5,
+      "monsoon_normal_mm": 240.6,
+      "overall_departure_pct": -43.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 135.5,
+          "monsoon_normal_mm": 240.6,
+          "percent_departure": -43.7
+        }
+      },
+      "mean_daily_departure_pct": -0.29,
+      "categories": {
+        "NR": 26,
+        "LD": 17,
+        "D": 3,
+        "N": 3,
+        "LE": 3
+      }
+    },
+    "BETUL": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 57.0,
+          "daily_mean_mm": 4.38,
+          "daily_normal_mean_mm": 10.49
+        },
+        "9": {
+          "total_mm": 122.5,
+          "daily_mean_mm": 4.08,
+          "daily_normal_mean_mm": 6.2
+        },
+        "10": {
+          "total_mm": 0.2,
+          "daily_mean_mm": 0.02,
+          "daily_normal_mean_mm": 2.06
+        }
+      },
+      "monsoon_total_mm": 179.7,
+      "monsoon_normal_mm": 341.0,
+      "overall_departure_pct": -47.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 179.7,
+          "monsoon_normal_mm": 341.0,
+          "percent_departure": -47.3
+        }
+      },
+      "mean_daily_departure_pct": -0.49,
+      "categories": {
+        "NR": 17,
+        "LD": 16,
+        "D": 6,
+        "N": 5,
+        "LE": 4,
+        "E": 4
+      }
+    },
+    "BHADRAK": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 132.5,
+          "daily_mean_mm": 10.19,
+          "daily_normal_mean_mm": 9.83
+        },
+        "9": {
+          "total_mm": 341.1,
+          "daily_mean_mm": 11.37,
+          "daily_normal_mean_mm": 8.47
+        },
+        "10": {
+          "total_mm": 4.8,
+          "daily_mean_mm": 0.53,
+          "daily_normal_mean_mm": 8.2
+        }
+      },
+      "monsoon_total_mm": 478.4,
+      "monsoon_normal_mm": 455.8,
+      "overall_departure_pct": 5.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 478.4,
+          "monsoon_normal_mm": 455.8,
+          "percent_departure": 5.0
+        }
+      },
+      "mean_daily_departure_pct": 0.13,
+      "categories": {
+        "LD": 18,
+        "NR": 14,
+        "LE": 11,
+        "N": 5,
+        "E": 3,
+        "D": 1
+      }
+    },
+    "BHIND": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 140.7,
+          "daily_mean_mm": 10.82,
+          "daily_normal_mean_mm": 5.56
+        },
+        "9": {
+          "total_mm": 200.6,
+          "daily_mean_mm": 6.69,
+          "daily_normal_mean_mm": 4.07
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.62
+        }
+      },
+      "monsoon_total_mm": 341.3,
+      "monsoon_normal_mm": 209.0,
+      "overall_departure_pct": 63.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 341.3,
+          "monsoon_normal_mm": 209.0,
+          "percent_departure": 63.3
+        }
+      },
+      "mean_daily_departure_pct": 1.6,
+      "categories": {
+        "NR": 21,
+        "LE": 13,
+        "LD": 9,
+        "N": 4,
+        "E": 3,
+        "D": 2
+      }
+    },
+    "BHOPAL": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 119.2,
+          "daily_mean_mm": 9.17,
+          "daily_normal_mean_mm": 11.52
+        },
+        "9": {
+          "total_mm": 157.0,
+          "daily_mean_mm": 5.23,
+          "daily_normal_mean_mm": 5.1
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.12
+        }
+      },
+      "monsoon_total_mm": 276.2,
+      "monsoon_normal_mm": 321.8,
+      "overall_departure_pct": -14.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 276.2,
+          "monsoon_normal_mm": 321.8,
+          "percent_departure": -14.2
+        }
+      },
+      "mean_daily_departure_pct": -0.09,
+      "categories": {
+        "NR": 22,
+        "LD": 15,
+        "LE": 11,
+        "N": 3,
+        "D": 1
+      }
+    },
+    "BOKARO": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 112.3,
+          "daily_mean_mm": 8.64,
+          "daily_normal_mean_mm": 7.48
+        },
+        "9": {
+          "total_mm": 322.2,
+          "daily_mean_mm": 10.74,
+          "daily_normal_mean_mm": 6.66
+        },
+        "10": {
+          "total_mm": 41.3,
+          "daily_mean_mm": 4.59,
+          "daily_normal_mean_mm": 3.88
+        }
+      },
+      "monsoon_total_mm": 475.8,
+      "monsoon_normal_mm": 332.0,
+      "overall_departure_pct": 43.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 475.8,
+          "monsoon_normal_mm": 332.0,
+          "percent_departure": 43.3
+        }
+      },
+      "mean_daily_departure_pct": 0.5,
+      "categories": {
+        "NR": 16,
+        "LE": 13,
+        "LD": 8,
+        "D": 7,
+        "E": 4,
+        "N": 4
+      }
+    },
+    "BOUDH": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 113.3,
+          "daily_mean_mm": 8.72,
+          "daily_normal_mean_mm": 12.25
+        },
+        "9": {
+          "total_mm": 167.6,
+          "daily_mean_mm": 5.59,
+          "daily_normal_mean_mm": 7.19
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.9
+        }
+      },
+      "monsoon_total_mm": 280.9,
+      "monsoon_normal_mm": 401.0,
+      "overall_departure_pct": -30.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 280.9,
+          "monsoon_normal_mm": 401.0,
+          "percent_departure": -30.0
+        }
+      },
+      "mean_daily_departure_pct": -0.02,
+      "categories": {
+        "NR": 19,
+        "LD": 15,
+        "LE": 9,
+        "N": 4,
+        "D": 4,
+        "E": 1
+      }
+    },
+    "BURHANPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 13.3,
+          "daily_mean_mm": 1.02,
+          "daily_normal_mean_mm": 7.79
+        },
+        "9": {
+          "total_mm": 79.5,
+          "daily_mean_mm": 2.65,
+          "daily_normal_mean_mm": 4.73
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.48
+        }
+      },
+      "monsoon_total_mm": 92.8,
+      "monsoon_normal_mm": 265.5,
+      "overall_departure_pct": -65.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 92.8,
+          "monsoon_normal_mm": 265.5,
+          "percent_departure": -65.0
+        }
+      },
+      "mean_daily_departure_pct": -0.66,
+      "categories": {
+        "NR": 31,
+        "LD": 13,
+        "D": 4,
+        "LE": 4
+      }
+    },
+    "CHATRA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 153.0,
+          "daily_mean_mm": 11.77,
+          "daily_normal_mean_mm": 7.95
+        },
+        "9": {
+          "total_mm": 95.6,
+          "daily_mean_mm": 3.19,
+          "daily_normal_mean_mm": 6.96
+        },
+        "10": {
+          "total_mm": 54.4,
+          "daily_mean_mm": 6.04,
+          "daily_normal_mean_mm": 3.67
+        }
+      },
+      "monsoon_total_mm": 303.0,
+      "monsoon_normal_mm": 345.2,
+      "overall_departure_pct": -12.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 303.0,
+          "monsoon_normal_mm": 345.2,
+          "percent_departure": -12.2
+        }
+      },
+      "mean_daily_departure_pct": 0.0,
+      "categories": {
+        "NR": 26,
+        "LE": 9,
+        "LD": 6,
+        "N": 4,
+        "D": 4,
+        "ND": 2,
+        "E": 1
+      }
+    },
+    "CHHATARPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 246.2,
+          "daily_mean_mm": 18.94,
+          "daily_normal_mean_mm": 10.09
+        },
+        "9": {
+          "total_mm": 359.0,
+          "daily_mean_mm": 11.97,
+          "daily_normal_mean_mm": 5.98
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.58
+        }
+      },
+      "monsoon_total_mm": 605.2,
+      "monsoon_normal_mm": 333.7,
+      "overall_departure_pct": 81.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 605.2,
+          "monsoon_normal_mm": 333.7,
+          "percent_departure": 81.4
+        }
+      },
+      "mean_daily_departure_pct": 2.03,
+      "categories": {
+        "NR": 15,
+        "LE": 13,
+        "LD": 10,
+        "D": 7,
+        "E": 5,
+        "N": 2
+      }
+    },
+    "CHHINDWARA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 80.4,
+          "daily_mean_mm": 6.18,
+          "daily_normal_mean_mm": 10.79
+        },
+        "9": {
+          "total_mm": 155.7,
+          "daily_mean_mm": 5.19,
+          "daily_normal_mean_mm": 6.32
+        },
+        "10": {
+          "total_mm": 0.8,
+          "daily_mean_mm": 0.09,
+          "daily_normal_mean_mm": 2.64
+        }
+      },
+      "monsoon_total_mm": 236.9,
+      "monsoon_normal_mm": 353.6,
+      "overall_departure_pct": -33.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 236.9,
+          "monsoon_normal_mm": 353.6,
+          "percent_departure": -33.0
+        }
+      },
+      "mean_daily_departure_pct": -0.29,
+      "categories": {
+        "LD": 18,
+        "NR": 15,
+        "LE": 7,
+        "D": 4,
+        "N": 4,
+        "E": 4
+      }
+    },
+    "CUTTACK": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 117.4,
+          "daily_mean_mm": 9.03,
+          "daily_normal_mean_mm": 11.27
+        },
+        "9": {
+          "total_mm": 334.6,
+          "daily_mean_mm": 11.15,
+          "daily_normal_mean_mm": 8.32
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 6.94
+        }
+      },
+      "monsoon_total_mm": 452.0,
+      "monsoon_normal_mm": 458.5,
+      "overall_departure_pct": -1.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 452.0,
+          "monsoon_normal_mm": 458.5,
+          "percent_departure": -1.4
+        }
+      },
+      "mean_daily_departure_pct": 0.21,
+      "categories": {
+        "NR": 18,
+        "LD": 13,
+        "LE": 10,
+        "D": 6,
+        "N": 4,
+        "E": 1
+      }
+    },
+    "DAMOH": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 163.6,
+          "daily_mean_mm": 12.58,
+          "daily_normal_mean_mm": 11.48
+        },
+        "9": {
+          "total_mm": 255.0,
+          "daily_mean_mm": 8.5,
+          "daily_normal_mean_mm": 6.01
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.03
+        }
+      },
+      "monsoon_total_mm": 418.6,
+      "monsoon_normal_mm": 347.9,
+      "overall_departure_pct": 20.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 418.6,
+          "monsoon_normal_mm": 347.9,
+          "percent_departure": 20.3
+        }
+      },
+      "mean_daily_departure_pct": 0.58,
+      "categories": {
+        "LE": 14,
+        "NR": 14,
+        "LD": 12,
+        "D": 6,
+        "E": 5,
+        "N": 1
+      }
+    },
+    "DATIA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 207.1,
+          "daily_mean_mm": 15.93,
+          "daily_normal_mean_mm": 7.02
+        },
+        "9": {
+          "total_mm": 202.8,
+          "daily_mean_mm": 6.76,
+          "daily_normal_mean_mm": 4.66
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.87
+        }
+      },
+      "monsoon_total_mm": 409.9,
+      "monsoon_normal_mm": 247.9,
+      "overall_departure_pct": 65.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 409.9,
+          "monsoon_normal_mm": 247.9,
+          "percent_departure": 65.3
+        }
+      },
+      "mean_daily_departure_pct": 0.9,
+      "categories": {
+        "NR": 25,
+        "LE": 14,
+        "LD": 7,
+        "D": 3,
+        "N": 2,
+        "E": 1
+      }
+    },
+    "DEOGARH": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 231.9,
+          "daily_mean_mm": 17.84,
+          "daily_normal_mean_mm": 11.47
+        },
+        "9": {
+          "total_mm": 181.6,
+          "daily_mean_mm": 6.05,
+          "daily_normal_mean_mm": 7.93
+        },
+        "10": {
+          "total_mm": 2.4,
+          "daily_mean_mm": 0.27,
+          "daily_normal_mean_mm": 3.54
+        }
+      },
+      "monsoon_total_mm": 415.9,
+      "monsoon_normal_mm": 418.9,
+      "overall_departure_pct": -0.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 415.9,
+          "monsoon_normal_mm": 418.9,
+          "percent_departure": -0.7
+        }
+      },
+      "mean_daily_departure_pct": 0.12,
+      "categories": {
+        "NR": 18,
+        "LD": 14,
+        "LE": 10,
+        "D": 5,
+        "N": 3,
+        "E": 2
+      }
+    },
+    "DEOGHAR": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 92.6,
+          "daily_mean_mm": 7.12,
+          "daily_normal_mean_mm": 7.62
+        },
+        "9": {
+          "total_mm": 276.7,
+          "daily_mean_mm": 9.22,
+          "daily_normal_mean_mm": 8.25
+        },
+        "10": {
+          "total_mm": 27.4,
+          "daily_mean_mm": 3.04,
+          "daily_normal_mean_mm": 4.79
+        }
+      },
+      "monsoon_total_mm": 396.7,
+      "monsoon_normal_mm": 389.7,
+      "overall_departure_pct": 1.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 396.7,
+          "monsoon_normal_mm": 389.7,
+          "percent_departure": 1.8
+        }
+      },
+      "mean_daily_departure_pct": 0.16,
+      "categories": {
+        "NR": 18,
+        "LD": 11,
+        "LE": 10,
+        "D": 8,
+        "N": 4,
+        "E": 1
+      }
+    },
+    "DEWAS": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 35.3,
+          "daily_mean_mm": 2.72,
+          "daily_normal_mean_mm": 10.02
+        },
+        "9": {
+          "total_mm": 105.1,
+          "daily_mean_mm": 3.5,
+          "daily_normal_mean_mm": 5.1
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.57
+        }
+      },
+      "monsoon_total_mm": 140.4,
+      "monsoon_normal_mm": 297.3,
+      "overall_departure_pct": -52.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 140.4,
+          "monsoon_normal_mm": 297.3,
+          "percent_departure": -52.8
+        }
+      },
+      "mean_daily_departure_pct": -0.47,
+      "categories": {
+        "NR": 29,
+        "LD": 12,
+        "LE": 8,
+        "E": 2,
+        "N": 1
+      }
+    },
+    "DHANBAD": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 137.0,
+          "daily_mean_mm": 10.54,
+          "daily_normal_mean_mm": 8.76
+        },
+        "9": {
+          "total_mm": 347.5,
+          "daily_mean_mm": 11.58,
+          "daily_normal_mean_mm": 8.66
+        },
+        "10": {
+          "total_mm": 38.1,
+          "daily_mean_mm": 4.23,
+          "daily_normal_mean_mm": 5.13
+        }
+      },
+      "monsoon_total_mm": 522.6,
+      "monsoon_normal_mm": 419.8,
+      "overall_departure_pct": 24.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 522.6,
+          "monsoon_normal_mm": 419.8,
+          "percent_departure": 24.5
+        }
+      },
+      "mean_daily_departure_pct": 0.21,
+      "categories": {
+        "LE": 17,
+        "NR": 13,
+        "LD": 11,
+        "D": 5,
+        "N": 4,
+        "E": 2
+      }
+    },
+    "DHAR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 15.7,
+          "daily_mean_mm": 1.21,
+          "daily_normal_mean_mm": 8.48
+        },
+        "9": {
+          "total_mm": 91.4,
+          "daily_mean_mm": 3.05,
+          "daily_normal_mean_mm": 5.48
+        },
+        "10": {
+          "total_mm": 0.1,
+          "daily_mean_mm": 0.01,
+          "daily_normal_mean_mm": 2.09
+        }
+      },
+      "monsoon_total_mm": 107.2,
+      "monsoon_normal_mm": 293.5,
+      "overall_departure_pct": -63.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 107.2,
+          "monsoon_normal_mm": 293.5,
+          "percent_departure": -63.5
+        }
+      },
+      "mean_daily_departure_pct": -0.59,
+      "categories": {
+        "NR": 28,
+        "LD": 14,
+        "D": 5,
+        "LE": 3,
+        "E": 1,
+        "N": 1
+      }
+    },
+    "DHENKANAL": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 81.1,
+          "daily_mean_mm": 6.24,
+          "daily_normal_mean_mm": 10.39
+        },
+        "9": {
+          "total_mm": 272.6,
+          "daily_mean_mm": 9.09,
+          "daily_normal_mean_mm": 7.44
+        },
+        "10": {
+          "total_mm": 8.2,
+          "daily_mean_mm": 0.91,
+          "daily_normal_mean_mm": 5.52
+        }
+      },
+      "monsoon_total_mm": 361.9,
+      "monsoon_normal_mm": 407.9,
+      "overall_departure_pct": -11.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 361.9,
+          "monsoon_normal_mm": 407.9,
+          "percent_departure": -11.3
+        }
+      },
+      "mean_daily_departure_pct": -0.0,
+      "categories": {
+        "NR": 18,
+        "LD": 15,
+        "LE": 9,
+        "D": 4,
+        "N": 3,
+        "E": 3
+      }
+    },
+    "DINDORI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 232.4,
+          "daily_mean_mm": 17.88,
+          "daily_normal_mean_mm": 11.35
+        },
+        "9": {
+          "total_mm": 221.7,
+          "daily_mean_mm": 7.39,
+          "daily_normal_mean_mm": 6.67
+        },
+        "10": {
+          "total_mm": 0.3,
+          "daily_mean_mm": 0.03,
+          "daily_normal_mean_mm": 1.81
+        }
+      },
+      "monsoon_total_mm": 454.4,
+      "monsoon_normal_mm": 363.9,
+      "overall_departure_pct": 24.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 454.4,
+          "monsoon_normal_mm": 363.9,
+          "percent_departure": 24.9
+        }
+      },
+      "mean_daily_departure_pct": 0.77,
+      "categories": {
+        "LD": 15,
+        "NR": 15,
+        "LE": 13,
+        "D": 6,
+        "E": 3
+      }
+    },
+    "DUMKA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 79.8,
+          "daily_mean_mm": 6.14,
+          "daily_normal_mean_mm": 7.68
+        },
+        "9": {
+          "total_mm": 350.3,
+          "daily_mean_mm": 11.68,
+          "daily_normal_mean_mm": 9.17
+        },
+        "10": {
+          "total_mm": 21.8,
+          "daily_mean_mm": 2.42,
+          "daily_normal_mean_mm": 7.19
+        }
+      },
+      "monsoon_total_mm": 451.9,
+      "monsoon_normal_mm": 439.7,
+      "overall_departure_pct": 2.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 451.9,
+          "monsoon_normal_mm": 439.7,
+          "percent_departure": 2.8
+        }
+      },
+      "mean_daily_departure_pct": 0.03,
+      "categories": {
+        "NR": 23,
+        "LE": 11,
+        "LD": 7,
+        "E": 4,
+        "N": 3,
+        "D": 3,
+        "ND": 1
+      }
+    },
+    "EAST SINGHBHUM": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 166.7,
+          "daily_mean_mm": 12.82,
+          "daily_normal_mean_mm": 9.02
+        },
+        "9": {
+          "total_mm": 332.1,
+          "daily_mean_mm": 11.07,
+          "daily_normal_mean_mm": 7.94
+        },
+        "10": {
+          "total_mm": 7.9,
+          "daily_mean_mm": 0.88,
+          "daily_normal_mean_mm": 3.73
+        }
+      },
+      "monsoon_total_mm": 506.7,
+      "monsoon_normal_mm": 389.0,
+      "overall_departure_pct": 30.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 506.7,
+          "monsoon_normal_mm": 389.0,
+          "percent_departure": 30.3
+        }
+      },
+      "mean_daily_departure_pct": 0.23,
+      "categories": {
+        "NR": 16,
+        "LD": 13,
+        "LE": 13,
+        "E": 5,
+        "D": 3,
+        "N": 2
+      }
+    },
+    "GAJAPATI": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 113.3,
+          "daily_mean_mm": 8.72,
+          "daily_normal_mean_mm": 12.25
+        },
+        "9": {
+          "total_mm": 167.6,
+          "daily_mean_mm": 5.59,
+          "daily_normal_mean_mm": 7.19
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.9
+        }
+      },
+      "monsoon_total_mm": 280.9,
+      "monsoon_normal_mm": 401.0,
+      "overall_departure_pct": -30.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 280.9,
+          "monsoon_normal_mm": 401.0,
+          "percent_departure": -30.0
+        }
+      },
+      "mean_daily_departure_pct": -0.02,
+      "categories": {
+        "NR": 19,
+        "LD": 15,
+        "LE": 9,
+        "N": 4,
+        "D": 4,
+        "E": 1
+      }
+    },
+    "GANJAM": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 64.3,
+          "daily_mean_mm": 4.95,
+          "daily_normal_mean_mm": 8.35
+        },
+        "9": {
+          "total_mm": 350.7,
+          "daily_mean_mm": 11.69,
+          "daily_normal_mean_mm": 7.14
+        },
+        "10": {
+          "total_mm": 9.3,
+          "daily_mean_mm": 1.03,
+          "daily_normal_mean_mm": 8.21
+        }
+      },
+      "monsoon_total_mm": 424.3,
+      "monsoon_normal_mm": 396.8,
+      "overall_departure_pct": 6.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 424.3,
+          "monsoon_normal_mm": 396.8,
+          "percent_departure": 6.9
+        }
+      },
+      "mean_daily_departure_pct": 0.24,
+      "categories": {
+        "LD": 20,
+        "NR": 10,
+        "LE": 9,
+        "D": 8,
+        "N": 4,
+        "E": 1
+      }
+    },
+    "GARHWA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 133.6,
+          "daily_mean_mm": 10.28,
+          "daily_normal_mean_mm": 7.83
+        },
+        "9": {
+          "total_mm": 191.1,
+          "daily_mean_mm": 6.37,
+          "daily_normal_mean_mm": 6.37
+        },
+        "10": {
+          "total_mm": 13.5,
+          "daily_mean_mm": 1.5,
+          "daily_normal_mean_mm": 2.66
+        }
+      },
+      "monsoon_total_mm": 338.2,
+      "monsoon_normal_mm": 316.7,
+      "overall_departure_pct": 6.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 338.2,
+          "monsoon_normal_mm": 316.7,
+          "percent_departure": 6.8
+        }
+      },
+      "mean_daily_departure_pct": 0.15,
+      "categories": {
+        "NR": 27,
+        "ND": 9,
+        "LE": 8,
+        "LD": 6,
+        "E": 2
+      }
+    },
+    "GIRIDIH": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 85.2,
+          "daily_mean_mm": 6.55,
+          "daily_normal_mean_mm": 7.55
+        },
+        "9": {
+          "total_mm": 342.0,
+          "daily_mean_mm": 11.4,
+          "daily_normal_mean_mm": 7.35
+        },
+        "10": {
+          "total_mm": 27.0,
+          "daily_mean_mm": 3.0,
+          "daily_normal_mean_mm": 5.18
+        }
+      },
+      "monsoon_total_mm": 454.2,
+      "monsoon_normal_mm": 365.4,
+      "overall_departure_pct": 24.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 454.2,
+          "monsoon_normal_mm": 365.4,
+          "percent_departure": 24.3
+        }
+      },
+      "mean_daily_departure_pct": 0.23,
+      "categories": {
+        "LD": 17,
+        "NR": 12,
+        "LE": 11,
+        "E": 4,
+        "N": 4,
+        "D": 4
+      }
+    },
+    "GODDA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 48.1,
+          "daily_mean_mm": 3.7,
+          "daily_normal_mean_mm": 7.22
+        },
+        "9": {
+          "total_mm": 286.5,
+          "daily_mean_mm": 9.55,
+          "daily_normal_mean_mm": 7.62
+        },
+        "10": {
+          "total_mm": 10.7,
+          "daily_mean_mm": 1.19,
+          "daily_normal_mean_mm": 5.63
+        }
+      },
+      "monsoon_total_mm": 345.3,
+      "monsoon_normal_mm": 373.1,
+      "overall_departure_pct": -7.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 345.3,
+          "monsoon_normal_mm": 373.1,
+          "percent_departure": -7.5
+        }
+      },
+      "mean_daily_departure_pct": -0.1,
+      "categories": {
+        "NR": 27,
+        "LE": 11,
+        "LD": 4,
+        "E": 4,
+        "N": 3,
+        "D": 3
+      }
+    },
+    "GUMLA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 112.1,
+          "daily_mean_mm": 8.62,
+          "daily_normal_mean_mm": 8.15
+        },
+        "9": {
+          "total_mm": 126.9,
+          "daily_mean_mm": 4.23,
+          "daily_normal_mean_mm": 7.5
+        },
+        "10": {
+          "total_mm": 5.3,
+          "daily_mean_mm": 0.59,
+          "daily_normal_mean_mm": 4.08
+        }
+      },
+      "monsoon_total_mm": 244.3,
+      "monsoon_normal_mm": 367.7,
+      "overall_departure_pct": -33.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 244.3,
+          "monsoon_normal_mm": 367.7,
+          "percent_departure": -33.6
+        }
+      },
+      "mean_daily_departure_pct": -0.31,
+      "categories": {
+        "NR": 17,
+        "LD": 16,
+        "D": 7,
+        "LE": 6,
+        "E": 4,
+        "N": 2
+      }
+    },
+    "GUNA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 63.5,
+          "daily_mean_mm": 4.88,
+          "daily_normal_mean_mm": 10.62
+        },
+        "9": {
+          "total_mm": 237.2,
+          "daily_mean_mm": 7.91,
+          "daily_normal_mean_mm": 4.88
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.01
+        }
+      },
+      "monsoon_total_mm": 300.7,
+      "monsoon_normal_mm": 302.6,
+      "overall_departure_pct": -0.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 300.7,
+          "monsoon_normal_mm": 302.6,
+          "percent_departure": -0.6
+        }
+      },
+      "mean_daily_departure_pct": 0.05,
+      "categories": {
+        "NR": 27,
+        "LD": 11,
+        "LE": 11,
+        "E": 2,
+        "D": 1
+      }
+    },
+    "GWALIOR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 96.2,
+          "daily_mean_mm": 7.4,
+          "daily_normal_mean_mm": 7.65
+        },
+        "9": {
+          "total_mm": 157.1,
+          "daily_mean_mm": 5.24,
+          "daily_normal_mean_mm": 4.8
+        },
+        "10": {
+          "total_mm": 1.0,
+          "daily_mean_mm": 0.11,
+          "daily_normal_mean_mm": 1.89
+        }
+      },
+      "monsoon_total_mm": 254.3,
+      "monsoon_normal_mm": 260.5,
+      "overall_departure_pct": -2.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 254.3,
+          "monsoon_normal_mm": 260.5,
+          "percent_departure": -2.4
+        }
+      },
+      "mean_daily_departure_pct": -0.03,
+      "categories": {
+        "NR": 26,
+        "LE": 11,
+        "LD": 8,
+        "D": 3,
+        "N": 3,
+        "E": 1
+      }
+    },
+    "HARDA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 28.3,
+          "daily_mean_mm": 2.18,
+          "daily_normal_mean_mm": 10.82
+        },
+        "9": {
+          "total_mm": 91.4,
+          "daily_mean_mm": 3.05,
+          "daily_normal_mean_mm": 5.62
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.33
+        }
+      },
+      "monsoon_total_mm": 119.7,
+      "monsoon_normal_mm": 330.4,
+      "overall_departure_pct": -63.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 119.7,
+          "monsoon_normal_mm": 330.4,
+          "percent_departure": -63.8
+        }
+      },
+      "mean_daily_departure_pct": -0.45,
+      "categories": {
+        "NR": 33,
+        "LD": 9,
+        "LE": 6,
+        "N": 2,
+        "E": 1,
+        "D": 1
+      }
+    },
+    "HAZARIBAGH": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 96.0,
+          "daily_mean_mm": 7.38,
+          "daily_normal_mean_mm": 8.44
+        },
+        "9": {
+          "total_mm": 263.1,
+          "daily_mean_mm": 8.77,
+          "daily_normal_mean_mm": 7.78
+        },
+        "10": {
+          "total_mm": 37.3,
+          "daily_mean_mm": 4.14,
+          "daily_normal_mean_mm": 4.84
+        }
+      },
+      "monsoon_total_mm": 396.4,
+      "monsoon_normal_mm": 386.8,
+      "overall_departure_pct": 2.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 396.4,
+          "monsoon_normal_mm": 386.8,
+          "percent_departure": 2.5
+        }
+      },
+      "mean_daily_departure_pct": -0.0,
+      "categories": {
+        "NR": 15,
+        "LE": 11,
+        "LD": 11,
+        "D": 7,
+        "N": 5,
+        "E": 3
+      }
+    },
+    "INDORE": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 25.2,
+          "daily_mean_mm": 1.94,
+          "daily_normal_mean_mm": 10.12
+        },
+        "9": {
+          "total_mm": 106.8,
+          "daily_mean_mm": 3.56,
+          "daily_normal_mean_mm": 5.31
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.18
+        }
+      },
+      "monsoon_total_mm": 132.0,
+      "monsoon_normal_mm": 310.3,
+      "overall_departure_pct": -57.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 132.0,
+          "monsoon_normal_mm": 310.3,
+          "percent_departure": -57.5
+        }
+      },
+      "mean_daily_departure_pct": -0.54,
+      "categories": {
+        "NR": 33,
+        "LD": 12,
+        "LE": 6,
+        "E": 1
+      }
+    },
+    "JABALPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 214.2,
+          "daily_mean_mm": 16.48,
+          "daily_normal_mean_mm": 11.93
+        },
+        "9": {
+          "total_mm": 222.0,
+          "daily_mean_mm": 7.4,
+          "daily_normal_mean_mm": 6.55
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.9
+        }
+      },
+      "monsoon_total_mm": 436.2,
+      "monsoon_normal_mm": 368.8,
+      "overall_departure_pct": 18.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 436.2,
+          "monsoon_normal_mm": 368.8,
+          "percent_departure": 18.3
+        }
+      },
+      "mean_daily_departure_pct": 0.27,
+      "categories": {
+        "NR": 14,
+        "LE": 12,
+        "LD": 10,
+        "N": 9,
+        "D": 7
+      }
+    },
+    "JAGATSINGHAPUR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 120.8,
+          "daily_mean_mm": 9.29,
+          "daily_normal_mean_mm": 10.68
+        },
+        "9": {
+          "total_mm": 287.9,
+          "daily_mean_mm": 9.6,
+          "daily_normal_mean_mm": 8.32
+        },
+        "10": {
+          "total_mm": 1.8,
+          "daily_mean_mm": 0.2,
+          "daily_normal_mean_mm": 8.37
+        }
+      },
+      "monsoon_total_mm": 410.5,
+      "monsoon_normal_mm": 463.8,
+      "overall_departure_pct": -11.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 410.5,
+          "monsoon_normal_mm": 463.8,
+          "percent_departure": -11.5
+        }
+      },
+      "mean_daily_departure_pct": 0.02,
+      "categories": {
+        "LD": 18,
+        "NR": 13,
+        "LE": 11,
+        "D": 5,
+        "N": 3,
+        "E": 2
+      }
+    },
+    "JAJAPUR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 105.2,
+          "daily_mean_mm": 8.09,
+          "daily_normal_mean_mm": 11.15
+        },
+        "9": {
+          "total_mm": 374.2,
+          "daily_mean_mm": 12.47,
+          "daily_normal_mean_mm": 9.19
+        },
+        "10": {
+          "total_mm": 4.3,
+          "daily_mean_mm": 0.48,
+          "daily_normal_mean_mm": 7.24
+        }
+      },
+      "monsoon_total_mm": 483.7,
+      "monsoon_normal_mm": 485.7,
+      "overall_departure_pct": -0.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 483.7,
+          "monsoon_normal_mm": 485.7,
+          "percent_departure": -0.4
+        }
+      },
+      "mean_daily_departure_pct": 0.14,
+      "categories": {
+        "NR": 24,
+        "LD": 10,
+        "LE": 10,
+        "D": 4,
+        "E": 2,
+        "N": 2
+      }
+    },
+    "JAMTARA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 111.6,
+          "daily_mean_mm": 8.58,
+          "daily_normal_mean_mm": 7.99
+        },
+        "9": {
+          "total_mm": 412.8,
+          "daily_mean_mm": 13.76,
+          "daily_normal_mean_mm": 8.09
+        },
+        "10": {
+          "total_mm": 11.7,
+          "daily_mean_mm": 1.3,
+          "daily_normal_mean_mm": 6.2
+        }
+      },
+      "monsoon_total_mm": 536.1,
+      "monsoon_normal_mm": 402.5,
+      "overall_departure_pct": 33.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 536.1,
+          "monsoon_normal_mm": 402.5,
+          "percent_departure": 33.2
+        }
+      },
+      "mean_daily_departure_pct": 0.39,
+      "categories": {
+        "NR": 21,
+        "LE": 13,
+        "LD": 9,
+        "E": 5,
+        "D": 3,
+        "N": 1
+      }
+    },
+    "JHABUA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 17.0,
+          "daily_mean_mm": 1.31,
+          "daily_normal_mean_mm": 9.76
+        },
+        "9": {
+          "total_mm": 94.2,
+          "daily_mean_mm": 3.14,
+          "daily_normal_mean_mm": 5.17
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.14
+        }
+      },
+      "monsoon_total_mm": 111.2,
+      "monsoon_normal_mm": 301.4,
+      "overall_departure_pct": -63.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 111.2,
+          "monsoon_normal_mm": 301.4,
+          "percent_departure": -63.1
+        }
+      },
+      "mean_daily_departure_pct": -0.56,
+      "categories": {
+        "NR": 30,
+        "LD": 12,
+        "LE": 5,
+        "D": 3,
+        "N": 2
+      }
+    },
+    "JHARSUGUDA": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 155.6,
+          "daily_mean_mm": 11.97,
+          "daily_normal_mean_mm": 10.49
+        },
+        "9": {
+          "total_mm": 127.3,
+          "daily_mean_mm": 4.24,
+          "daily_normal_mean_mm": 7.54
+        },
+        "10": {
+          "total_mm": 2.4,
+          "daily_mean_mm": 0.27,
+          "daily_normal_mean_mm": 3.43
+        }
+      },
+      "monsoon_total_mm": 285.3,
+      "monsoon_normal_mm": 393.6,
+      "overall_departure_pct": -27.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 285.3,
+          "monsoon_normal_mm": 393.6,
+          "percent_departure": -27.5
+        }
+      },
+      "mean_daily_departure_pct": -0.24,
+      "categories": {
+        "NR": 18,
+        "LD": 17,
+        "LE": 8,
+        "D": 5,
+        "N": 2,
+        "E": 2
+      }
+    },
+    "KALAHANDI": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 228.4,
+          "daily_mean_mm": 17.57,
+          "daily_normal_mean_mm": 13.2
+        },
+        "9": {
+          "total_mm": 351.0,
+          "daily_mean_mm": 11.7,
+          "daily_normal_mean_mm": 8.23
+        },
+        "10": {
+          "total_mm": 3.2,
+          "daily_mean_mm": 0.36,
+          "daily_normal_mean_mm": 4.18
+        }
+      },
+      "monsoon_total_mm": 582.6,
+      "monsoon_normal_mm": 456.1,
+      "overall_departure_pct": 27.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 582.6,
+          "monsoon_normal_mm": 456.1,
+          "percent_departure": 27.7
+        }
+      },
+      "mean_daily_departure_pct": 0.61,
+      "categories": {
+        "NR": 15,
+        "LD": 14,
+        "LE": 11,
+        "D": 8,
+        "E": 3,
+        "N": 1
+      }
+    },
+    "KANDHAMAL": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 107.0,
+          "daily_mean_mm": 8.23,
+          "daily_normal_mean_mm": 11.59
+        },
+        "9": {
+          "total_mm": 374.8,
+          "daily_mean_mm": 12.49,
+          "daily_normal_mean_mm": 8.78
+        },
+        "10": {
+          "total_mm": 6.9,
+          "daily_mean_mm": 0.77,
+          "daily_normal_mean_mm": 6.13
+        }
+      },
+      "monsoon_total_mm": 488.7,
+      "monsoon_normal_mm": 469.3,
+      "overall_departure_pct": 4.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 488.7,
+          "monsoon_normal_mm": 469.3,
+          "percent_departure": 4.1
+        }
+      },
+      "mean_daily_departure_pct": 0.2,
+      "categories": {
+        "LD": 16,
+        "NR": 15,
+        "LE": 14,
+        "N": 5,
+        "E": 1,
+        "D": 1
+      }
+    },
+    "KATNI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 229.3,
+          "daily_mean_mm": 17.64,
+          "daily_normal_mean_mm": 10.09
+        },
+        "9": {
+          "total_mm": 227.0,
+          "daily_mean_mm": 7.57,
+          "daily_normal_mean_mm": 5.43
+        },
+        "10": {
+          "total_mm": 0.2,
+          "daily_mean_mm": 0.02,
+          "daily_normal_mean_mm": 2.1
+        }
+      },
+      "monsoon_total_mm": 456.5,
+      "monsoon_normal_mm": 313.1,
+      "overall_departure_pct": 45.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 456.5,
+          "monsoon_normal_mm": 313.1,
+          "percent_departure": 45.8
+        }
+      },
+      "mean_daily_departure_pct": 2.31,
+      "categories": {
+        "LE": 17,
+        "LD": 12,
+        "NR": 11,
+        "D": 7,
+        "N": 3,
+        "E": 2
+      }
+    },
+    "KENDRAPARA": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 130.8,
+          "daily_mean_mm": 10.06,
+          "daily_normal_mean_mm": 9.98
+        },
+        "9": {
+          "total_mm": 379.4,
+          "daily_mean_mm": 12.65,
+          "daily_normal_mean_mm": 8.32
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 9.36
+        }
+      },
+      "monsoon_total_mm": 510.2,
+      "monsoon_normal_mm": 463.5,
+      "overall_departure_pct": 10.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 510.2,
+          "monsoon_normal_mm": 463.5,
+          "percent_departure": 10.1
+        }
+      },
+      "mean_daily_departure_pct": 0.29,
+      "categories": {
+        "NR": 22,
+        "LE": 13,
+        "LD": 12,
+        "D": 4,
+        "N": 1
+      }
+    },
+    "KENDUJHAR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 188.8,
+          "daily_mean_mm": 14.52,
+          "daily_normal_mean_mm": 10.35
+        },
+        "9": {
+          "total_mm": 338.8,
+          "daily_mean_mm": 11.29,
+          "daily_normal_mean_mm": 8.01
+        },
+        "10": {
+          "total_mm": 4.1,
+          "daily_mean_mm": 0.46,
+          "daily_normal_mean_mm": 5.17
+        }
+      },
+      "monsoon_total_mm": 531.7,
+      "monsoon_normal_mm": 421.3,
+      "overall_departure_pct": 26.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 531.7,
+          "monsoon_normal_mm": 421.3,
+          "percent_departure": 26.2
+        }
+      },
+      "mean_daily_departure_pct": 0.45,
+      "categories": {
+        "LD": 18,
+        "LE": 12,
+        "NR": 8,
+        "D": 7,
+        "N": 4,
+        "E": 3
+      }
+    },
+    "KHANDWA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 28.8,
+          "daily_mean_mm": 2.22,
+          "daily_normal_mean_mm": 7.25
+        },
+        "9": {
+          "total_mm": 104.4,
+          "daily_mean_mm": 3.48,
+          "daily_normal_mean_mm": 5.14
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.04
+        }
+      },
+      "monsoon_total_mm": 133.2,
+      "monsoon_normal_mm": 267.0,
+      "overall_departure_pct": -50.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 133.2,
+          "monsoon_normal_mm": 267.0,
+          "percent_departure": -50.1
+        }
+      },
+      "mean_daily_departure_pct": -0.53,
+      "categories": {
+        "NR": 33,
+        "LD": 7,
+        "LE": 5,
+        "N": 4,
+        "D": 2,
+        "E": 1
+      }
+    },
+    "KHARGONE": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 21.5,
+          "daily_mean_mm": 1.65,
+          "daily_normal_mean_mm": 7.22
+        },
+        "9": {
+          "total_mm": 117.7,
+          "daily_mean_mm": 3.92,
+          "daily_normal_mean_mm": 4.56
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.92
+        }
+      },
+      "monsoon_total_mm": 139.2,
+      "monsoon_normal_mm": 248.0,
+      "overall_departure_pct": -43.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 139.2,
+          "monsoon_normal_mm": 248.0,
+          "percent_departure": -43.9
+        }
+      },
+      "mean_daily_departure_pct": -0.33,
+      "categories": {
+        "NR": 31,
+        "LD": 8,
+        "LE": 7,
+        "D": 4,
+        "N": 2
+      }
+    },
+    "KHORDHA": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 146.3,
+          "daily_mean_mm": 11.25,
+          "daily_normal_mean_mm": 10.68
+        },
+        "9": {
+          "total_mm": 373.8,
+          "daily_mean_mm": 12.46,
+          "daily_normal_mean_mm": 8.04
+        },
+        "10": {
+          "total_mm": 3.7,
+          "daily_mean_mm": 0.41,
+          "daily_normal_mean_mm": 7.42
+        }
+      },
+      "monsoon_total_mm": 523.8,
+      "monsoon_normal_mm": 446.9,
+      "overall_departure_pct": 17.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 523.8,
+          "monsoon_normal_mm": 446.9,
+          "percent_departure": 17.2
+        }
+      },
+      "mean_daily_departure_pct": 0.34,
+      "categories": {
+        "NR": 14,
+        "LE": 11,
+        "D": 10,
+        "LD": 9,
+        "N": 6,
+        "E": 2
+      }
+    },
+    "KHUNTI": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 83.3,
+          "daily_mean_mm": 6.41,
+          "daily_normal_mean_mm": 10.29
+        },
+        "9": {
+          "total_mm": 218.7,
+          "daily_mean_mm": 7.29,
+          "daily_normal_mean_mm": 7.85
+        },
+        "10": {
+          "total_mm": 2.3,
+          "daily_mean_mm": 0.26,
+          "daily_normal_mean_mm": 4.52
+        }
+      },
+      "monsoon_total_mm": 304.3,
+      "monsoon_normal_mm": 409.9,
+      "overall_departure_pct": -25.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 304.3,
+          "monsoon_normal_mm": 409.9,
+          "percent_departure": -25.8
+        }
+      },
+      "mean_daily_departure_pct": -0.23,
+      "categories": {
+        "NR": 21,
+        "LD": 10,
+        "D": 8,
+        "LE": 6,
+        "E": 5,
+        "N": 2
+      }
+    },
+    "KODERMA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 74.9,
+          "daily_mean_mm": 5.76,
+          "daily_normal_mean_mm": 6.72
+        },
+        "9": {
+          "total_mm": 305.1,
+          "daily_mean_mm": 10.17,
+          "daily_normal_mean_mm": 7.24
+        },
+        "10": {
+          "total_mm": 36.6,
+          "daily_mean_mm": 4.07,
+          "daily_normal_mean_mm": 4.26
+        }
+      },
+      "monsoon_total_mm": 416.6,
+      "monsoon_normal_mm": 342.9,
+      "overall_departure_pct": 21.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 416.6,
+          "monsoon_normal_mm": 342.9,
+          "percent_departure": 21.5
+        }
+      },
+      "mean_daily_departure_pct": 0.16,
+      "categories": {
+        "NR": 19,
+        "LE": 14,
+        "LD": 8,
+        "D": 6,
+        "N": 4,
+        "E": 1
+      }
+    },
+    "KORAPUT": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 258.1,
+          "daily_mean_mm": 19.85,
+          "daily_normal_mean_mm": 10.81
+        },
+        "9": {
+          "total_mm": 567.4,
+          "daily_mean_mm": 18.91,
+          "daily_normal_mean_mm": 8.72
+        },
+        "10": {
+          "total_mm": 10.4,
+          "daily_mean_mm": 1.16,
+          "daily_normal_mean_mm": 6.18
+        }
+      },
+      "monsoon_total_mm": 835.9,
+      "monsoon_normal_mm": 457.7,
+      "overall_departure_pct": 82.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 835.9,
+          "monsoon_normal_mm": 457.7,
+          "percent_departure": 82.6
+        }
+      },
+      "mean_daily_departure_pct": 1.63,
+      "categories": {
+        "LE": 14,
+        "LD": 14,
+        "NR": 11,
+        "D": 9,
+        "N": 3,
+        "E": 1
+      }
+    },
+    "LATEHAR": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 381.8,
+          "daily_mean_mm": 29.37,
+          "daily_normal_mean_mm": 8.66
+        },
+        "9": {
+          "total_mm": 188.0,
+          "daily_mean_mm": 6.27,
+          "daily_normal_mean_mm": 6.85
+        },
+        "10": {
+          "total_mm": 24.0,
+          "daily_mean_mm": 2.67,
+          "daily_normal_mean_mm": 3.57
+        }
+      },
+      "monsoon_total_mm": 593.8,
+      "monsoon_normal_mm": 350.1,
+      "overall_departure_pct": 69.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 593.8,
+          "monsoon_normal_mm": 350.1,
+          "percent_departure": 69.6
+        }
+      },
+      "mean_daily_departure_pct": 0.61,
+      "categories": {
+        "NR": 22,
+        "LE": 16,
+        "LD": 9,
+        "E": 2,
+        "N": 2,
+        "D": 1
+      }
+    },
+    "LOHARDAGA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 160.4,
+          "daily_mean_mm": 12.34,
+          "daily_normal_mean_mm": 7.52
+        },
+        "9": {
+          "total_mm": 252.2,
+          "daily_mean_mm": 8.41,
+          "daily_normal_mean_mm": 6.86
+        },
+        "10": {
+          "total_mm": 36.2,
+          "daily_mean_mm": 4.02,
+          "daily_normal_mean_mm": 3.92
+        }
+      },
+      "monsoon_total_mm": 448.8,
+      "monsoon_normal_mm": 338.8,
+      "overall_departure_pct": 32.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 448.8,
+          "monsoon_normal_mm": 338.8,
+          "percent_departure": 32.5
+        }
+      },
+      "mean_daily_departure_pct": 0.48,
+      "categories": {
+        "NR": 23,
+        "LE": 16,
+        "D": 5,
+        "LD": 5,
+        "E": 2,
+        "ND": 1
+      }
+    },
+    "MALKANGIRI": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 198.2,
+          "daily_mean_mm": 15.25,
+          "daily_normal_mean_mm": 11.16
+        },
+        "9": {
+          "total_mm": 566.5,
+          "daily_mean_mm": 18.88,
+          "daily_normal_mean_mm": 8.27
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 5.58
+        }
+      },
+      "monsoon_total_mm": 764.7,
+      "monsoon_normal_mm": 443.5,
+      "overall_departure_pct": 72.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 764.7,
+          "monsoon_normal_mm": 443.5,
+          "percent_departure": 72.4
+        }
+      },
+      "mean_daily_departure_pct": 1.75,
+      "categories": {
+        "NR": 18,
+        "LE": 12,
+        "LD": 10,
+        "D": 8,
+        "N": 3,
+        "E": 1
+      }
+    },
+    "MANDLA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 237.8,
+          "daily_mean_mm": 18.29,
+          "daily_normal_mean_mm": 11.11
+        },
+        "9": {
+          "total_mm": 277.9,
+          "daily_mean_mm": 9.26,
+          "daily_normal_mean_mm": 6.56
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.32
+        }
+      },
+      "monsoon_total_mm": 515.7,
+      "monsoon_normal_mm": 362.0,
+      "overall_departure_pct": 42.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 515.7,
+          "monsoon_normal_mm": 362.0,
+          "percent_departure": 42.5
+        }
+      },
+      "mean_daily_departure_pct": 0.85,
+      "categories": {
+        "LE": 13,
+        "NR": 13,
+        "LD": 11,
+        "D": 9,
+        "N": 4,
+        "E": 2
+      }
+    },
+    "MANDSAUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 70.6,
+          "daily_mean_mm": 5.43,
+          "daily_normal_mean_mm": 9.86
+        },
+        "9": {
+          "total_mm": 162.7,
+          "daily_mean_mm": 5.42,
+          "daily_normal_mean_mm": 4.35
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.46
+        }
+      },
+      "monsoon_total_mm": 233.3,
+      "monsoon_normal_mm": 271.7,
+      "overall_departure_pct": -14.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 233.3,
+          "monsoon_normal_mm": 271.7,
+          "percent_departure": -14.1
+        }
+      },
+      "mean_daily_departure_pct": -0.04,
+      "categories": {
+        "NR": 38,
+        "LE": 10,
+        "LD": 2,
+        "N": 1,
+        "D": 1
+      }
+    },
+    "MAYURBHANJ": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 229.6,
+          "daily_mean_mm": 17.66,
+          "daily_normal_mean_mm": 10.84
+        },
+        "9": {
+          "total_mm": 468.9,
+          "daily_mean_mm": 15.63,
+          "daily_normal_mean_mm": 8.51
+        },
+        "10": {
+          "total_mm": 16.3,
+          "daily_mean_mm": 1.81,
+          "daily_normal_mean_mm": 5.58
+        }
+      },
+      "monsoon_total_mm": 714.8,
+      "monsoon_normal_mm": 446.5,
+      "overall_departure_pct": 60.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 714.8,
+          "monsoon_normal_mm": 446.5,
+          "percent_departure": 60.1
+        }
+      },
+      "mean_daily_departure_pct": 0.78,
+      "categories": {
+        "LE": 16,
+        "LD": 15,
+        "D": 8,
+        "NR": 7,
+        "N": 4,
+        "E": 2
+      }
+    },
+    "MORENA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 99.5,
+          "daily_mean_mm": 7.65,
+          "daily_normal_mean_mm": 6.46
+        },
+        "9": {
+          "total_mm": 207.4,
+          "daily_mean_mm": 6.91,
+          "daily_normal_mean_mm": 3.56
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.48
+        }
+      },
+      "monsoon_total_mm": 306.9,
+      "monsoon_normal_mm": 204.1,
+      "overall_departure_pct": 50.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 306.9,
+          "monsoon_normal_mm": 204.1,
+          "percent_departure": 50.4
+        }
+      },
+      "mean_daily_departure_pct": 0.2,
+      "categories": {
+        "NR": 30,
+        "LE": 13,
+        "N": 3,
+        "D": 2,
+        "E": 2,
+        "LD": 2
+      }
+    },
+    "NABARANGAPUR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 311.8,
+          "daily_mean_mm": 23.98,
+          "daily_normal_mean_mm": 13.81
+        },
+        "9": {
+          "total_mm": 545.7,
+          "daily_mean_mm": 18.19,
+          "daily_normal_mean_mm": 8.8
+        },
+        "10": {
+          "total_mm": 1.7,
+          "daily_mean_mm": 0.19,
+          "daily_normal_mean_mm": 4.98
+        }
+      },
+      "monsoon_total_mm": 859.2,
+      "monsoon_normal_mm": 488.2,
+      "overall_departure_pct": 76.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 859.2,
+          "monsoon_normal_mm": 488.2,
+          "percent_departure": 76.0
+        }
+      },
+      "mean_daily_departure_pct": 1.61,
+      "categories": {
+        "LD": 19,
+        "NR": 13,
+        "LE": 12,
+        "D": 7,
+        "E": 1
+      }
+    },
+    "NARMADAPURAM": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 115.9,
+          "daily_mean_mm": 8.92,
+          "daily_normal_mean_mm": 15.06
+        },
+        "9": {
+          "total_mm": 150.4,
+          "daily_mean_mm": 5.01,
+          "daily_normal_mean_mm": 6.89
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.61
+        }
+      },
+      "monsoon_total_mm": 266.3,
+      "monsoon_normal_mm": 417.1,
+      "overall_departure_pct": -36.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 266.3,
+          "monsoon_normal_mm": 417.1,
+          "percent_departure": -36.2
+        }
+      },
+      "mean_daily_departure_pct": -0.37,
+      "categories": {
+        "NR": 18,
+        "LD": 10,
+        "E": 9,
+        "D": 8,
+        "LE": 5,
+        "N": 2
+      }
+    },
+    "NARSINGHPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 163.4,
+          "daily_mean_mm": 12.57,
+          "daily_normal_mean_mm": 12.84
+        },
+        "9": {
+          "total_mm": 245.8,
+          "daily_mean_mm": 8.19,
+          "daily_normal_mean_mm": 6.2
+        },
+        "10": {
+          "total_mm": 2.6,
+          "daily_mean_mm": 0.29,
+          "daily_normal_mean_mm": 1.68
+        }
+      },
+      "monsoon_total_mm": 411.8,
+      "monsoon_normal_mm": 367.9,
+      "overall_departure_pct": 11.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 411.8,
+          "monsoon_normal_mm": 367.9,
+          "percent_departure": 11.9
+        }
+      },
+      "mean_daily_departure_pct": 0.27,
+      "categories": {
+        "NR": 16,
+        "LE": 14,
+        "LD": 10,
+        "D": 5,
+        "N": 5,
+        "E": 2
+      }
+    },
+    "NAYAGARH": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 85.6,
+          "daily_mean_mm": 6.58,
+          "daily_normal_mean_mm": 9.7
+        },
+        "9": {
+          "total_mm": 349.8,
+          "daily_mean_mm": 11.66,
+          "daily_normal_mean_mm": 7.86
+        },
+        "10": {
+          "total_mm": 9.0,
+          "daily_mean_mm": 1.0,
+          "daily_normal_mean_mm": 6.94
+        }
+      },
+      "monsoon_total_mm": 444.4,
+      "monsoon_normal_mm": 424.4,
+      "overall_departure_pct": 4.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 444.4,
+          "monsoon_normal_mm": 424.4,
+          "percent_departure": 4.7
+        }
+      },
+      "mean_daily_departure_pct": 0.12,
+      "categories": {
+        "LD": 20,
+        "LE": 10,
+        "NR": 10,
+        "N": 7,
+        "D": 4,
+        "E": 1
+      }
+    },
+    "NEEMUCH": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 64.4,
+          "daily_mean_mm": 4.95,
+          "daily_normal_mean_mm": 9.16
+        },
+        "9": {
+          "total_mm": 113.2,
+          "daily_mean_mm": 3.77,
+          "daily_normal_mean_mm": 3.88
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 0.97
+        }
+      },
+      "monsoon_total_mm": 177.6,
+      "monsoon_normal_mm": 244.2,
+      "overall_departure_pct": -27.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 177.6,
+          "monsoon_normal_mm": 244.2,
+          "percent_departure": -27.3
+        }
+      },
+      "mean_daily_departure_pct": -0.04,
+      "categories": {
+        "NR": 36,
+        "LE": 7,
+        "LD": 5,
+        "D": 2,
+        "E": 2
+      }
+    },
+    "NIWARI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 530.5,
+          "daily_mean_mm": 40.81,
+          "daily_normal_mean_mm": 9.98
+        },
+        "9": {
+          "total_mm": 236.8,
+          "daily_mean_mm": 7.89,
+          "daily_normal_mean_mm": 4.81
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.39
+        }
+      },
+      "monsoon_total_mm": 767.3,
+      "monsoon_normal_mm": 295.6,
+      "overall_departure_pct": 159.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 767.3,
+          "monsoon_normal_mm": 295.6,
+          "percent_departure": 159.6
+        }
+      },
+      "mean_daily_departure_pct": 3.79,
+      "categories": {
+        "NR": 31,
+        "LE": 14,
+        "E": 3,
+        "LD": 2,
+        "N": 1,
+        "D": 1
+      }
+    },
+    "NUAPADA": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 92.3,
+          "daily_mean_mm": 7.1,
+          "daily_normal_mean_mm": 10.61
+        },
+        "9": {
+          "total_mm": 337.4,
+          "daily_mean_mm": 11.25,
+          "daily_normal_mean_mm": 6.34
+        },
+        "10": {
+          "total_mm": 1.0,
+          "daily_mean_mm": 0.11,
+          "daily_normal_mean_mm": 3.63
+        }
+      },
+      "monsoon_total_mm": 430.7,
+      "monsoon_normal_mm": 360.7,
+      "overall_departure_pct": 19.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 430.7,
+          "monsoon_normal_mm": 360.7,
+          "percent_departure": 19.4
+        }
+      },
+      "mean_daily_departure_pct": 0.7,
+      "categories": {
+        "NR": 22,
+        "LD": 17,
+        "LE": 11,
+        "N": 2
+      }
+    },
+    "PAKUR": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 77.3,
+          "daily_mean_mm": 5.95,
+          "daily_normal_mean_mm": 9.42
+        },
+        "9": {
+          "total_mm": 155.5,
+          "daily_mean_mm": 5.18,
+          "daily_normal_mean_mm": 10.76
+        },
+        "10": {
+          "total_mm": 0.3,
+          "daily_mean_mm": 0.03,
+          "daily_normal_mean_mm": 7.7
+        }
+      },
+      "monsoon_total_mm": 233.1,
+      "monsoon_normal_mm": 514.6,
+      "overall_departure_pct": -54.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 233.1,
+          "monsoon_normal_mm": 514.6,
+          "percent_departure": -54.7
+        }
+      },
+      "mean_daily_departure_pct": -0.5,
+      "categories": {
+        "NR": 23,
+        "LD": 10,
+        "D": 9,
+        "LE": 5,
+        "E": 4,
+        "N": 1
+      }
+    },
+    "PALAMU": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 201.9,
+          "daily_mean_mm": 15.53,
+          "daily_normal_mean_mm": 7.75
+        },
+        "9": {
+          "total_mm": 175.3,
+          "daily_mean_mm": 5.84,
+          "daily_normal_mean_mm": 6.23
+        },
+        "10": {
+          "total_mm": 17.6,
+          "daily_mean_mm": 1.96,
+          "daily_normal_mean_mm": 2.57
+        }
+      },
+      "monsoon_total_mm": 394.8,
+      "monsoon_normal_mm": 310.7,
+      "overall_departure_pct": 27.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 394.8,
+          "monsoon_normal_mm": 310.7,
+          "percent_departure": 27.1
+        }
+      },
+      "mean_daily_departure_pct": 0.15,
+      "categories": {
+        "NR": 15,
+        "LD": 13,
+        "LE": 12,
+        "E": 6,
+        "D": 4,
+        "ND": 1,
+        "N": 1
+      }
+    },
+    "PANNA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 301.0,
+          "daily_mean_mm": 23.15,
+          "daily_normal_mean_mm": 11.07
+        },
+        "9": {
+          "total_mm": 402.3,
+          "daily_mean_mm": 13.41,
+          "daily_normal_mean_mm": 6.99
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.38
+        }
+      },
+      "monsoon_total_mm": 703.3,
+      "monsoon_normal_mm": 375.0,
+      "overall_departure_pct": 87.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 703.3,
+          "monsoon_normal_mm": 375.0,
+          "percent_departure": 87.5
+        }
+      },
+      "mean_daily_departure_pct": 1.72,
+      "categories": {
+        "NR": 16,
+        "LE": 14,
+        "LD": 9,
+        "E": 7,
+        "N": 3,
+        "D": 3
+      }
+    },
+    "PURI": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 159.3,
+          "daily_mean_mm": 12.25,
+          "daily_normal_mean_mm": 10.48
+        },
+        "9": {
+          "total_mm": 336.1,
+          "daily_mean_mm": 11.2,
+          "daily_normal_mean_mm": 8.15
+        },
+        "10": {
+          "total_mm": 2.0,
+          "daily_mean_mm": 0.22,
+          "daily_normal_mean_mm": 7.92
+        }
+      },
+      "monsoon_total_mm": 497.4,
+      "monsoon_normal_mm": 452.2,
+      "overall_departure_pct": 10.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 497.4,
+          "monsoon_normal_mm": 452.2,
+          "percent_departure": 10.0
+        }
+      },
+      "mean_daily_departure_pct": 0.3,
+      "categories": {
+        "LE": 16,
+        "LD": 15,
+        "NR": 14,
+        "D": 5,
+        "E": 1,
+        "N": 1
+      }
+    },
+    "RAISEN": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 65.2,
+          "daily_mean_mm": 5.02,
+          "daily_normal_mean_mm": 12.65
+        },
+        "9": {
+          "total_mm": 168.8,
+          "daily_mean_mm": 5.63,
+          "daily_normal_mean_mm": 5.96
+        },
+        "10": {
+          "total_mm": 0.9,
+          "daily_mean_mm": 0.1,
+          "daily_normal_mean_mm": 1.88
+        }
+      },
+      "monsoon_total_mm": 234.9,
+      "monsoon_normal_mm": 360.1,
+      "overall_departure_pct": -34.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 234.9,
+          "monsoon_normal_mm": 360.1,
+          "percent_departure": -34.8
+        }
+      },
+      "mean_daily_departure_pct": -0.36,
+      "categories": {
+        "LD": 16,
+        "NR": 16,
+        "D": 8,
+        "LE": 7,
+        "N": 4,
+        "E": 1
+      }
+    },
+    "RAJGARH": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 86.3,
+          "daily_mean_mm": 6.64,
+          "daily_normal_mean_mm": 11.52
+        },
+        "9": {
+          "total_mm": 206.4,
+          "daily_mean_mm": 6.88,
+          "daily_normal_mean_mm": 4.31
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.78
+        }
+      },
+      "monsoon_total_mm": 292.7,
+      "monsoon_normal_mm": 295.0,
+      "overall_departure_pct": -0.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 292.7,
+          "monsoon_normal_mm": 295.0,
+          "percent_departure": -0.8
+        }
+      },
+      "mean_daily_departure_pct": 0.11,
+      "categories": {
+        "NR": 30,
+        "LE": 9,
+        "LD": 8,
+        "D": 2,
+        "E": 2,
+        "N": 1
+      }
+    },
+    "RAMGARH": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 146.8,
+          "daily_mean_mm": 11.29,
+          "daily_normal_mean_mm": 8.61
+        },
+        "9": {
+          "total_mm": 341.6,
+          "daily_mean_mm": 11.39,
+          "daily_normal_mean_mm": 7.26
+        },
+        "10": {
+          "total_mm": 15.1,
+          "daily_mean_mm": 1.68,
+          "daily_normal_mean_mm": 4.22
+        }
+      },
+      "monsoon_total_mm": 503.5,
+      "monsoon_normal_mm": 367.7,
+      "overall_departure_pct": 36.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 503.5,
+          "monsoon_normal_mm": 367.7,
+          "percent_departure": 36.9
+        }
+      },
+      "mean_daily_departure_pct": 0.41,
+      "categories": {
+        "NR": 17,
+        "LE": 12,
+        "LD": 10,
+        "D": 7,
+        "E": 4,
+        "N": 2
+      }
+    },
+    "RANCHI": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 162.4,
+          "daily_mean_mm": 12.49,
+          "daily_normal_mean_mm": 8.28
+        },
+        "9": {
+          "total_mm": 333.1,
+          "daily_mean_mm": 11.1,
+          "daily_normal_mean_mm": 7.08
+        },
+        "10": {
+          "total_mm": 9.9,
+          "daily_mean_mm": 1.1,
+          "daily_normal_mean_mm": 3.47
+        }
+      },
+      "monsoon_total_mm": 505.4,
+      "monsoon_normal_mm": 351.2,
+      "overall_departure_pct": 43.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 505.4,
+          "monsoon_normal_mm": 351.2,
+          "percent_departure": 43.9
+        }
+      },
+      "mean_daily_departure_pct": 0.39,
+      "categories": {
+        "NR": 16,
+        "LE": 15,
+        "LD": 10,
+        "E": 4,
+        "D": 4,
+        "N": 3
+      }
+    },
+    "RATLAM": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 30.4,
+          "daily_mean_mm": 2.34,
+          "daily_normal_mean_mm": 11.92
+        },
+        "9": {
+          "total_mm": 101.7,
+          "daily_mean_mm": 3.39,
+          "daily_normal_mean_mm": 4.67
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.33
+        }
+      },
+      "monsoon_total_mm": 132.1,
+      "monsoon_normal_mm": 316.1,
+      "overall_departure_pct": -58.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 132.1,
+          "monsoon_normal_mm": 316.1,
+          "percent_departure": -58.2
+        }
+      },
+      "mean_daily_departure_pct": -0.45,
+      "categories": {
+        "NR": 37,
+        "LE": 6,
+        "LD": 4,
+        "N": 4,
+        "D": 1
+      }
+    },
+    "RAYAGADA": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 181.3,
+          "daily_mean_mm": 13.95,
+          "daily_normal_mean_mm": 8.82
+        },
+        "9": {
+          "total_mm": 269.1,
+          "daily_mean_mm": 8.97,
+          "daily_normal_mean_mm": 6.68
+        },
+        "10": {
+          "total_mm": 0.3,
+          "daily_mean_mm": 0.03,
+          "daily_normal_mean_mm": 5.38
+        }
+      },
+      "monsoon_total_mm": 450.7,
+      "monsoon_normal_mm": 363.4,
+      "overall_departure_pct": 24.0,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 450.7,
+          "monsoon_normal_mm": 363.4,
+          "percent_departure": 24.0
+        }
+      },
+      "mean_daily_departure_pct": 0.42,
+      "categories": {
+        "LD": 19,
+        "NR": 13,
+        "LE": 12,
+        "D": 4,
+        "N": 2,
+        "E": 2
+      }
+    },
+    "REWA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 311.3,
+          "daily_mean_mm": 23.95,
+          "daily_normal_mean_mm": 8.85
+        },
+        "9": {
+          "total_mm": 225.3,
+          "daily_mean_mm": 7.51,
+          "daily_normal_mean_mm": 7.1
+        },
+        "10": {
+          "total_mm": 0.3,
+          "daily_mean_mm": 0.03,
+          "daily_normal_mean_mm": 2.94
+        }
+      },
+      "monsoon_total_mm": 536.9,
+      "monsoon_normal_mm": 354.4,
+      "overall_departure_pct": 51.5,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 536.9,
+          "monsoon_normal_mm": 354.4,
+          "percent_departure": 51.5
+        }
+      },
+      "mean_daily_departure_pct": 0.49,
+      "categories": {
+        "LD": 15,
+        "LE": 14,
+        "NR": 14,
+        "D": 4,
+        "N": 3,
+        "E": 2
+      }
+    },
+    "SAGAR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 166.4,
+          "daily_mean_mm": 12.8,
+          "daily_normal_mean_mm": 11.55
+        },
+        "9": {
+          "total_mm": 234.9,
+          "daily_mean_mm": 7.83,
+          "daily_normal_mean_mm": 5.76
+        },
+        "10": {
+          "total_mm": 0.2,
+          "daily_mean_mm": 0.02,
+          "daily_normal_mean_mm": 1.72
+        }
+      },
+      "monsoon_total_mm": 401.5,
+      "monsoon_normal_mm": 338.5,
+      "overall_departure_pct": 18.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 401.5,
+          "monsoon_normal_mm": 338.5,
+          "percent_departure": 18.6
+        }
+      },
+      "mean_daily_departure_pct": 0.09,
+      "categories": {
+        "LE": 14,
+        "NR": 13,
+        "D": 11,
+        "LD": 8,
+        "N": 4,
+        "E": 2
+      }
+    },
+    "SAHEBGANJ": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 8.68
+        },
+        "9": {
+          "total_mm": 19.2,
+          "daily_mean_mm": 0.64,
+          "daily_normal_mean_mm": 10.58
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 6.78
+        }
+      },
+      "monsoon_total_mm": 19.2,
+      "monsoon_normal_mm": 491.3,
+      "overall_departure_pct": -96.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 19.2,
+          "monsoon_normal_mm": 491.3,
+          "percent_departure": -96.1
+        }
+      },
+      "mean_daily_departure_pct": -0.72,
+      "categories": {
+        "ND": 43,
+        "NR": 8,
+        "LE": 1
+      }
+    },
+    "SAMBALPUR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 145.3,
+          "daily_mean_mm": 11.18,
+          "daily_normal_mean_mm": 11.85
+        },
+        "9": {
+          "total_mm": 175.1,
+          "daily_mean_mm": 5.84,
+          "daily_normal_mean_mm": 7.54
+        },
+        "10": {
+          "total_mm": 2.0,
+          "daily_mean_mm": 0.22,
+          "daily_normal_mean_mm": 3.12
+        }
+      },
+      "monsoon_total_mm": 322.4,
+      "monsoon_normal_mm": 408.5,
+      "overall_departure_pct": -21.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 322.4,
+          "monsoon_normal_mm": 408.5,
+          "percent_departure": -21.1
+        }
+      },
+      "mean_daily_departure_pct": -0.18,
+      "categories": {
+        "LD": 18,
+        "NR": 13,
+        "LE": 9,
+        "D": 6,
+        "N": 4,
+        "E": 2
+      }
+    },
+    "SARAIKELA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 165.1,
+          "daily_mean_mm": 12.7,
+          "daily_normal_mean_mm": 7.9
+        },
+        "9": {
+          "total_mm": 356.0,
+          "daily_mean_mm": 11.87,
+          "daily_normal_mean_mm": 7.24
+        },
+        "10": {
+          "total_mm": 40.6,
+          "daily_mean_mm": 4.51,
+          "daily_normal_mean_mm": 2.8
+        }
+      },
+      "monsoon_total_mm": 561.7,
+      "monsoon_normal_mm": 345.1,
+      "overall_departure_pct": 62.8,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 561.7,
+          "monsoon_normal_mm": 345.1,
+          "percent_departure": 62.8
+        }
+      },
+      "mean_daily_departure_pct": 1.07,
+      "categories": {
+        "NR": 26,
+        "LE": 14,
+        "ND": 6,
+        "LD": 3,
+        "D": 2,
+        "E": 1
+      }
+    },
+    "SATNA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 431.8,
+          "daily_mean_mm": 33.22,
+          "daily_normal_mean_mm": 8.52
+        },
+        "9": {
+          "total_mm": 392.6,
+          "daily_mean_mm": 13.09,
+          "daily_normal_mean_mm": 6.18
+        },
+        "10": {
+          "total_mm": 0.1,
+          "daily_mean_mm": 0.01,
+          "daily_normal_mean_mm": 2.43
+        }
+      },
+      "monsoon_total_mm": 824.5,
+      "monsoon_normal_mm": 318.0,
+      "overall_departure_pct": 159.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 824.5,
+          "monsoon_normal_mm": 318.0,
+          "percent_departure": 159.3
+        }
+      },
+      "mean_daily_departure_pct": 1.31,
+      "categories": {
+        "LE": 19,
+        "NR": 16,
+        "LD": 9,
+        "E": 4,
+        "D": 3,
+        "N": 1
+      }
+    },
+    "SEHORE": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 69.7,
+          "daily_mean_mm": 5.36,
+          "daily_normal_mean_mm": 13.46
+        },
+        "9": {
+          "total_mm": 112.0,
+          "daily_mean_mm": 3.73,
+          "daily_normal_mean_mm": 5.81
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.49
+        }
+      },
+      "monsoon_total_mm": 181.7,
+      "monsoon_normal_mm": 362.8,
+      "overall_departure_pct": -49.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 181.7,
+          "monsoon_normal_mm": 362.8,
+          "percent_departure": -49.9
+        }
+      },
+      "mean_daily_departure_pct": -0.53,
+      "categories": {
+        "NR": 22,
+        "LD": 13,
+        "D": 6,
+        "LE": 5,
+        "E": 3,
+        "N": 3
+      }
+    },
+    "SEONI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 53.2,
+          "daily_mean_mm": 4.09,
+          "daily_normal_mean_mm": 9.48
+        },
+        "9": {
+          "total_mm": 163.7,
+          "daily_mean_mm": 5.46,
+          "daily_normal_mean_mm": 5.8
+        },
+        "10": {
+          "total_mm": 2.2,
+          "daily_mean_mm": 0.24,
+          "daily_normal_mean_mm": 2.71
+        }
+      },
+      "monsoon_total_mm": 219.1,
+      "monsoon_normal_mm": 321.7,
+      "overall_departure_pct": -31.9,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 219.1,
+          "monsoon_normal_mm": 321.7,
+          "percent_departure": -31.9
+        }
+      },
+      "mean_daily_departure_pct": -0.26,
+      "categories": {
+        "NR": 18,
+        "LD": 16,
+        "LE": 6,
+        "D": 5,
+        "E": 4,
+        "N": 3
+      }
+    },
+    "SHAHDOL": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 301.6,
+          "daily_mean_mm": 23.2,
+          "daily_normal_mean_mm": 10.55
+        },
+        "9": {
+          "total_mm": 246.6,
+          "daily_mean_mm": 8.22,
+          "daily_normal_mean_mm": 6.3
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 2.24
+        }
+      },
+      "monsoon_total_mm": 548.2,
+      "monsoon_normal_mm": 346.3,
+      "overall_departure_pct": 58.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 548.2,
+          "monsoon_normal_mm": 346.3,
+          "percent_departure": 58.3
+        }
+      },
+      "mean_daily_departure_pct": 0.51,
+      "categories": {
+        "LE": 18,
+        "NR": 18,
+        "LD": 7,
+        "D": 6,
+        "E": 2,
+        "N": 1
+      }
+    },
+    "SHAJAPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 58.3,
+          "daily_mean_mm": 4.48,
+          "daily_normal_mean_mm": 10.65
+        },
+        "9": {
+          "total_mm": 142.0,
+          "daily_mean_mm": 4.73,
+          "daily_normal_mean_mm": 4.84
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.37
+        }
+      },
+      "monsoon_total_mm": 200.3,
+      "monsoon_normal_mm": 295.8,
+      "overall_departure_pct": -32.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 200.3,
+          "monsoon_normal_mm": 295.8,
+          "percent_departure": -32.3
+        }
+      },
+      "mean_daily_departure_pct": -0.21,
+      "categories": {
+        "NR": 30,
+        "LE": 9,
+        "LD": 7,
+        "D": 3,
+        "N": 2,
+        "E": 1
+      }
+    },
+    "SHEOPUR": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 85.6,
+          "daily_mean_mm": 6.58,
+          "daily_normal_mean_mm": 6.92
+        },
+        "9": {
+          "total_mm": 235.7,
+          "daily_mean_mm": 7.86,
+          "daily_normal_mean_mm": 3.03
+        },
+        "10": {
+          "total_mm": 2.8,
+          "daily_mean_mm": 0.31,
+          "daily_normal_mean_mm": 0.94
+        }
+      },
+      "monsoon_total_mm": 324.1,
+      "monsoon_normal_mm": 189.3,
+      "overall_departure_pct": 71.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 324.1,
+          "monsoon_normal_mm": 189.3,
+          "percent_departure": 71.2
+        }
+      },
+      "mean_daily_departure_pct": 1.55,
+      "categories": {
+        "NR": 30,
+        "LE": 11,
+        "D": 4,
+        "LD": 3,
+        "E": 3,
+        "N": 1
+      }
+    },
+    "SHIVPURI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 174.1,
+          "daily_mean_mm": 13.39,
+          "daily_normal_mean_mm": 7.68
+        },
+        "9": {
+          "total_mm": 280.4,
+          "daily_mean_mm": 9.35,
+          "daily_normal_mean_mm": 4.34
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.82
+        }
+      },
+      "monsoon_total_mm": 454.5,
+      "monsoon_normal_mm": 246.5,
+      "overall_departure_pct": 84.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 454.5,
+          "monsoon_normal_mm": 246.5,
+          "percent_departure": 84.4
+        }
+      },
+      "mean_daily_departure_pct": 0.75,
+      "categories": {
+        "NR": 20,
+        "LE": 13,
+        "LD": 8,
+        "D": 5,
+        "N": 3,
+        "E": 3
+      }
+    },
+    "SIDHI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 244.5,
+          "daily_mean_mm": 18.81,
+          "daily_normal_mean_mm": 11.14
+        },
+        "9": {
+          "total_mm": 255.4,
+          "daily_mean_mm": 8.51,
+          "daily_normal_mean_mm": 7.76
+        },
+        "10": {
+          "total_mm": 2.1,
+          "daily_mean_mm": 0.23,
+          "daily_normal_mean_mm": 2.81
+        }
+      },
+      "monsoon_total_mm": 502.0,
+      "monsoon_normal_mm": 402.9,
+      "overall_departure_pct": 24.6,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 502.0,
+          "monsoon_normal_mm": 402.9,
+          "percent_departure": 24.6
+        }
+      },
+      "mean_daily_departure_pct": 0.12,
+      "categories": {
+        "NR": 15,
+        "LE": 13,
+        "LD": 10,
+        "D": 6,
+        "N": 5,
+        "E": 3
+      }
+    },
+    "SIMDEGA": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 130.5,
+          "daily_mean_mm": 10.04,
+          "daily_normal_mean_mm": 10.67
+        },
+        "9": {
+          "total_mm": 244.4,
+          "daily_mean_mm": 8.15,
+          "daily_normal_mean_mm": 8.8
+        },
+        "10": {
+          "total_mm": 18.1,
+          "daily_mean_mm": 2.01,
+          "daily_normal_mean_mm": 3.98
+        }
+      },
+      "monsoon_total_mm": 393.0,
+      "monsoon_normal_mm": 438.5,
+      "overall_departure_pct": -10.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 393.0,
+          "monsoon_normal_mm": 438.5,
+          "percent_departure": -10.4
+        }
+      },
+      "mean_daily_departure_pct": -0.02,
+      "categories": {
+        "LD": 15,
+        "D": 11,
+        "LE": 10,
+        "NR": 8,
+        "E": 4,
+        "N": 4
+      }
+    },
+    "SINGRAULI": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 237.3,
+          "daily_mean_mm": 18.25,
+          "daily_normal_mean_mm": 10.79
+        },
+        "9": {
+          "total_mm": 267.0,
+          "daily_mean_mm": 8.9,
+          "daily_normal_mean_mm": 6.32
+        },
+        "10": {
+          "total_mm": 6.3,
+          "daily_mean_mm": 0.7,
+          "daily_normal_mean_mm": 2.64
+        }
+      },
+      "monsoon_total_mm": 510.6,
+      "monsoon_normal_mm": 353.6,
+      "overall_departure_pct": 44.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 510.6,
+          "monsoon_normal_mm": 353.6,
+          "percent_departure": 44.4
+        }
+      },
+      "mean_daily_departure_pct": 0.42,
+      "categories": {
+        "LE": 16,
+        "NR": 15,
+        "LD": 8,
+        "D": 7,
+        "E": 3,
+        "N": 3
+      }
+    },
+    "SUBARNAPUR": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 64.0,
+          "daily_mean_mm": 4.92,
+          "daily_normal_mean_mm": 13.02
+        },
+        "9": {
+          "total_mm": 179.1,
+          "daily_mean_mm": 5.97,
+          "daily_normal_mean_mm": 7.16
+        },
+        "10": {
+          "total_mm": 3.8,
+          "daily_mean_mm": 0.42,
+          "daily_normal_mean_mm": 2.52
+        }
+      },
+      "monsoon_total_mm": 246.9,
+      "monsoon_normal_mm": 406.7,
+      "overall_departure_pct": -39.3,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 246.9,
+          "monsoon_normal_mm": 406.7,
+          "percent_departure": -39.3
+        }
+      },
+      "mean_daily_departure_pct": -0.19,
+      "categories": {
+        "NR": 19,
+        "LD": 16,
+        "LE": 9,
+        "N": 4,
+        "D": 2,
+        "E": 2
+      }
+    },
+    "SUNDARGARH": {
+      "state": "ODISHA",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 189.4,
+          "daily_mean_mm": 14.57,
+          "daily_normal_mean_mm": 11.14
+        },
+        "9": {
+          "total_mm": 170.3,
+          "daily_mean_mm": 5.68,
+          "daily_normal_mean_mm": 7.31
+        },
+        "10": {
+          "total_mm": 7.0,
+          "daily_mean_mm": 0.78,
+          "daily_normal_mean_mm": 3.23
+        }
+      },
+      "monsoon_total_mm": 366.7,
+      "monsoon_normal_mm": 393.2,
+      "overall_departure_pct": -6.7,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 366.7,
+          "monsoon_normal_mm": 393.2,
+          "percent_departure": -6.7
+        }
+      },
+      "mean_daily_departure_pct": -0.05,
+      "categories": {
+        "LD": 22,
+        "LE": 10,
+        "NR": 10,
+        "D": 4,
+        "E": 4,
+        "N": 2
+      }
+    },
+    "TIKAMGARH": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 289.5,
+          "daily_mean_mm": 22.27,
+          "daily_normal_mean_mm": 9.04
+        },
+        "9": {
+          "total_mm": 230.4,
+          "daily_mean_mm": 7.68,
+          "daily_normal_mean_mm": 4.89
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.69
+        }
+      },
+      "monsoon_total_mm": 519.9,
+      "monsoon_normal_mm": 279.3,
+      "overall_departure_pct": 86.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 519.9,
+          "monsoon_normal_mm": 279.3,
+          "percent_departure": 86.1
+        }
+      },
+      "mean_daily_departure_pct": 0.5,
+      "categories": {
+        "NR": 22,
+        "LE": 18,
+        "LD": 5,
+        "D": 5,
+        "N": 2
+      }
+    },
+    "UJJAIN": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 24.2,
+          "daily_mean_mm": 1.86,
+          "daily_normal_mean_mm": 10.96
+        },
+        "9": {
+          "total_mm": 103.5,
+          "daily_mean_mm": 3.45,
+          "daily_normal_mean_mm": 4.7
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 1.57
+        }
+      },
+      "monsoon_total_mm": 127.7,
+      "monsoon_normal_mm": 297.6,
+      "overall_departure_pct": -57.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 127.7,
+          "monsoon_normal_mm": 297.6,
+          "percent_departure": -57.1
+        }
+      },
+      "mean_daily_departure_pct": -0.5,
+      "categories": {
+        "NR": 35,
+        "LD": 8,
+        "LE": 7,
+        "D": 1,
+        "E": 1
+      }
+    },
+    "UMARIA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 270.7,
+          "daily_mean_mm": 20.82,
+          "daily_normal_mean_mm": 12.65
+        },
+        "9": {
+          "total_mm": 335.3,
+          "daily_mean_mm": 11.18,
+          "daily_normal_mean_mm": 7.29
+        },
+        "10": {
+          "total_mm": 0.0,
+          "daily_mean_mm": 0.0,
+          "daily_normal_mean_mm": 3.41
+        }
+      },
+      "monsoon_total_mm": 606.0,
+      "monsoon_normal_mm": 413.8,
+      "overall_departure_pct": 46.4,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 606.0,
+          "monsoon_normal_mm": 413.8,
+          "percent_departure": 46.4
+        }
+      },
+      "mean_daily_departure_pct": 0.83,
+      "categories": {
+        "LE": 14,
+        "NR": 14,
+        "LD": 11,
+        "D": 8,
+        "N": 4,
+        "E": 1
+      }
+    },
+    "VIDISHA": {
+      "state": "MADHYA PRADESH",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 75.0,
+          "daily_mean_mm": 5.77,
+          "daily_normal_mean_mm": 12.29
+        },
+        "9": {
+          "total_mm": 177.0,
+          "daily_mean_mm": 5.9,
+          "daily_normal_mean_mm": 5.12
+        },
+        "10": {
+          "total_mm": 0.1,
+          "daily_mean_mm": 0.01,
+          "daily_normal_mean_mm": 1.61
+        }
+      },
+      "monsoon_total_mm": 252.1,
+      "monsoon_normal_mm": 327.9,
+      "overall_departure_pct": -23.1,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 252.1,
+          "monsoon_normal_mm": 327.9,
+          "percent_departure": -23.1
+        }
+      },
+      "mean_daily_departure_pct": -0.22,
+      "categories": {
+        "NR": 19,
+        "LD": 12,
+        "D": 8,
+        "LE": 8,
+        "E": 3,
+        "N": 2
+      }
+    },
+    "WEST SINGHBHUM": {
+      "state": "JHARKHAND",
+      "days_monitored": 52,
+      "monthly_climatology_mm": {
+        "8": {
+          "total_mm": 213.9,
+          "daily_mean_mm": 16.45,
+          "daily_normal_mean_mm": 9.22
+        },
+        "9": {
+          "total_mm": 231.8,
+          "daily_mean_mm": 7.73,
+          "daily_normal_mean_mm": 6.46
+        },
+        "10": {
+          "total_mm": 15.0,
+          "daily_mean_mm": 1.67,
+          "daily_normal_mean_mm": 3.59
+        }
+      },
+      "monsoon_total_mm": 460.7,
+      "monsoon_normal_mm": 345.9,
+      "overall_departure_pct": 33.2,
+      "departure_by_year": {
+        "2026": {
+          "monsoon_total_mm": 460.7,
+          "monsoon_normal_mm": 345.9,
+          "percent_departure": 33.2
+        }
+      },
+      "mean_daily_departure_pct": 0.43,
+      "categories": {
+        "LE": 14,
+        "LD": 13,
+        "NR": 13,
+        "D": 5,
+        "E": 4,
+        "N": 3
+      }
+    }
+  }
+}

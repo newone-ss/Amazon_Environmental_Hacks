@@ -101,9 +101,30 @@ def evaluate_site(site_id: str) -> Site | None:
         data_tag=dtag,
     )
 
-    features = raw.get("features", {})
+    features = raw.get("features", {}).copy()
     if "elevation_m" not in features and village.elevation_m is not None:
         features["elevation_m"] = village.elevation_m
+
+    # Ground missing hydro-climatic indicators with lazy, cached empirical derived data
+    from scoring.derived_loader import get_settlement_derived_data
+
+    settlement_telemetry = get_settlement_derived_data(site_id)
+    if settlement_telemetry:
+        gw_station = settlement_telemetry.get("groundwater", {}).get("nearest_station")
+        if (
+            gw_station
+            and "groundwater_depth_m" not in features
+            and gw_station.get("post_monsoon_depth_m") is not None
+        ):
+            features["groundwater_depth_m"] = gw_station["post_monsoon_depth_m"]
+
+        temp_grid = settlement_telemetry.get("temperature", {})
+        if (
+            temp_grid
+            and "lst_summer_max_c" not in features
+            and temp_grid.get("summer_mean_max_c") is not None
+        ):
+            features["lst_summer_max_c"] = temp_grid["summer_mean_max_c"]
 
     # 1. Deterministic Scores
     recharge_res = calculate_recharge_score(
@@ -170,3 +191,14 @@ def get_site_recommendations(site_id: str) -> list[Recommendation] | None:
 def clear_caches() -> None:
     """Clear all LRU caches (useful for testing or config reload)."""
     _load_demo_sites_config.cache_clear()
+    from scoring.derived_loader import (
+        load_derived_groundwater,
+        load_derived_rainfall,
+        load_derived_settlements,
+        load_derived_temperature,
+    )
+
+    load_derived_groundwater.cache_clear()
+    load_derived_rainfall.cache_clear()
+    load_derived_settlements.cache_clear()
+    load_derived_temperature.cache_clear()
