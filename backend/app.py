@@ -25,6 +25,7 @@ try:
 except ImportError:
     Mangum = None  # type: ignore
 
+from agent.dpr_generator import create_dpr_zip, generate_dpr_package
 from agent.orchestrator import LeadPlannerOrchestratorAgent
 from agent.participatory import ParticipatoryMonitoringAgent
 from agent.report_generator import create_report
@@ -263,7 +264,9 @@ async def submit_text_observation(
         }
     )
     if not result.get("success"):
-        raise HTTPException(status_code=400, detail=result.get("error", "Processing failed"))
+        raise HTTPException(
+            status_code=400, detail=result.get("error", "Processing failed")
+        )
     return result
 
 
@@ -278,13 +281,18 @@ async def submit_voice_observation(
     # Upload audio to S3 first
     bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
     region = os.getenv("AWS_REGION", "ap-south-1")
-    audio_key = f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{audio.filename.split('.')[-1]}"
+    audio_key = (
+        f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{audio.filename.split('.')[-1]}"
+    )
 
     try:
         import boto3
+
         s3 = boto3.client("s3", region_name=region)
         content = await audio.read()
-        s3.put_object(Bucket=bucket, Key=audio_key, Body=content, ContentType=audio.content_type)
+        s3.put_object(
+            Bucket=bucket, Key=audio_key, Body=content, ContentType=audio.content_type
+        )
         audio_s3_uri = f"s3://{bucket}/{audio_key}"
     except Exception as exc:  # noqa: BLE001
         logger.warning("S3 upload failed, using local fallback: %s", exc)
@@ -299,7 +307,9 @@ async def submit_voice_observation(
         }
     )
     if not result.get("success"):
-        raise HTTPException(status_code=400, detail=result.get("error", "Processing failed"))
+        raise HTTPException(
+            status_code=400, detail=result.get("error", "Processing failed")
+        )
     return result
 
 
@@ -338,9 +348,10 @@ async def whatsapp_webhook(
 
     # Return TwiML response for Twilio
     from fastapi.responses import Response
+
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
-    <Message>Thank you! Your observation has been recorded. {result.get('message', '')}</Message>
+    <Message>Thank you! Your observation has been recorded. {result.get("message", "")}</Message>
 </Response>"""
     return Response(content=twiml, media_type="application/xml")
 
@@ -392,7 +403,9 @@ async def generate_pathway(
 ) -> dict:
     """Generate a single adaptation pathway for a site under an SSP scenario."""
     try:
-        pathway = generate_adaptation_pathway(site_id, ssp_scenario, base_rainfall_fraction)
+        pathway = generate_adaptation_pathway(
+            site_id, ssp_scenario, base_rainfall_fraction
+        )
         return pathway_to_dict(pathway)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
@@ -425,12 +438,16 @@ async def get_pathway_visualization(
 ) -> dict:
     """Get pathway data optimized for frontend visualization (IPCC AR6 style)."""
     try:
-        pathway = generate_adaptation_pathway(site_id, ssp_scenario, base_rainfall_fraction)
+        pathway = generate_adaptation_pathway(
+            site_id, ssp_scenario, base_rainfall_fraction
+        )
         return generate_pathway_visualization_data(pathway)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
-        raise HTTPException(status_code=500, detail=f"Visualization data generation failed: {exc}")
+        raise HTTPException(
+            status_code=500, detail=f"Visualization data generation failed: {exc}"
+        )
 
 
 @app.get("/pathways/scenarios", response_model=list[dict])
@@ -495,6 +512,85 @@ def get_report_file(filename: str) -> HTMLResponse:
         raise HTTPException(status_code=404, detail="Report dossier not found")
     with open(filepath, "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
+
+
+# ── DPR Generator Routes ─────────────────────────────────
+
+from fastapi.responses import Response
+
+
+@app.post("/dpr/generate", response_model=dict)
+async def generate_dpr(
+    site_ids: str = Form(...),
+    project_name: str = Form(""),
+    include_pdf: bool = Form(False),
+) -> dict:
+    """Generate a DPR package (DOCX, XLSX, KML) for the given sites."""
+    site_list = [s.strip() for s in site_ids.split(",") if s.strip()]
+    if not site_list:
+        raise HTTPException(status_code=400, detail="At least one site_id required")
+
+    try:
+        dpr = generate_dpr_package(site_list, project_name or None, include_pdf)
+        zip_bytes = create_dpr_zip(dpr)
+
+        # Return ZIP as base64 or save to S3
+        import base64
+
+        zip_b64 = base64.b64encode(zip_bytes).decode()
+
+        return {
+            "project_id": dpr.project_id,
+            "project_name": dpr.project_name,
+            "site_count": dpr.manifest["site_count"],
+            "total_cost_inr": dpr.manifest["total_cost_high_inr"],
+            "total_labour_days": dpr.manifest["total_labour_days"],
+            "zip_base64": zip_b64,
+            "manifest": dpr.manifest,
+        }
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"DPR generation failed: {exc}")
+
+
+@app.post("/dpr/download", response_class=Response)
+async def download_dpr_zip(
+    site_ids: str = Form(...),
+    project_name: str = Form(""),
+    include_pdf: bool = Form(False),
+) -> Response:
+    """Download DPR package as ZIP file directly."""
+    site_list = [s.strip() for s in site_ids.split(",") if s.strip()]
+    if not site_list:
+        raise HTTPException(status_code=400, detail="At least one site_id required")
+
+    try:
+        dpr = generate_dpr_package(site_list, project_name or None, include_pdf)
+        zip_bytes = create_dpr_zip(dpr)
+
+        return Response(
+            content=zip_bytes,
+            media_type="application/zip",
+            headers={
+                "Content-Disposition": f'attachment; filename="{dpr.project_id}.zip"'
+            },
+        )
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"DPR generation failed: {exc}")
+
+
+@app.get("/dpr/schemes", response_model=dict)
+async def list_scheme_mapping() -> dict:
+    """Get scheme mapping for all intervention types."""
+    from agent.dpr_generator import SCHEME_MAPPING, STATE_SCHEME_NUANCES
+
+    return {
+        "intervention_schemes": SCHEME_MAPPING,
+        "state_nuances": STATE_SCHEME_NUANCES,
+    }
 
 
 # ── Lambda handler ─────────────────────────────

@@ -57,7 +57,13 @@ class PathwayConfig:
     """Configuration for pathway generation."""
 
     periods: list[tuple[int, int]] = field(
-        default_factory=lambda: [(2025, 2030), (2030, 2035), (2035, 2040), (2040, 2045), (2045, 2050)]
+        default_factory=lambda: [
+            (2025, 2030),
+            (2030, 2035),
+            (2035, 2040),
+            (2040, 2045),
+            (2045, 2050),
+        ]
     )
     ssp_scenarios: dict[str, dict[str, float]] = field(
         default_factory=lambda: {
@@ -118,7 +124,9 @@ def load_pathway_config() -> PathwayConfig:
     return PathwayConfig()
 
 
-def _get_ssp_rainfall_fraction(ssp: str, period_idx: int, base_fraction: float = 1.0) -> float:
+def _get_ssp_rainfall_fraction(
+    ssp: str, period_idx: int, base_fraction: float = 1.0
+) -> float:
     """
     Calculate rainfall fraction for a given SSP scenario and period.
 
@@ -193,7 +201,10 @@ def _select_interventions_for_period(
     critical_triggers = [t for t in triggers if t["level"] == "critical"]
     if critical_triggers:
         for trigger in critical_triggers:
-            if trigger["score"] == "recharge_score" and "check_dam" not in existing_interventions:
+            if (
+                trigger["score"] == "recharge_score"
+                and "check_dam" not in existing_interventions
+            ):
                 recommendations.append(
                     {
                         "intervention_id": "check_dam",
@@ -202,7 +213,10 @@ def _select_interventions_for_period(
                         "estimated_cost": 300000,
                     }
                 )
-            elif trigger["score"] == "spring_drying_index" and "spring_shed_treatment" not in existing_interventions:
+            elif (
+                trigger["score"] == "spring_drying_index"
+                and "spring_shed_treatment" not in existing_interventions
+            ):
                 recommendations.append(
                     {
                         "intervention_id": "spring_shed_treatment",
@@ -211,7 +225,10 @@ def _select_interventions_for_period(
                         "estimated_cost": 400000,
                     }
                 )
-            elif trigger["score"] == "heat_water_stress" and "rooftop_rainwater_harvesting" not in existing_interventions:
+            elif (
+                trigger["score"] == "heat_water_stress"
+                and "rooftop_rainwater_harvesting" not in existing_interventions
+            ):
                 recommendations.append(
                     {
                         "intervention_id": "rooftop_rainwater_harvesting",
@@ -225,7 +242,10 @@ def _select_interventions_for_period(
     warning_triggers = [t for t in triggers if t["level"] == "warning"]
     if warning_triggers and not critical_triggers:
         for trigger in warning_triggers:
-            if trigger["score"] == "recharge_score" and "percolation_tank" not in existing_interventions:
+            if (
+                trigger["score"] == "recharge_score"
+                and "percolation_tank" not in existing_interventions
+            ):
                 recommendations.append(
                     {
                         "intervention_id": "percolation_tank",
@@ -234,7 +254,10 @@ def _select_interventions_for_period(
                         "estimated_cost": 550000,
                     }
                 )
-            elif trigger["score"] == "heat_water_stress" and "farm_pond" not in existing_interventions:
+            elif (
+                trigger["score"] == "heat_water_stress"
+                and "farm_pond" not in existing_interventions
+            ):
                 recommendations.append(
                     {
                         "intervention_id": "farm_pond",
@@ -293,18 +316,24 @@ def generate_adaptation_pathway(
         period_label = f"{year_start}-{year_end}"
 
         # Calculate climate forcing for this period
-        rainfall_frac = _get_ssp_rainfall_fraction(ssp_scenario, period_idx, base_rainfall_fraction)
+        rainfall_frac = _get_ssp_rainfall_fraction(
+            ssp_scenario, period_idx, base_rainfall_fraction
+        )
         temp_increase = _get_ssp_temperature_increase(ssp_scenario, period_idx)
 
         # Run scenario simulation
         scenario_result = run_site_scenario(
             site_id=site_id,
             rainfall_fraction=rainfall_frac,
-            include_intervention=existing_interventions[0] if existing_interventions else None,
+            include_intervention=existing_interventions[0]
+            if existing_interventions
+            else None,
         )
 
         if scenario_result:
-            current_scores = {s.score_type: s.value for s in scenario_result.adjusted_scores}
+            current_scores = {
+                s.score_type: s.value for s in scenario_result.adjusted_scores
+            }
         else:
             current_scores = baseline_scores.copy()
 
@@ -322,7 +351,9 @@ def generate_adaptation_pathway(
 
         # Track new interventions
         new_interventions = [
-            i["intervention_id"] for i in period_interventions if i["priority"] != "maintenance"
+            i["intervention_id"]
+            for i in period_interventions
+            if i["priority"] != "maintenance"
         ]
         existing_interventions.extend(new_interventions)
 
@@ -347,7 +378,9 @@ def generate_adaptation_pathway(
             decision_node=decision_node,
             trigger_condition=trigger_info["score"] if trigger_info else None,
             trigger_threshold=trigger_info["threshold"] if trigger_info else None,
-            alternative_pathway=f"accelerated_{ssp_scenario}" if decision_node else None,
+            alternative_pathway=f"accelerated_{ssp_scenario}"
+            if decision_node
+            else None,
             cumulative_cost_inr=cumulative_cost,
             notes=[
                 (
@@ -402,7 +435,10 @@ def generate_pathway_comparison(
             pathways[ssp] = generate_adaptation_pathway(site_id, ssp)
         except Exception as exc:  # noqa: BLE001
             import logging
-            logging.getLogger(__name__).error("Pathway generation failed for %s: %s", ssp, exc)
+
+            logging.getLogger(__name__).error(
+                "Pathway generation failed for %s: %s", ssp, exc
+            )
 
     return pathways
 
@@ -453,11 +489,23 @@ def generate_pathway_visualization_data(pathway: AdaptationPathway) -> dict[str,
         "ssp_scenario": pathway.ssp_scenario,
         "timeline": {
             "periods": [step.period for step in pathway.steps],
-            "recharge_scores": [step.baseline_scores.get("recharge_score", 0) for step in pathway.steps],
-            "stress_scores": [step.baseline_scores.get("heat_water_stress", 0) for step in pathway.steps],
-            "spring_risk_scores": [step.baseline_scores.get("spring_drying_index", 0) for step in pathway.steps],
+            "recharge_scores": [
+                step.baseline_scores.get("recharge_score", 0) for step in pathway.steps
+            ],
+            "stress_scores": [
+                step.baseline_scores.get("heat_water_stress", 0)
+                for step in pathway.steps
+            ],
+            "spring_risk_scores": [
+                step.baseline_scores.get("spring_drying_index", 0)
+                for step in pathway.steps
+            ],
             "decision_nodes": [
-                {"period": step.period, "trigger": step.trigger_condition, "threshold": step.trigger_threshold}
+                {
+                    "period": step.period,
+                    "trigger": step.trigger_condition,
+                    "threshold": step.trigger_threshold,
+                }
                 for step in pathway.steps
                 if step.decision_node
             ],
@@ -490,13 +538,17 @@ def _build_intervention_timeline(pathway: AdaptationPathway) -> list[dict[str, A
     return timeline
 
 
-def calculate_pathway_npv(pathway: AdaptationPathway, discount_rate: float | None = None) -> float:
+def calculate_pathway_npv(
+    pathway: AdaptationPathway, discount_rate: float | None = None
+) -> float:
     """Calculate Net Present Value of pathway costs."""
     config = load_pathway_config()
     rate = discount_rate or config.discount_rate
     npv = 0.0
     for step in pathway.steps:
-        period_cost = sum(i.get("estimated_cost", 0) for i in step.recommended_interventions)
+        period_cost = sum(
+            i.get("estimated_cost", 0) for i in step.recommended_interventions
+        )
         years_from_now = step.year_start - 2025
         npv += period_cost / ((1 + rate) ** years_from_now)
     return round(npv, 2)

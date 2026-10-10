@@ -32,11 +32,41 @@ logger = logging.getLogger(__name__)
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
 _OBSERVATION_TYPES: dict[str, list[str]] = {
-    "well_depth": ["well depth", "water level", "borewell depth", "open well depth", "groundwater level"],
-    "spring_flow": ["spring flow", "spring discharge", "jhola flow", "jharna flow", "spring drying"],
+    "well_depth": [
+        "well depth",
+        "water level",
+        "borewell depth",
+        "open well depth",
+        "groundwater level",
+    ],
+    "spring_flow": [
+        "spring flow",
+        "spring discharge",
+        "jhola flow",
+        "jharna flow",
+        "spring drying",
+    ],
     "rainfall": ["rainfall", "rain", "monsoon", "precipitation"],
-    "water_quality": ["water quality", "taste", "color", "smell", "contamination", "salinity", "fluoride", "iron"],
-    "structure_condition": ["check dam", "percolation tank", "contour trench", "gabion", "farm pond", "damage", "silted", "breach"],
+    "water_quality": [
+        "water quality",
+        "taste",
+        "color",
+        "smell",
+        "contamination",
+        "salinity",
+        "fluoride",
+        "iron",
+    ],
+    "structure_condition": [
+        "check dam",
+        "percolation tank",
+        "contour trench",
+        "gabion",
+        "farm pond",
+        "damage",
+        "silted",
+        "breach",
+    ],
     "general": ["general", "other", "observation"],
 }
 
@@ -70,7 +100,9 @@ class ParticipatoryMonitoringAgent(BaseAgent):
     def _initialize_aws_clients(self) -> None:
         """Lazy-initialize AWS clients."""
         try:
-            self._transcribe_client = boto3.client("transcribe", region_name="ap-south-1")
+            self._transcribe_client = boto3.client(
+                "transcribe", region_name="ap-south-1"
+            )
             self._s3_client = boto3.client("s3", region_name="ap-south-1")
             dynamodb = boto3.resource("dynamodb", region_name="ap-south-1")
             self._dynamodb_table = dynamodb.Table("bhujal-observations")
@@ -119,7 +151,9 @@ class ParticipatoryMonitoringAgent(BaseAgent):
             "success": True,
             "observation_id": stored.observation_id,
             "extracted": extracted,
-            "validated": validated.model_dump() if hasattr(validated, "model_dump") else validated,
+            "validated": validated.model_dump()
+            if hasattr(validated, "model_dump")
+            else validated,
             "badge": badge_info,
             "message": f"Observation recorded. {badge_info.get('message', '')}",
         }
@@ -141,9 +175,16 @@ class ParticipatoryMonitoringAgent(BaseAgent):
             )
             # Wait for completion (in production, use async callback)
             waiter = self._transcribe_client.get_waiter("transcription_job_completed")
-            waiter.wait(TranscriptionJobName=job_name, WaiterConfig={"Delay": 5, "MaxAttempts": 60})
-            response = self._transcribe_client.get_transcription_job(TranscriptionJobName=job_name)
-            transcript_uri = response["TranscriptionJob"]["Transcript"]["TranscriptFileUri"]
+            waiter.wait(
+                TranscriptionJobName=job_name,
+                WaiterConfig={"Delay": 5, "MaxAttempts": 60},
+            )
+            response = self._transcribe_client.get_transcription_job(
+                TranscriptionJobName=job_name
+            )
+            transcript_uri = response["TranscriptionJob"]["Transcript"][
+                "TranscriptFileUri"
+            ]
             # Fetch transcript (simplified - in production use presigned URL)
             return self._fetch_transcript(transcript_uri)
         except ClientError as exc:
@@ -157,9 +198,14 @@ class ParticipatoryMonitoringAgent(BaseAgent):
         """Fetch transcript from Transcribe output URI."""
         try:
             import urllib.request
+
             with urllib.request.urlopen(uri) as response:
                 data = json.loads(response.read())
-                return data.get("results", {}).get("transcripts", [{}])[0].get("transcript", "")
+                return (
+                    data.get("results", {})
+                    .get("transcripts", [{}])[0]
+                    .get("transcript", "")
+                )
         except Exception:  # noqa: BLE001
             return ""
 
@@ -261,7 +307,10 @@ JSON:"""
             if not raw:
                 # Try fuzzy match
                 for v in get_all_villages():
-                    if village_name.lower() in v.name.lower() or v.name.lower() in village_name.lower():
+                    if (
+                        village_name.lower() in v.name.lower()
+                        or v.name.lower() in village_name.lower()
+                    ):
                         site_id = v.id
                         break
             else:
@@ -320,7 +369,9 @@ JSON:"""
 
         return stored
 
-    def _update_observer_stats(self, observer_id: str, observer_name: str) -> dict[str, Any]:
+    def _update_observer_stats(
+        self, observer_id: str, observer_name: str
+    ) -> dict[str, Any]:
         """Update observer contribution count and badge."""
         # In production, this would use a separate DynamoDB table for observer stats
         # For now, return mock badge info
@@ -334,13 +385,33 @@ JSON:"""
             "message": "Thank you for your contribution! You are now a Jal Mitra (Bronze).",
         }
 
-    def get_leaderboard(self, state: str | None = None, limit: int = 10) -> list[dict[str, Any]]:
+    def get_leaderboard(
+        self, state: str | None = None, limit: int = 10
+    ) -> list[dict[str, Any]]:
         """Get top contributors leaderboard (mock implementation)."""
         # In production, query observer stats table
         return [
-            {"rank": 1, "observer_name": "Ramesh Kumar", "village": "Laxmipur", "contributions": 47, "badge": "Jal Mitra (Platinum)"},
-            {"rank": 2, "observer_name": "Sunita Devi", "village": "Dukum", "contributions": 32, "badge": "Jal Mitra (Gold)"},
-            {"rank": 3, "observer_name": "Mohan Singh", "village": "Bichhiya", "contributions": 28, "badge": "Jal Mitra (Gold)"},
+            {
+                "rank": 1,
+                "observer_name": "Ramesh Kumar",
+                "village": "Laxmipur",
+                "contributions": 47,
+                "badge": "Jal Mitra (Platinum)",
+            },
+            {
+                "rank": 2,
+                "observer_name": "Sunita Devi",
+                "village": "Dukum",
+                "contributions": 32,
+                "badge": "Jal Mitra (Gold)",
+            },
+            {
+                "rank": 3,
+                "observer_name": "Mohan Singh",
+                "village": "Bichhiya",
+                "contributions": 28,
+                "badge": "Jal Mitra (Gold)",
+            },
         ][:limit]
 
     def fallback_execute(self, context: dict[str, Any]) -> dict[str, Any]:
