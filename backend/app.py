@@ -43,8 +43,12 @@ from backend.models import (
 )
 from scoring import (
     evaluate_site,
+    generate_adaptation_pathway,
+    generate_pathway_comparison,
+    generate_pathway_visualization_data,
     get_all_villages,
     get_site_recommendations,
+    pathway_to_dict,
     run_site_scenario,
 )
 
@@ -361,6 +365,89 @@ async def get_observer_stats(observer_id: str) -> dict:
         "badges_earned": [],
         "rank": None,
     }
+
+
+# ── Adaptation Pathways Routes ─────────────────────────────────
+
+
+class PathwayRequest:
+    """Request model for pathway generation."""
+
+    def __init__(
+        self,
+        site_id: str = Form(...),
+        ssp_scenario: str = Form("SSP2-4.5"),
+        base_rainfall_fraction: float = Form(1.0),
+    ):
+        self.site_id = site_id
+        self.ssp_scenario = ssp_scenario
+        self.base_rainfall_fraction = base_rainfall_fraction
+
+
+@app.post("/pathways/generate", response_model=dict)
+async def generate_pathway(
+    site_id: str = Form(...),
+    ssp_scenario: str = Form("SSP2-4.5"),
+    base_rainfall_fraction: float = Form(1.0),
+) -> dict:
+    """Generate a single adaptation pathway for a site under an SSP scenario."""
+    try:
+        pathway = generate_adaptation_pathway(site_id, ssp_scenario, base_rainfall_fraction)
+        return pathway_to_dict(pathway)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Pathway generation failed: {exc}")
+
+
+@app.post("/pathways/compare", response_model=dict)
+async def compare_pathways(
+    site_id: str = Form(...),
+    scenarios: str = Form("SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5"),
+    base_rainfall_fraction: float = Form(1.0),
+) -> dict:
+    """Generate and compare pathways across multiple SSP scenarios."""
+    scenario_list = [s.strip() for s in scenarios.split(",") if s.strip()]
+    try:
+        pathways = generate_pathway_comparison(site_id, scenario_list)
+        return {ssp: pathway_to_dict(p) for ssp, p in pathways.items()}
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Pathway comparison failed: {exc}")
+
+
+@app.get("/pathways/visualize/{site_id}/{ssp_scenario}", response_model=dict)
+async def get_pathway_visualization(
+    site_id: str,
+    ssp_scenario: str,
+    base_rainfall_fraction: float = Query(1.0),
+) -> dict:
+    """Get pathway data optimized for frontend visualization (IPCC AR6 style)."""
+    try:
+        pathway = generate_adaptation_pathway(site_id, ssp_scenario, base_rainfall_fraction)
+        return generate_pathway_visualization_data(pathway)
+    except ValueError as exc:
+        raise HTTPException(status_code=404, detail=str(exc))
+    except Exception as exc:  # noqa: BLE001
+        raise HTTPException(status_code=500, detail=f"Visualization data generation failed: {exc}")
+
+
+@app.get("/pathways/scenarios", response_model=list[dict])
+async def list_ssp_scenarios() -> list[dict]:
+    """List available SSP scenarios with descriptions."""
+    from scoring.pathways import load_pathway_config
+
+    config = load_pathway_config()
+    return [
+        {
+            "id": ssp,
+            "rainfall_trend_per_decade": v.get("rainfall_trend", 0),
+            "temp_trend_per_decade": v.get("temp_trend", 0),
+            "description": v.get("description", ""),
+        }
+        for ssp, v in config.ssp_scenarios.items()
+    ]
 
 
 # ── Report Routes ─────────────────────────────────

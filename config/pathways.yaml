@@ -1,0 +1,62 @@
+# ──────────────────────────────────────────────
+# Adaptation Pathways Configuration — Bhujal
+# Controls multi-period adaptation planning parameters.
+# ──────────────────────────────────────────────
+
+# Planning periods (5-year intervals)
+periods:
+  - [2025, 2030]
+  - [2030, 2035]
+  - [2035, 2040]
+  - [2040, 2045]
+  - [2045, 2050]
+
+# SSP Scenario climate trajectories
+# rainfall_trend: fractional change per decade (positive = wetter)
+# temp_trend: °C increase per decade
+ssp_scenarios:
+  SSP1-2.6:
+    rainfall_trend: 0.02      # +2%/decade (sustainable pathway)
+    temp_trend: 0.01          # +0.1°C/decade
+    description: "Sustainable development, low emissions"
+  SSP2-4.5:
+    rainfall_trend: -0.01     # -1%/decade (middle of road)
+    temp_trend: 0.02          # +0.2°C/decade
+    description: "Middle-of-the-road, current policies"
+  SSP3-7.0:
+    rainfall_trend: -0.02     # -2%/decade (regional rivalry)
+    temp_trend: 0.03          # +0.3°C/decade
+    description: "Regional rivalry, high emissions"
+  SSP5-8.5:
+    rainfall_trend: -0.03     # -3%/decade (fossil-fueled)
+    temp_trend: 0.04          # +0.4°C/decade
+    description: "Fossil-fueled development, very high emissions"
+
+# Intervention design lifespans (years)
+intervention_lifespan_years:
+  check_dam: 15
+  percolation_tank: 20
+  contour_trench: 10
+  spring_shed_treatment: 25
+  rooftop_rainwater_harvesting: 20
+  farm_pond: 15
+  gabion_structure: 20
+
+# Decision triggers for adaptive management
+# When scores cross thresholds, pathway branches
+decision_triggers:
+  recharge_score:
+    critical: 30       # Below 30 = immediate action needed
+    warning: 50        # Below 50 = plan intervention
+  heat_water_stress:
+    critical: 70       # Above 70 = immediate action
+    warning: 50        # Above 50 = plan intervention
+  spring_drying_index:
+    critical: 70       # Above 70 = immediate action
+    warning: 50        # Above 50 = plan intervention
+
+# Cost escalation factor per period (inflation)
+cost_escalation_per_period: 0.05  # 5% per 5-year period
+
+# Discount rate for NPV calculations
+discount_rate: 0.08  # 8% per annum
