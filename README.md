@@ -210,9 +210,10 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- test_agents.py          # Pytest suite for autonomous multi-agent collective
 |   |-- test_api.py             # Pytest suite for FastAPI REST endpoints and state filters
 |   `-- test_derived_data.py    # Pytest suite for Phase 4 derived schemas and sign convention
+|-- agent.md                    # Core operational directives, mathematical schemas, and rules
 |-- main.py                     # Unified Command-Line Interface (list, evaluate, simulate, report, server)
-|-- Makefile                    # Standardized automation interface
-`-- requirements.txt            # Python dependencies with pinned semver constraints
+|-- requirements.txt            # Python dependencies with pinned semver constraints
+`-- TEST_CHECKLIST.md           # Concrete testing checklist and Definition of Done
 ```
 
 ---

@@ -38,9 +38,8 @@ data/reports/
 # Frontend (kept local only, excluded from GitHub repo)
 frontend/
 
-# Local workspace configs and documentation (kept local only, excluded from GitHub repo)
-/TEST_CHECKLIST.md
-/agent.md
+# Local workspace configs and scripts (kept local only, excluded from GitHub repo)
+/Makefile
 /pytest.ini
 /.python-version
 /.awssamignore
