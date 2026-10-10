@@ -177,6 +177,7 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   |-- scenario.yaml           # Rainfall perturbation factors and intervention uplifts
 |   `-- weights.yaml            # Analytical scoring factor weights and classification tiers
 |-- data/
+|   |-- derived/                # Lightweight precomputed datasets (groundwater, temperature, rainfall, settlements)
 |   |-- groundwater_level_cleaned_odisha_jharkhand_mp_2021_2025.csv # CGWB empirical telemetry (34,141 rows)
 |   |-- imd_max_temperature_odisha_jharkhand_mp_2021_2024.csv       # IMD gridded maximum temperature (109,575 rows)
 |   |-- rainfall_cleaned_odisha_jharkhand_mp.csv                    # IMD daily rainfall & departures (5,512 rows)
@@ -190,10 +191,9 @@ Before any civil intervention is approved, the site is evaluated against determi
 |   `-- validation.md           # Verification, testing, and validation methodology
 |-- infra/
 |   `-- template.yaml           # AWS Serverless Application Model (SAM) CloudFormation template
-|-- pipeline/                   # Offline geospatial acquisition, reprojection, and feature extraction
-|   |-- download/               # Raster and vector dataset retrieval modules
-|   |-- preprocess/             # Alignment, clipping, and coordinate transformation routines
-|   `-- features/               # Morphometric and hydro-climatic feature generators
+|-- pipeline/                   # Offline empirical telemetry aggregation and packaging
+|   |-- build_derived.py        # Precomputes compact derived JSONs from raw CSVs
+|   `-- package.py              # AWS SAM Lambda bundle packager (build/lambda)
 |-- scoring/                    # Deterministic spatial hydrogeology and safety veto engine
 |   |-- recharge.py             # Multi-criteria infiltration suitability overlay
 |   |-- stress.py               # Compound heat-water vulnerability calculator
