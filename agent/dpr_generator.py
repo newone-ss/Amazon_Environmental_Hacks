@@ -12,7 +12,7 @@ import io
 import json
 import zipfile
 from dataclasses import dataclass
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -227,9 +227,7 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
     info.alignment = WD_ALIGN_PARAGRAPH.CENTER
     run = info.add_run(f"Project ID: {project_id}\n")
     run.font.size = Pt(12)
-    run = info.add_run(
-        f"Generated: {datetime.now(timezone.utc).strftime('%d %B %Y')}\n"
-    )
+    run = info.add_run(f"Generated: {datetime.now(UTC).strftime('%d %B %Y')}\n")
     run.font.size = Pt(12)
     run = info.add_run("Bhujal Decision Support System\n")
     run.font.size = Pt(12)
@@ -1087,9 +1085,7 @@ def generate_dpr_package(
     if not sites:
         raise ValueError("No valid sites found")
 
-    project_id = (
-        f"DPR_{datetime.now(timezone.utc).strftime('%Y%m%d_%H%M%S')}_{len(sites)}sites"
-    )
+    project_id = f"DPR_{datetime.now(UTC).strftime('%Y%m%d_%H%M%S')}_{len(sites)}sites"
     if project_name is None:
         project_name = (
             f"Bhujal Watershed DPR — {', '.join(s.village.name for s in sites[:3])}"
@@ -1109,7 +1105,7 @@ def generate_dpr_package(
     manifest = {
         "project_id": project_id,
         "project_name": project_name,
-        "generated_at": datetime.now(timezone.utc).isoformat(),
+        "generated_at": datetime.now(UTC).isoformat(),
         "sites": [s.village.id for s in sites],
         "site_count": len(sites),
         "total_cost_high_inr": sum(
@@ -1131,7 +1127,7 @@ def generate_dpr_package(
         project_id=project_id,
         project_name=project_name,
         sites=sites,
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
         docx_bytes=docx_bytes,
         xlsx_bytes=xlsx_bytes,
         kml_bytes=kml_bytes,

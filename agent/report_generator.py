@@ -9,7 +9,7 @@ and climate scenario projections.
 from __future__ import annotations
 
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -25,7 +25,7 @@ def generate_action_dossier_html(
     scenario_info: dict[str, Any] | None = None,
 ) -> str:
     """Render self-contained, publication-grade HTML action dossier."""
-    timestamp = datetime.now(timezone.utc).strftime("%Y-%m-%d %H:%M:%S UTC")
+    timestamp = datetime.now(UTC).strftime("%Y-%m-%d %H:%M:%S UTC")
 
     states = sorted({s.village.state for s in sites if s.village.state})
     districts = sorted({s.village.district for s in sites if s.village.district})
@@ -242,7 +242,7 @@ def create_report(
     return ReportResult(
         report_id=report_id,
         title="Bhujal Comprehensive Watershed Planning Dossier",
-        generated_at=datetime.now(timezone.utc),
+        generated_at=datetime.now(UTC),
         site_count=len(sites),
         download_url=f"/reports/{filename}",
         format="html",

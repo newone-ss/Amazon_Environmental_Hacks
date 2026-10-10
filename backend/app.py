@@ -11,7 +11,7 @@ import hashlib
 import logging
 import os
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -99,7 +99,7 @@ async def get_meta() -> MetaResponse:
         total_villages=len(villages),
         scoring_weights_hash=_get_weights_hash(),
         data_tags_in_use=[DataTag.REAL, DataTag.PROXY, DataTag.ILLUSTRATIVE],
-        last_pipeline_run=datetime.now(timezone.utc),
+        last_pipeline_run=datetime.now(UTC),
         supported_states=["Odisha", "Madhya Pradesh", "Jharkhand", "Pan-India"],
     )
 
@@ -158,7 +158,7 @@ async def get_recommendations(
 async def create_observation(obs: ObservationCreate) -> Observation:
     """Submit a field observation."""
     obs_id = f"obs_{uuid.uuid4().hex[:12]}"
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
 
     # Generate photo URL if filename provided
     photo_url = None

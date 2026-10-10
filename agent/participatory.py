@@ -12,7 +12,7 @@ import json
 import logging
 import re
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
@@ -343,7 +343,7 @@ JSON:"""
     def _store_observation(self, obs_create: ObservationCreate) -> Observation:
         """Store observation in DynamoDB and return Observation object."""
         obs_id = f"obs_{uuid.uuid4().hex[:12]}"
-        now = datetime.now(timezone.utc)
+        now = datetime.now(UTC)
 
         stored = Observation(
             observation_id=obs_id,

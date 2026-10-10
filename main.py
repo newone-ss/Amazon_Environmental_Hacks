@@ -131,6 +131,7 @@ def cmd_report(args: argparse.Namespace) -> None:
 
 # ── Participatory Monitoring CLI ────────────────────────────────
 
+
 def cmd_participatory_submit(args: argparse.Namespace) -> None:
     """Submit a community observation via text."""
     agent = ParticipatoryMonitoringAgent()
@@ -143,11 +144,13 @@ def cmd_participatory_submit(args: argparse.Namespace) -> None:
         }
     )
     if result.get("success"):
-        print("\n✓ Observation recorded successfully!")
+        print("\nObservation recorded successfully!")
         print(f"  Observation ID: {result['observation_id']}")
         print(f"  Site: {result['validated'].get('site_id', 'unknown')}")
         print(f"  Type: {result['validated'].get('observation_type', 'general')}")
-        print(f"  Value: {result['validated'].get('value', 'N/A')} {result['validated'].get('unit', '')}")
+        print(
+            f"  Value: {result['validated'].get('value', 'N/A')} {result['validated'].get('unit', '')}"
+        )
         print(f"  Badge: {result['badge'].get('current_badge', 'Jal Mitra (Bronze)')}")
         print(f"  Message: {result['message']}")
     else:
@@ -159,7 +162,7 @@ def cmd_participatory_leaderboard(args: argparse.Namespace) -> None:
     """Show community contributor leaderboard."""
     agent = ParticipatoryMonitoringAgent()
     leaderboard = agent.get_leaderboard(state=args.state, limit=args.limit)
-    print(f"\n🏆 Jal Mitra Leaderboard (Top {args.limit})")
+    print(f"\nJal Mitra Leaderboard (Top {args.limit})")
     if args.state:
         print(f"   State: {args.state}")
     print("-" * 80)
@@ -175,23 +178,33 @@ def cmd_participatory_leaderboard(args: argparse.Namespace) -> None:
 
 # ── Adaptation Pathways CLI ────────────────────────────────────
 
+
 def cmd_pathways_generate(args: argparse.Namespace) -> None:
     """Generate adaptation pathway for a site."""
     pathway = generate_adaptation_pathway(
         args.site_id, args.scenario, args.base_rainfall
     )
-    print(f"\n📈 Adaptation Pathway: {pathway.site_name} ({pathway.site_id})")
+    print(f"\nAdaptation Pathway: {pathway.site_name} ({pathway.site_id})")
     print(f"   SSP Scenario: {pathway.ssp_scenario}")
     print(f"   Success Probability: {pathway.success_probability:.0%}")
-    print(f"   Total Cost: ₹{pathway.total_cost_inr:,.0f} ({pathway.total_cost_inr/100000:.2f} Lakhs)")
-    print(f"   Final Recharge: {pathway.final_recharge_score:.1f} | Stress: {pathway.final_stress_score:.1f} | Spring Risk: {pathway.final_spring_risk:.1f}")
+    print(
+        f"   Total Cost: ₹{pathway.total_cost_inr:,.0f} ({pathway.total_cost_inr / 100000:.2f} Lakhs)"
+    )
+    print(
+        f"   Final Recharge: {pathway.final_recharge_score:.1f} | Stress: {pathway.final_stress_score:.1f} | Spring Risk: {pathway.final_spring_risk:.1f}"
+    )
     print("-" * 90)
-    print(f"{'Period':<12} {'Rainfall':<10} {'Recharge':<10} {'Stress':<10} {'Spring':<10} {'Interventions':<30}")
+    print(
+        f"{'Period':<12} {'Rainfall':<10} {'Recharge':<10} {'Stress':<10} {'Spring':<10} {'Interventions':<30}"
+    )
     print("-" * 90)
     for step in pathway.steps:
-        interventions = ", ".join(i["intervention_id"] for i in step.recommended_interventions) or "—"
+        interventions = (
+            ", ".join(i["intervention_id"] for i in step.recommended_interventions)
+            or "—"
+        )
         if step.decision_node:
-            interventions += f" ⚠️ DECISION: {step.trigger_condition}"
+            interventions += f" [DECISION: {step.trigger_condition}]"
         print(
             f"{step.period:<12} {step.rainfall_fraction:<10.2f} "
             f"{step.baseline_scores.get('recharge_score', 0):<10.1f} "
@@ -205,14 +218,16 @@ def cmd_pathways_generate(args: argparse.Namespace) -> None:
 def cmd_pathways_compare(args: argparse.Namespace) -> None:
     """Compare pathways across SSP scenarios."""
     pathways = generate_pathway_comparison(args.site_id, args.scenarios.split(","))
-    print(f"\n📊 Pathway Comparison: {args.site_id}")
+    print(f"\nPathway Comparison: {args.site_id}")
     print("-" * 100)
-    print(f"{'SSP Scenario':<15} {'Success %':<10} {'Total Cost (L)':<15} {'Final Recharge':<15} {'Final Stress':<15} {'Final Spring':<15}")
+    print(
+        f"{'SSP Scenario':<15} {'Success %':<10} {'Total Cost (L)':<15} {'Final Recharge':<15} {'Final Stress':<15} {'Final Spring':<15}"
+    )
     print("-" * 100)
     for ssp, pathway in pathways.items():
         print(
             f"{ssp:<15} {pathway.success_probability:<10.0%} "
-            f"{pathway.total_cost_inr/100000:<15.2f} "
+            f"{pathway.total_cost_inr / 100000:<15.2f} "
             f"{pathway.final_recharge_score:<15.1f} "
             f"{pathway.final_stress_score:<15.1f} "
             f"{pathway.final_spring_risk:<15.1f}"
@@ -221,6 +236,7 @@ def cmd_pathways_compare(args: argparse.Namespace) -> None:
 
 
 # ── DPR Generator CLI ──────────────────────────────────────────
+
 
 def cmd_dpr_generate(args: argparse.Namespace) -> None:
     """Generate DPR package for sites."""
@@ -237,11 +253,13 @@ def cmd_dpr_generate(args: argparse.Namespace) -> None:
         with open(output_path, "wb") as f:
             f.write(zip_bytes)
 
-        print("\n📦 DPR Package Generated Successfully!")
+        print("\nDPR Package Generated Successfully!")
         print(f"  Project ID: {dpr.project_id}")
         print(f"  Project Name: {dpr.project_name}")
         print(f"  Sites: {', '.join(s.village.name for s in dpr.sites)}")
-        print(f"  Total Cost: ₹{dpr.manifest['total_cost_high_inr']:,.0f} ({dpr.manifest['total_cost_high_inr']/100000:.2f} Lakhs)")
+        print(
+            f"  Total Cost: ₹{dpr.manifest['total_cost_high_inr']:,.0f} ({dpr.manifest['total_cost_high_inr'] / 100000:.2f} Lakhs)"
+        )
         print(f"  Total Labour: {dpr.manifest['total_labour_days']:,} person-days")
         print(f"  Output: {output_path}")
         print(f"  Contents: DOCX, XLSX, KML{' + PDF' if dpr.pdf_bytes else ''}")
@@ -310,14 +328,20 @@ def main() -> None:
     p_rpt.set_defaults(func=cmd_report)
 
     # participatory
-    p_part = subparsers.add_parser("participatory", help="Community monitoring commands")
+    p_part = subparsers.add_parser(
+        "participatory", help="Community monitoring commands"
+    )
     part_sub = p_part.add_subparsers(dest="part_command", required=True)
 
     p_part_submit = part_sub.add_parser("submit", help="Submit community observation")
     p_part_submit.add_argument("text", help="Observation text")
-    p_part_submit.add_argument("--observer-id", required=True, help="Observer ID (phone/WhatsApp)")
+    p_part_submit.add_argument(
+        "--observer-id", required=True, help="Observer ID (phone/WhatsApp)"
+    )
     p_part_submit.add_argument("--observer-name", default="", help="Observer name")
-    p_part_submit.add_argument("--language", default="en-IN", help="Language code (e.g., en-IN, hi-IN, or-IN)")
+    p_part_submit.add_argument(
+        "--language", default="en-IN", help="Language code (e.g., en-IN, hi-IN, or-IN)"
+    )
     p_part_submit.set_defaults(func=cmd_participatory_submit)
 
     p_part_lb = part_sub.add_parser("leaderboard", help="Show Jal Mitra leaderboard")
@@ -331,13 +355,25 @@ def main() -> None:
 
     p_path_gen = path_sub.add_parser("generate", help="Generate pathway for a site")
     p_path_gen.add_argument("site_id", help="Site identifier")
-    p_path_gen.add_argument("--scenario", default="SSP2-4.5", help="SSP scenario (SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5)")
-    p_path_gen.add_argument("--base-rainfall", type=float, default=1.0, help="Baseline rainfall fraction")
+    p_path_gen.add_argument(
+        "--scenario",
+        default="SSP2-4.5",
+        help="SSP scenario (SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5)",
+    )
+    p_path_gen.add_argument(
+        "--base-rainfall", type=float, default=1.0, help="Baseline rainfall fraction"
+    )
     p_path_gen.set_defaults(func=cmd_pathways_generate)
 
-    p_path_cmp = path_sub.add_parser("compare", help="Compare pathways across scenarios")
+    p_path_cmp = path_sub.add_parser(
+        "compare", help="Compare pathways across scenarios"
+    )
     p_path_cmp.add_argument("site_id", help="Site identifier")
-    p_path_cmp.add_argument("--scenarios", default="SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5", help="Comma-separated SSP scenarios")
+    p_path_cmp.add_argument(
+        "--scenarios",
+        default="SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5",
+        help="Comma-separated SSP scenarios",
+    )
     p_path_cmp.set_defaults(func=cmd_pathways_compare)
 
     # dpr
@@ -348,7 +384,9 @@ def main() -> None:
     p_dpr_gen.add_argument("--sites", required=True, help="Comma-separated site IDs")
     p_dpr_gen.add_argument("--name", default="", help="Project name")
     p_dpr_gen.add_argument("--output", default="", help="Output ZIP path")
-    p_dpr_gen.add_argument("--pdf", action="store_true", help="Include PDF (requires weasyprint)")
+    p_dpr_gen.add_argument(
+        "--pdf", action="store_true", help="Include PDF (requires weasyprint)"
+    )
     p_dpr_gen.set_defaults(func=cmd_dpr_generate)
 
     # server
