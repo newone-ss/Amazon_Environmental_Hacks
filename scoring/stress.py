@@ -25,6 +25,7 @@ from scoring.base import (
 def calculate_heat_water_stress(
     features: dict[str, Any],
     data_tag: DataTag = DataTag.ILLUSTRATIVE,
+    field_provenance: dict[str, str] | None = None,
 ) -> ScoreResult:
     """
     Calculate compound heat-water stress score from surface thermal and water accessibility indicators.
@@ -70,15 +71,55 @@ def calculate_heat_water_stress(
 
     score_val, drivers = compute_weighted_score(normalized_map, weights_spec)
 
+    # Compute confidence based on field provenance
+    if field_provenance is None:
+        # Fallback to original confidence and note
+        confidence_level = ConfidenceLevel.HIGH
+        confidence_numeric = 0.81
+        data_quality_note = (
+            "Compound thermal and hydrological index from MODIS LST (1km), "
+            "MODIS NDVI, and CHIRPS precipitation departure."
+        )
+    else:
+        # Fields used in heat_water_stress score
+        used_fields = [
+            "lst_summer_max_c",
+            "ndvi_summer",
+            "rainfall_deficit_pct",
+            "groundwater_depth_m",
+            "distance_to_perennial_water_m",
+            "population_density_per_km2",
+        ]
+        derived_count = 0
+        for field in used_fields:
+            prov = field_provenance.get(field, "unknown")
+            if prov == "derived":
+                derived_count += 1
+        non_derived_count = len(used_fields) - derived_count
+        # Base confidence 0.81, penalize 0.1 for each non-derived field
+        confidence_numeric = 0.81 - (0.1 * non_derived_count)
+        confidence_numeric = max(0.0, min(1.0, confidence_numeric))  # clamp
+        # Determine confidence level
+        if confidence_numeric >= 0.8:
+            confidence_level = ConfidenceLevel.HIGH
+        elif confidence_numeric >= 0.5:
+            confidence_level = ConfidenceLevel.MEDIUM
+        else:
+            confidence_level = ConfidenceLevel.LOW
+        # Update data quality note with provenance info
+        data_quality_note = (
+            f"Compound thermal and hydrological index from MODIS LST (1km), "
+            f"MODIS NDVI, and CHIRPS precipitation departure. "
+            f"Field provenance: {derived_count}/{len(used_fields)} derived, "
+            f"{non_derived_count} curated/assumed."
+        )
+
     return build_score_result(
         score_type="heat_water_stress",
         value=score_val,
         drivers=drivers,
-        confidence_level=ConfidenceLevel.HIGH,
-        confidence_numeric=0.81,
-        data_quality_note=(
-            "Compound thermal and hydrological index from MODIS LST (1km), "
-            "MODIS NDVI, and CHIRPS precipitation departure."
-        ),
+        confidence_level=confidence_level,
+        confidence_numeric=confidence_numeric,
+        data_quality_note=data_quality_note,
         data_tag=data_tag,
     )

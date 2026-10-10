@@ -153,3 +153,13 @@ The AI layer is architected as an autonomous multi-agent collective consisting o
   * `S3CrudPolicy` scoped strictly to `UploadsBucket`.
   * Scoped Bedrock model invocation permissions.
 * **Network Segregation**: Pure serverless constructs eliminate the need for VPC peering, NAT Gateways, or bastion hosts for MVP operations, drastically reducing vulnerability surface area and deployment latency.
+
+---
+
+## 6. Deployed API URL
+
+After deploying the backend via AWS SAM, the API Gateway endpoint URL can be found in the CloudFormation stack outputs or recorded here:
+
+API_URL: https://<api-id>.execute-api.<region>.amazonaws.com/<stage>
+
+This URL is used for testing with the smoke script and for frontend configuration.

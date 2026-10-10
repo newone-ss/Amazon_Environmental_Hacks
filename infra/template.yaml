@@ -8,10 +8,11 @@ Globals:
   Function:
     Timeout: 30
     MemorySize: 512
-    Runtime: python3.11
+    Runtime: python3.12
     Environment:
       Variables:
         DYNAMODB_TABLE_OBSERVATIONS: !Ref ObservationsTable
+        DYNAMODB_TABLE_BEDROCK_CACHE: !Ref BedrockCacheTable
         S3_BUCKET_UPLOADS: !Ref UploadsBucket
         BEDROCK_MODEL_ID: anthropic.claude-3-sonnet-20240229-v1:0
         LOG_LEVEL: INFO
@@ -52,13 +53,15 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ObservationsTable
+        - DynamoDBCrudPolicy:
+            TableName: !Ref BedrockCacheTable
         - S3CrudPolicy:
             BucketName: !Ref UploadsBucket
         - Statement:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-              Resource: "*"
+              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/${BEDROCK_MODEL_ID}"
       Events:
         ApiEvent:
           Type: HttpApi
@@ -89,7 +92,22 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-  # ── S3 — File Uploads (photos, reports) ────────
+  # ── DynamoDB — Bedrock Response Cache ────────
+  BedrockCacheTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: bhujal-bedrock-cache
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: cache_key
+          AttributeType: S
+        - AttributeName: cached_narrative
+          AttributeType: S
+      KeySchema:
+        - AttributeName: cache_key
+          KeyType: HASH
+
+  # ── S3 — File Uploads (photos, reports, DPR packages) ──────
   UploadsBucket:
     Type: AWS::S3::Bucket
     Properties:
@@ -101,9 +119,16 @@ Resources:
             AllowedMethods:
               - PUT
               - GET
+              - HEAD
             AllowedHeaders:
               - "*"
             MaxAge: 3600
+      LifecycleConfiguration:
+        Rules:
+          - Id: AbortIncompleteMultipartUploads
+            Status: Enabled
+            AbortIncompleteMultipartUpload:
+              DaysAfterInitiation: 7
 
   # ── S3 — Frontend Static Hosting ──────────────
   FrontendBucket:
@@ -130,7 +155,7 @@ Resources:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${FrontendDistribution}"
 
-  # ── CloudFront — Frontend CDN ──────────────────
+  # ── CloudFront — Frontend CDN ─────────────────
   FrontendDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -142,7 +167,7 @@ Resources:
             DomainName: !GetAtt FrontendBucket.RegionalDomainName
             S3OriginConfig:
               OriginAccessIdentity: ""
-            OriginAccessControlId: !Ref FrontendOAC
+              OriginAccessControlId: !Ref FrontendOAC
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -171,6 +196,13 @@ Resources:
         SigningBehavior: always
         SigningProtocol: sigv4
 
+  # ── CloudWatch Log Group for Lambda Function ─────
+  BhujalLogGroup:
+    Type: AWS::Logs::LogGroup
+    Properties:
+      LogGroupName: !Sub "/aws/${AWS::StackName}-BhujalFunction"
+      RetentionInDays: 30
+
 Outputs:
   ApiUrl:
     Description: API Gateway endpoint URL
@@ -187,3 +219,7 @@ Outputs:
   UploadsBucketName:
     Description: S3 bucket for uploads
     Value: !Ref UploadsBucket
+
+  BedrockCacheTableName:
+    Description: DynamoDB table for Bedrock response cache
+    Value: !Ref BedrockCacheTable

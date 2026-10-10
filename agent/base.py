@@ -7,11 +7,13 @@ template fallback engines for all specialized analytical agents.
 
 from __future__ import annotations
 
+import hashlib
 import json
 import logging
 import os
 from typing import Any
 
+import boto3
 from pydantic import BaseModel, Field
 
 logger = logging.getLogger(__name__)
@@ -55,9 +57,38 @@ class BaseAgent:
         self.region = region or os.getenv(
             "BEDROCK_REGION", os.getenv("AWS_REGION", "ap-south-1")
         )
+        # Initialize Bedrock cache table if configured
+        self.bedrock_cache_table = os.getenv("DYNAMODB_TABLE_BEDROCK_CACHE")
+        if self.bedrock_cache_table:
+            self.dynamodb = boto3.resource("dynamodb")
+            self.cache_table = self.dynamodb.Table(self.bedrock_cache_table)
+
+    def _get_cache_key(self, prompt: str) -> str:
+        """Generate a cache key for Bedrock invocation based on prompt and system parameters."""
+        key_string = f"{self.system_prompt}|{prompt}|{self.model_id}"
+        return hashlib.sha256(key_string.encode()).hexdigest()
 
     def _invoke_bedrock(self, prompt: str) -> str | None:
         """Attempt invoking Claude 3 Sonnet on Amazon Bedrock."""
+        # Check if Bedrock usage is disabled via environment variable
+        use_bedrock = os.getenv("USE_BEDROCK", "true").lower()
+        if use_bedrock == "false":
+            return None
+
+        # Generate cache key
+        cache_key = self._get_cache_key(prompt)
+
+        # Try to get from cache if cache table is configured
+        if self.bedrock_cache_table:
+            try:
+                response = self.cache_table.get_item(Key={"cache_key": cache_key})
+                if "Item" in response:
+                    logger.debug("Bedrock cache hit for key: %s", cache_key)
+                    return response["Item"].get("cached_narrative")
+            except Exception as e:  # noqa: BLE001
+                logger.debug("Bedrock cache get failed: %s", e)
+                # Continue to Bedrock invocation on cache error
+
         # Fast bail-out if no credentials exist in environment or ~/.aws/credentials
         has_env_creds = bool(
             os.getenv("AWS_ACCESS_KEY_ID")
@@ -96,7 +127,22 @@ class BaseAgent:
                 body=json.dumps(payload),
             )
             resp_body = json.loads(response["body"].read().decode("utf-8"))
-            return resp_body.get("content", [{}])[0].get("text", "")
+            narrative = resp_body.get("content", [{}])[0].get("text", "")
+
+            # Cache the result if cache table is configured
+            if self.bedrock_cache_table:
+                try:
+                    self.cache_table.put_item(
+                        Item={
+                            "cache_key": cache_key,
+                            "cached_narrative": narrative,
+                        }
+                    )
+                    logger.debug("Bedrock cache stored for key: %s", cache_key)
+                except Exception as e:  # noqa: BLE001
+                    logger.debug("Bedrock cache put failed: %s", e)
+
+            return narrative
         except Exception as e:  # noqa: BLE001
             logger.debug(
                 "Bedrock invocation bypassed (%s). Falling back to deterministic synthesis.",

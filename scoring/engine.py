@@ -106,12 +106,17 @@ def evaluate_site(site_id: str) -> Site | None:
         features["elevation_m"] = village.elevation_m
 
     # 1. Deterministic Scores
-    recharge_res = calculate_recharge_score(features, data_tag=dtag)
-    stress_res = calculate_heat_water_stress(features, data_tag=dtag)
+    recharge_res = calculate_recharge_score(
+        features, data_tag=dtag, field_provenance=raw.get("field_provenance", {})
+    )
+    stress_res = calculate_heat_water_stress(
+        features, data_tag=dtag, field_provenance=raw.get("field_provenance", {})
+    )
     spring_res = calculate_spring_drying_index(
         features,
         has_spring=village.has_spring,
         data_tag=dtag,
+        field_provenance=raw.get("field_provenance", {}),
     )
 
     scores = [recharge_res, stress_res, spring_res]

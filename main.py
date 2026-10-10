@@ -188,7 +188,7 @@ def cmd_pathways_generate(args: argparse.Namespace) -> None:
     print(f"   SSP Scenario: {pathway.ssp_scenario}")
     print(f"   Success Probability: {pathway.success_probability:.0%}")
     print(
-        f"   Total Cost: ₹{pathway.total_cost_inr:,.0f} ({pathway.total_cost_inr / 100000:.2f} Lakhs)"
+        f"   Total Cost: INR {pathway.total_cost_inr:,.0f} ({pathway.total_cost_inr / 100000:.2f} Lakhs)"
     )
     print(
         f"   Final Recharge: {pathway.final_recharge_score:.1f} | Stress: {pathway.final_stress_score:.1f} | Spring Risk: {pathway.final_spring_risk:.1f}"
@@ -258,7 +258,7 @@ def cmd_dpr_generate(args: argparse.Namespace) -> None:
         print(f"  Project Name: {dpr.project_name}")
         print(f"  Sites: {', '.join(s.village.name for s in dpr.sites)}")
         print(
-            f"  Total Cost: ₹{dpr.manifest['total_cost_high_inr']:,.0f} ({dpr.manifest['total_cost_high_inr'] / 100000:.2f} Lakhs)"
+            f"  Total Cost: INR {dpr.manifest['total_cost_high_inr']:,.0f} ({dpr.manifest['total_cost_high_inr'] / 100000:.2f} Lakhs)"
         )
         print(f"  Total Labour: {dpr.manifest['total_labour_days']:,} person-days")
         print(f"  Output: {output_path}")

@@ -309,3 +309,11 @@ Bhujal maintains a strict empirical honesty policy:
 ## 9. License
 
 This project is licensed under the MIT License. See `LICENSE` for details.
+
+## 10. Deployed API URL
+
+After deploying the backend via AWS SAM, record the API Gateway URL here:
+
+API_URL: https://<api-id>.execute-api.<region>.amazonaws.com/<stage>
+
+This URL should be used for testing with the smoke script and for frontend configuration.

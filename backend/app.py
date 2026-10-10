@@ -11,7 +11,12 @@ import hashlib
 import logging
 import os
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+
+try:
+    from datetime import UTC
+except ImportError:
+    UTC = timezone.utc  # noqa: UP017
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -534,10 +539,35 @@ async def generate_dpr(
         dpr = generate_dpr_package(site_list, project_name or None, include_pdf)
         zip_bytes = create_dpr_zip(dpr)
 
-        # Return ZIP as base64 or save to S3
         import base64
+        import tempfile
+
+        import boto3
 
         zip_b64 = base64.b64encode(zip_bytes).decode()
+        presigned_url = None
+
+        bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
+        zip_key = f"dpr/{dpr.project_id}.zip"
+
+        try:
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:
+                tmp.write(zip_bytes)
+                tmp_path = tmp.name
+
+            try:
+                s3_client = boto3.client("s3")
+                s3_client.upload_file(tmp_path, bucket, zip_key)
+                presigned_url = s3_client.generate_presigned_url(
+                    "get_object",
+                    Params={"Bucket": bucket, "Key": zip_key},
+                    ExpiresIn=3600,
+                )
+            finally:
+                if os.path.exists(tmp_path):
+                    os.unlink(tmp_path)
+        except Exception as s3_err:  # noqa: BLE001
+            logger.warning("S3 DPR upload/presign skipped or failed: %s", s3_err)
 
         return {
             "project_id": dpr.project_id,
@@ -546,6 +576,7 @@ async def generate_dpr(
             "total_cost_inr": dpr.manifest["total_cost_high_inr"],
             "total_labour_days": dpr.manifest["total_labour_days"],
             "zip_base64": zip_b64,
+            "presigned_url": presigned_url,
             "manifest": dpr.manifest,
         }
     except ValueError as exc:

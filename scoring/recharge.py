@@ -26,6 +26,7 @@ from scoring.base import (
 def calculate_recharge_score(
     features: dict[str, Any],
     data_tag: DataTag = DataTag.ILLUSTRATIVE,
+    field_provenance: dict[str, str] | None = None,
 ) -> ScoreResult:
     """
     Calculate deterministic recharge suitability score from terrain and climatic features.
@@ -64,15 +65,55 @@ def calculate_recharge_score(
 
     score_val, drivers = compute_weighted_score(normalized_map, weights_spec)
 
+    # Compute confidence based on field provenance
+    if field_provenance is None:
+        # Fallback to original confidence and note
+        confidence_level = ConfidenceLevel.MEDIUM
+        confidence_numeric = 0.72
+        data_quality_note = (
+            "Multi-criteria overlay derived from SRTM 30m DEM, "
+            "SoilGrids 250m, and CHIRPS precipitation."
+        )
+    else:
+        # Fields used in recharge score
+        used_fields = [
+            "slope_degrees",
+            "soil_permeability",
+            "rainfall_intensity",
+            "lulc_perviousness",
+            "lineament_density",
+            "drainage_density",
+        ]
+        derived_count = 0
+        for field in used_fields:
+            prov = field_provenance.get(field, "unknown")
+            if prov == "derived":
+                derived_count += 1
+        non_derived_count = len(used_fields) - derived_count
+        # Base confidence 0.72, penalize 0.1 for each non-derived field
+        confidence_numeric = 0.72 - (0.1 * non_derived_count)
+        confidence_numeric = max(0.0, min(1.0, confidence_numeric))  # clamp
+        # Determine confidence level
+        if confidence_numeric >= 0.8:
+            confidence_level = ConfidenceLevel.HIGH
+        elif confidence_numeric >= 0.5:
+            confidence_level = ConfidenceLevel.MEDIUM
+        else:
+            confidence_level = ConfidenceLevel.LOW
+        # Update data quality note with provenance info
+        data_quality_note = (
+            f"Multi-criteria overlay derived from SRTM 30m DEM, "
+            f"SoilGrids 250m, and CHIRPS precipitation. "
+            f"Field provenance: {derived_count}/{len(used_fields)} derived, "
+            f"{non_derived_count} curated/assumed."
+        )
+
     return build_score_result(
         score_type="recharge_score",
         value=score_val,
         drivers=drivers,
-        confidence_level=ConfidenceLevel.MEDIUM,
-        confidence_numeric=0.72,
-        data_quality_note=(
-            "Multi-criteria overlay derived from SRTM 30m DEM, "
-            "SoilGrids 250m, and CHIRPS precipitation."
-        ),
+        confidence_level=confidence_level,
+        confidence_numeric=confidence_numeric,
+        data_quality_note=data_quality_note,
         data_tag=data_tag,
     )

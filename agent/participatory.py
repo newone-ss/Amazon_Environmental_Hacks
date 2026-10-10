@@ -12,7 +12,12 @@ import json
 import logging
 import re
 import uuid
-from datetime import UTC, datetime
+from datetime import datetime, timezone
+
+try:
+    from datetime import UTC
+except ImportError:
+    UTC = timezone.utc  # noqa: UP017
 from pathlib import Path
 from typing import Any
 

@@ -73,10 +73,10 @@ The Bhujal verification and validation framework ensures mathematical correctnes
 
 ## 3. Test Execution and Continuous Integration
 
-All 44 automated tests across Tier 1, Tier 2, Tier 3, and Tier 4 are executed automatically upon every code commit and pull request via the GitHub Actions CI pipeline (`.github/workflows/ci.yml`):
-* `tests/test_models.py`: Pydantic v2 data contract integrity and serialization bounds.
-* `tests/test_scoring.py`: Deterministic spatial scoring, safety veto invariants, and climate simulation.
-* `tests/test_agents.py`: Domain specialist agents, Bedrock LLM synthesis, and administrative orchestrator.
-* `tests/test_api.py`: FastAPI REST endpoint operations, multi-state filtering, and HTML dossier generation.
+All 47 automated tests across Tier 1, Tier 2, Tier 3, and Tier 4 are executed automatically upon every code commit and pull request via the GitHub Actions CI pipeline (`.github/workflows/ci.yml`):
+* `tests/test_models.py`: Pydantic v2 data contract integrity and serialization bounds (12 tests).
+* `tests/test_scoring.py`: Deterministic spatial scoring, safety veto invariants, and climate simulation (13 tests).
+* `tests/test_agents.py`: Domain specialist agents, Bedrock LLM synthesis, and administrative orchestrator (7 tests).
+* `tests/test_api.py`: FastAPI REST endpoint operations, multi-state filtering, HTML dossier generation, and DPR package generation (15 tests).
 
-Pull requests failing any test or linter constraint (`ruff check`, `ruff format`) are strictly blocked from merging.
+Pull requests failing any test or linter constraint (`ruff check`, `ruff format`) are strictly blocked from merging. See [TEST_CHECKLIST.md](../TEST_CHECKLIST.md) for the mandatory concrete verification procedure and Definition of Done.

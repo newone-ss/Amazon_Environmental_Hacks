@@ -37,6 +37,7 @@ def calculate_spring_drying_index(
     features: dict[str, Any],
     has_spring: bool = True,
     data_tag: DataTag = DataTag.ILLUSTRATIVE,
+    field_provenance: dict[str, str] | None = None,
 ) -> ScoreResult:
     """
     Calculate springhead drying risk index (0-100). Higher score indicates greater risk of baseflow cessation.
@@ -95,15 +96,55 @@ def calculate_spring_drying_index(
 
     score_val, drivers = compute_weighted_score(normalized_map, weights_spec)
 
+    # Compute confidence based on field provenance
+    if field_provenance is None:
+        # Fallback to original confidence and note
+        confidence_level = ConfidenceLevel.MEDIUM
+        confidence_numeric = 0.68
+        data_quality_note = (
+            "Heuristic morphometric vulnerability derived from Hansen Forest Change, "
+            "DEM catchment delineation, and CHIRPS rainfall trends."
+        )
+    else:
+        # Fields used in spring_drying_index score
+        used_fields = [
+            "elevation_m",
+            "catchment_area_ha",
+            "forest_loss_pct",
+            "geology",
+            "rainfall_trend_pct",
+            "slope_degrees",
+        ]
+        derived_count = 0
+        for field in used_fields:
+            prov = field_provenance.get(field, "unknown")
+            if prov == "derived":
+                derived_count += 1
+        non_derived_count = len(used_fields) - derived_count
+        # Base confidence 0.68, penalize 0.1 for each non-derived field
+        confidence_numeric = 0.68 - (0.1 * non_derived_count)
+        confidence_numeric = max(0.0, min(1.0, confidence_numeric))  # clamp
+        # Determine confidence level
+        if confidence_numeric >= 0.8:
+            confidence_level = ConfidenceLevel.HIGH
+        elif confidence_numeric >= 0.5:
+            confidence_level = ConfidenceLevel.MEDIUM
+        else:
+            confidence_level = ConfidenceLevel.LOW
+        # Update data quality note with provenance info
+        data_quality_note = (
+            f"Heuristic morphometric vulnerability derived from Hansen Forest Change, "
+            f"DEM catchment delineation, and CHIRPS rainfall trends. "
+            f"Field provenance: {derived_count}/{len(used_fields)} derived, "
+            f"{non_derived_count} curated/assumed."
+        )
+
     return build_score_result(
         score_type="spring_drying_index",
         value=score_val,
         drivers=drivers,
-        confidence_level=ConfidenceLevel.MEDIUM,
-        confidence_numeric=0.68,
-        data_quality_note=(
-            "Heuristic morphometric vulnerability derived from Hansen Forest Change, "
-            "DEM catchment delineation, and CHIRPS rainfall trends."
-        ),
+        confidence_level=confidence_level,
+        confidence_numeric=confidence_numeric,
+        data_quality_note=data_quality_note,
         data_tag=data_tag,
     )

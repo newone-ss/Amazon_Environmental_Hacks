@@ -155,7 +155,7 @@ If any feature implementation exceeds 150% of its designated time window, immedi
 * Implemented 7 specialized autonomous domain agents and Lead Orchestrator in `agent/`.
 * Implemented Amazon Bedrock Claude 3 Sonnet integration with deterministic template fallback.
 * Implemented publication-grade HTML action dossier report generator in `agent/report_generator.py`.
-* Created comprehensive test suite (41 tests passing across models, scoring, agents, and API).
+* Created comprehensive test suite (47 tests passing across models, scoring, agents, and API; see `TEST_CHECKLIST.md` for verification gates).
 
 ### Phase 3: Client Interface Development (Current)
 * Initialize React + TypeScript application in `frontend/`.
