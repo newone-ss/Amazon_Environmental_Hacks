@@ -162,3 +162,29 @@ class TestApiEndpoints:
         get_rpt = client.get(f"/reports/{filename}")
         assert get_rpt.status_code == 200
         assert "Bhujal: Watershed Planning Action Dossier" in get_rpt.text
+
+    def test_dpr_schemes(self) -> None:
+        response = client.get("/dpr/schemes")
+        assert response.status_code == 200
+        data = response.json()
+        assert "intervention_schemes" in data
+        assert "state_nuances" in data
+        assert "check_dam" in data["intervention_schemes"]
+        assert "Madhya Pradesh" in data["state_nuances"]
+
+    def test_dpr_generate(self) -> None:
+        payload = {"site_ids": "site_001", "project_name": "Test DPR Package"}
+        response = client.post("/dpr/generate", data=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["site_count"] == 1
+        assert "zip_base64" in data
+        assert len(data["zip_base64"]) > 100
+        assert "manifest" in data
+
+    def test_dpr_download(self) -> None:
+        response = client.post("/dpr/download", data={"site_ids": "site_001"})
+        assert response.status_code == 200
+        assert response.headers["content-type"] == "application/zip"
+        assert response.content[:4] == b"PK\x03\x04"
+

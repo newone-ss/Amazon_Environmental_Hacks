@@ -16,13 +16,32 @@ from datetime import UTC, datetime
 from pathlib import Path
 from typing import Any
 
-from docx import Document
-from docx.enum.table import WD_TABLE_ALIGNMENT
-from docx.enum.text import WD_ALIGN_PARAGRAPH
-from docx.shared import Inches, Pt, RGBColor
-from openpyxl import Workbook
-from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
-from openpyxl.utils import get_column_letter
+try:
+    from docx import Document
+    from docx.enum.table import WD_TABLE_ALIGNMENT
+    from docx.enum.text import WD_ALIGN_PARAGRAPH
+    from docx.shared import Inches, Pt, RGBColor
+
+    DOCX_AVAILABLE = True
+except ImportError:
+    Document = None  # type: ignore[assignment,misc]
+    WD_TABLE_ALIGNMENT = None  # type: ignore[assignment,misc]
+    WD_ALIGN_PARAGRAPH = None  # type: ignore[assignment,misc]
+    Inches = Pt = RGBColor = None  # type: ignore[assignment,misc]
+    DOCX_AVAILABLE = False
+
+try:
+    from openpyxl import Workbook
+    from openpyxl.styles import Alignment, Border, Font, PatternFill, Side
+    from openpyxl.utils import get_column_letter
+
+    OPENPYXL_AVAILABLE = True
+except ImportError:
+    Workbook = None  # type: ignore[assignment,misc]
+    Alignment = Border = Font = PatternFill = Side = None  # type: ignore[assignment,misc]
+    get_column_letter = None  # type: ignore[assignment,misc]
+    OPENPYXL_AVAILABLE = False
+
 
 from backend.models import (
     SafetyStatus,
@@ -195,6 +214,8 @@ def _add_table_with_style(
 
 def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) -> bytes:
     """Generate the main DPR document in .docx format."""
+    if not DOCX_AVAILABLE or Document is None:
+        raise RuntimeError("python-docx is required for Word document generation")
     doc = Document()
 
     # Styles
@@ -696,6 +717,8 @@ def _generate_dpr_docx(sites: list[Site], project_name: str, project_id: str) ->
 
 def _generate_dpr_xlsx(sites: list[Site]) -> bytes:
     """Generate cost abstracts and financial tables in .xlsx format."""
+    if not OPENPYXL_AVAILABLE or Workbook is None:
+        raise RuntimeError("openpyxl is required for Excel workbook generation")
     wb = Workbook()
 
     # Styles
