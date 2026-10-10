@@ -10,6 +10,7 @@ from agent.heat_stress import HeatWaterStressAgent
 from agent.hydrogeology import HydrogeologyAgent
 from agent.intervention_composer import InterventionComposerAgent
 from agent.orchestrator import LeadPlannerOrchestratorAgent
+from agent.participatory import ParticipatoryMonitoringAgent
 from agent.report_generator import create_report, generate_action_dossier_html
 from agent.safety_auditor import SafetyAuditorAgent
 from agent.scenario_simulator import ScenarioSimulatorAgent
@@ -23,6 +24,7 @@ __all__ = [
     "HydrogeologyAgent",
     "InterventionComposerAgent",
     "LeadPlannerOrchestratorAgent",
+    "ParticipatoryMonitoringAgent",
     "SafetyAuditorAgent",
     "ScenarioSimulatorAgent",
     "SpringshedAgent",

@@ -23,6 +23,7 @@ from scoring.base import (
 from scoring.engine import (
     evaluate_site,
     get_all_villages,
+    get_site_raw_data,
     get_site_recommendations,
     run_site_scenario,
 )
@@ -52,6 +53,7 @@ __all__ = [
     "get_interventions_config",
     "get_safety_config",
     "get_scenario_config",
+    "get_site_raw_data",
     "get_site_recommendations",
     "get_weights_config",
     "normalize_linear",

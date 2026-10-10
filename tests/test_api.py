@@ -16,7 +16,7 @@ class TestApiEndpoints:
         response = client.get("/meta")
         assert response.status_code == 200
         data = response.json()
-        assert data["version"] == "0.1.0"
+        assert data["version"] == "0.2.0"
         assert "Odisha" in data["aoi_name"]
         assert data["total_villages"] == 13
         assert "supported_states" in data

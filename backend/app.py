@@ -1,6 +1,6 @@
 """
 Bhujal — FastAPI Application
-==============================
+=============================
 Main production REST API application with full integration into
 deterministic scoring modules, multi-agent orchestrator, and DynamoDB/S3.
 """
@@ -16,7 +16,7 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-from fastapi import Body, FastAPI, HTTPException, Query
+from fastapi import Body, FastAPI, Form, HTTPException, Query, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import HTMLResponse
 
@@ -26,6 +26,7 @@ except ImportError:
     Mangum = None  # type: ignore
 
 from agent.orchestrator import LeadPlannerOrchestratorAgent
+from agent.participatory import ParticipatoryMonitoringAgent
 from agent.report_generator import create_report
 from backend.models import (
     DataTag,
@@ -53,7 +54,7 @@ REPORTS_DIR = Path(__file__).resolve().parent.parent / "data" / "reports"
 app = FastAPI(
     title="Bhujal API",
     description="Decision-support tool for groundwater recharge planning in hilly tribal areas",
-    version="0.1.0",
+    version="0.2.0",
 )
 
 # CORS — dev and prod origins
@@ -68,6 +69,7 @@ app.add_middleware(
 # In-memory store for local development fallback
 _local_observations: list[Observation] = []
 _orchestrator = LeadPlannerOrchestratorAgent()
+_participatory_agent = ParticipatoryMonitoringAgent()
 
 
 def _get_weights_hash() -> str:
@@ -86,7 +88,7 @@ async def get_meta() -> MetaResponse:
     """System metadata and AOI info."""
     villages = get_all_villages()
     return MetaResponse(
-        version="0.1.0",
+        version="0.2.0",
         aoi_name="Priority Watersheds: Odisha, Madhya Pradesh, Jharkhand",
         aoi_state="Multi-State (Odisha, Madhya Pradesh, Jharkhand; Pan-India Extensible)",
         total_villages=len(villages),
@@ -219,6 +221,149 @@ async def list_observations(site_id: str | None = Query(None)) -> list[Observati
     if site_id:
         return [o for o in _local_observations if o.site_id == site_id]
     return list(_local_observations)
+
+
+# ── Participatory Monitoring Routes ─────────────────────────────────
+
+
+class ParticipatoryTextRequest:
+    """Request model for text-based community observation."""
+
+    def __init__(
+        self,
+        text: str = Form(...),
+        observer_id: str = Form(...),
+        observer_name: str = Form(""),
+        language_code: str = Form("en-IN"),
+    ):
+        self.text = text
+        self.observer_id = observer_id
+        self.observer_name = observer_name
+        self.language_code = language_code
+
+
+@app.post("/participatory/observe/text", response_model=dict)
+async def submit_text_observation(
+    text: str = Form(...),
+    observer_id: str = Form(...),
+    observer_name: str = Form(""),
+    language_code: str = Form("en-IN"),
+) -> dict:
+    """Submit a community observation via text (WhatsApp message)."""
+    result = _participatory_agent.execute(
+        {
+            "text": text,
+            "observer_id": observer_id,
+            "observer_name": observer_name,
+            "language_code": language_code,
+        }
+    )
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Processing failed"))
+    return result
+
+
+@app.post("/participatory/observe/voice", response_model=dict)
+async def submit_voice_observation(
+    audio: UploadFile,
+    observer_id: str = Form(...),
+    observer_name: str = Form(""),
+    language_code: str = Form("en-IN"),
+) -> dict:
+    """Submit a community observation via voice note (WhatsApp voice message)."""
+    # Upload audio to S3 first
+    bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
+    region = os.getenv("AWS_REGION", "ap-south-1")
+    audio_key = f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{audio.filename.split('.')[-1]}"
+
+    try:
+        import boto3
+        s3 = boto3.client("s3", region_name=region)
+        content = await audio.read()
+        s3.put_object(Bucket=bucket, Key=audio_key, Body=content, ContentType=audio.content_type)
+        audio_s3_uri = f"s3://{bucket}/{audio_key}"
+    except Exception as exc:  # noqa: BLE001
+        logger.warning("S3 upload failed, using local fallback: %s", exc)
+        audio_s3_uri = f"local://{audio_key}"
+
+    result = _participatory_agent.execute(
+        {
+            "audio_s3_uri": audio_s3_uri,
+            "observer_id": observer_id,
+            "observer_name": observer_name,
+            "language_code": language_code,
+        }
+    )
+    if not result.get("success"):
+        raise HTTPException(status_code=400, detail=result.get("error", "Processing failed"))
+    return result
+
+
+@app.post("/participatory/observe/whatsapp", response_model=dict)
+async def whatsapp_webhook(
+    Body: str = Form(...),
+    From: str = Form(...),
+    MediaUrl0: str = Form(""),
+    MediaContentType0: str = Form(""),
+) -> dict:
+    """
+    WhatsApp Business API webhook endpoint.
+
+    Receives incoming messages from WhatsApp (via Twilio or Meta Cloud API).
+    Handles both text and voice messages.
+    """
+    observer_id = From.replace("whatsapp:", "")
+    observer_name = ""
+
+    # If media (voice) attached
+    if MediaUrl0 and "audio" in MediaContentType0:
+        # In production, download from MediaUrl0 and upload to S3
+        # For now, process as text with note about voice
+        text = f"[Voice message received] {Body}"
+    else:
+        text = Body
+
+    result = _participatory_agent.execute(
+        {
+            "text": text,
+            "observer_id": observer_id,
+            "observer_name": observer_name,
+            "language_code": "en-IN",
+        }
+    )
+
+    # Return TwiML response for Twilio
+    from fastapi.responses import Response
+    twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
+<Response>
+    <Message>Thank you! Your observation has been recorded. {result.get('message', '')}</Message>
+</Response>"""
+    return Response(content=twiml, media_type="application/xml")
+
+
+@app.get("/participatory/leaderboard", response_model=list[dict])
+async def get_leaderboard(
+    state: str | None = Query(None),
+    limit: int = Query(10, ge=1, le=50),
+) -> list[dict]:
+    """Get top community contributors leaderboard."""
+    return _participatory_agent.get_leaderboard(state=state, limit=limit)
+
+
+@app.get("/participatory/stats/{observer_id}", response_model=dict)
+async def get_observer_stats(observer_id: str) -> dict:
+    """Get statistics for a specific observer."""
+    # In production, query observer stats from DynamoDB
+    return {
+        "observer_id": observer_id,
+        "total_observations": 0,
+        "by_type": {},
+        "badges_earned": [],
+        "rank": None,
+    }
+
+
+# ── Report Routes ─────────────────────────────────
 
 
 @app.post("/report", response_model=ReportResult)
