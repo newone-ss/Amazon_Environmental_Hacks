@@ -60,14 +60,20 @@ from scoring import (
     run_site_scenario,
 )
 
-CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
-REPORTS_DIR = Path(__file__).resolve().parent.parent / "data" / "reports"
+_backend_dir = Path(__file__).resolve().parent
+CONFIG_DIR = (
+    _backend_dir / "config"
+    if (_backend_dir / "config").exists()
+    else _backend_dir.parent / "config"
+)
+REPORTS_DIR = _backend_dir.parent / "data" / "reports"
 
 app = FastAPI(
     title="Bhujal API",
     description="Decision-support tool for groundwater recharge planning in hilly tribal areas",
     version="0.2.0",
 )
+
 
 # ── Security Middleware ─────────────────────────
 @app.middleware("http")
@@ -78,6 +84,7 @@ async def add_security_headers(request: Request, call_next):
     response.headers["X-XSS-Protection"] = "1; mode=block"
     response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
     return response
+
 
 # CORS — dev and prod origins
 allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
@@ -110,15 +117,20 @@ _participatory_agent = ParticipatoryMonitoringAgent()
 
 class AgentConsultRequest(BaseModel):
     """Request model for interactive agent consultation."""
+
     site_id: str = Field(..., description="Target settlement ID")
-    query: str = Field(..., min_length=2, max_length=1000, description="Planner question")
-    agent_type: str | None = Field(None, description="Optional specific agent role to consult")
+    query: str = Field(
+        ..., min_length=2, max_length=1000, description="Planner question"
+    )
+    agent_type: str | None = Field(
+        None, description="Optional specific agent role to consult"
+    )
 
 
 class AgentSynthesizeRequest(BaseModel):
     """Request model for multi-site plan synthesis."""
-    site_ids: list[str] = Field(..., min_length=1, description="List of settlement IDs")
 
+    site_ids: list[str] = Field(..., min_length=1, description="List of settlement IDs")
 
 
 def _get_weights_hash() -> str:
@@ -164,6 +176,7 @@ async def get_meta() -> MetaResponse:
     """System metadata and AOI info (cached for 5 minutes)."""
     global _meta_cache, _meta_cache_time
     import time
+
     now = time.time()
     if _meta_cache and (now - _meta_cache_time) < _meta_cache_ttl:
         return MetaResponse(**_meta_cache)
@@ -271,13 +284,18 @@ async def create_observation(obs: ObservationCreate) -> Observation:
             import boto3
             from botocore.config import Config
 
-            dynamodb = boto3.resource("dynamodb", config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
+            dynamodb = boto3.resource(
+                "dynamodb",
+                config=Config(retries={"max_attempts": 3, "mode": "adaptive"}),
+            )
             table = dynamodb.Table(table_name)
             item = stored.model_dump()
             item["timestamp"] = item["timestamp"].isoformat()
             table.put_item(Item=item)
         except Exception as exc:  # noqa: BLE001
-            logger.warning("DynamoDB put_item failed after retries: %s. Using local store.", exc)
+            logger.warning(
+                "DynamoDB put_item failed after retries: %s. Using local store.", exc
+            )
 
     with _local_observations_lock:
         _local_observations.append(stored)
@@ -298,7 +316,10 @@ async def list_observations(
             from boto3.dynamodb.conditions import Key
             from botocore.config import Config
 
-            dynamodb = boto3.resource("dynamodb", config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
+            dynamodb = boto3.resource(
+                "dynamodb",
+                config=Config(retries={"max_attempts": 3, "mode": "adaptive"}),
+            )
             table = dynamodb.Table(table_name)
             if site_id:
                 query_kwargs = {
@@ -308,19 +329,23 @@ async def list_observations(
                 }
                 if exclusive_start_key:
                     import json
+
                     query_kwargs["ExclusiveStartKey"] = json.loads(exclusive_start_key)
                 resp = table.query(**query_kwargs)
             else:
                 scan_kwargs = {"Limit": limit}
                 if exclusive_start_key:
                     import json
+
                     scan_kwargs["ExclusiveStartKey"] = json.loads(exclusive_start_key)
                 resp = table.scan(**scan_kwargs)
 
             items = resp.get("Items", [])
             return [Observation(**item) for item in items]
         except Exception as exc:  # noqa: BLE001
-            logger.warning("DynamoDB query failed after retries: %s. Using local store.", exc)
+            logger.warning(
+                "DynamoDB query failed after retries: %s. Using local store.", exc
+            )
 
     with _local_observations_lock:
         if site_id:
@@ -411,24 +436,31 @@ async def submit_voice_observation(
     # Upload audio to S3 using streaming to avoid memory issues
     bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
     region = os.getenv("AWS_REGION", "ap-south-1")
-    audio_key = (
-        f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{(audio.filename or 'audio').split('.')[-1]}"
-    )
+    audio_key = f"voice/{observer_id}/{uuid.uuid4().hex[:12]}.{(audio.filename or 'audio').split('.')[-1]}"
 
     try:
         import boto3
         from botocore.config import Config
 
-        s3 = boto3.client("s3", region_name=region, config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
-        
+        s3 = boto3.client(
+            "s3",
+            region_name=region,
+            config=Config(retries={"max_attempts": 3, "mode": "adaptive"}),
+        )
+
         # Stream upload in chunks to avoid loading entire file into memory
         chunk_size = 1024 * 1024  # 1MB chunks
         from boto3.s3.transfer import TransferConfig
-        transfer_config = TransferConfig(multipart_threshold=chunk_size, multipart_chunksize=chunk_size)
-        
+
+        transfer_config = TransferConfig(
+            multipart_threshold=chunk_size, multipart_chunksize=chunk_size
+        )
+
         # Use upload_fileobj for streaming
         await audio.seek(0)
-        s3.upload_fileobj(audio.file, Bucket=bucket, Key=audio_key, Config=transfer_config)
+        s3.upload_fileobj(
+            audio.file, Bucket=bucket, Key=audio_key, Config=transfer_config
+        )
         audio_s3_uri = f"s3://{bucket}/{audio_key}"
     except Exception as exc:  # noqa: BLE001
         logger.warning("S3 upload failed, using local fallback: %s", exc)
@@ -474,9 +506,13 @@ async def whatsapp_webhook(
         url = str(request.url)
         # Validate signature
         from twilio.request_validator import RequestValidator
+
         validator = RequestValidator(twilio_auth_token)
         if not validator.validate(url, dict(form_data), X_Twilio_Signature):
-            logger.warning("Invalid Twilio signature from %s", request.client.host if request.client else "unknown")
+            logger.warning(
+                "Invalid Twilio signature from %s",
+                request.client.host if request.client else "unknown",
+            )
             raise HTTPException(status_code=403, detail="Invalid Twilio signature")
 
     # Verify Meta Cloud API signature (X-Hub-Signature-256)
@@ -485,11 +521,16 @@ async def whatsapp_webhook(
         body_bytes = await request.body()
         import hashlib
         import hmac
-        expected_sig = "sha256=" + hmac.new(
-            meta_app_secret.encode(), body_bytes, hashlib.sha256
-        ).hexdigest()
+
+        expected_sig = (
+            "sha256="
+            + hmac.new(meta_app_secret.encode(), body_bytes, hashlib.sha256).hexdigest()
+        )
         if not hmac.compare_digest(expected_sig, X_Hub_Signature_256):
-            logger.warning("Invalid Meta signature from %s", request.client.host if request.client else "unknown")
+            logger.warning(
+                "Invalid Meta signature from %s",
+                request.client.host if request.client else "unknown",
+            )
             raise HTTPException(status_code=403, detail="Invalid Meta signature")
 
     # Re-read form data if we consumed it for validation
@@ -537,7 +578,6 @@ async def whatsapp_webhook(
     return Response(content=twiml, media_type="application/xml")
 
 
-
 @app.get("/participatory/leaderboard", response_model=list[dict])
 async def get_leaderboard(
     state: str | None = Query(None),
@@ -565,9 +605,15 @@ async def get_observer_stats(observer_id: str) -> dict:
 
 class PathwayRequest(BaseModel):
     """Request model for pathway generation."""
+
     site_id: str = Field(..., description="Target settlement ID")
-    ssp_scenario: str = Field("SSP2-4.5", description="SSP scenario (e.g., SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5)")
-    base_rainfall_fraction: float = Field(1.0, ge=0.5, le=2.0, description="Base rainfall fraction")
+    ssp_scenario: str = Field(
+        "SSP2-4.5",
+        description="SSP scenario (e.g., SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5)",
+    )
+    base_rainfall_fraction: float = Field(
+        1.0, ge=0.5, le=2.0, description="Base rainfall fraction"
+    )
 
 
 @app.post("/pathways/generate", response_model=dict)
@@ -593,10 +639,11 @@ async def generate_pathway(request: PathwayRequest) -> dict:
 
 class PathwayCompareRequest(BaseModel):
     """Request model for pathway comparison."""
+
     site_id: str = Field(..., description="Target settlement ID")
     scenarios: list[str] | str = Field(
         default=["SSP1-2.6", "SSP2-4.5", "SSP3-7.0", "SSP5-8.5"],
-        description="List of SSP scenarios or comma-separated string"
+        description="List of SSP scenarios or comma-separated string",
     )
     base_rainfall_fraction: float = Field(1.0, ge=0.5, le=2.0)
 
@@ -605,7 +652,7 @@ class PathwayCompareRequest(BaseModel):
 async def compare_pathways(request: PathwayCompareRequest) -> dict:
     """Generate and compare pathways across multiple SSP scenarios."""
     site_id = request.site_id
-    
+
     if isinstance(request.scenarios, list):
         scenario_list = request.scenarios
     else:
@@ -622,7 +669,6 @@ async def compare_pathways(request: PathwayCompareRequest) -> dict:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"Pathway comparison failed: {exc}")
-
 
 
 @app.get("/pathways/visualize/{site_id}/{ssp_scenario}", response_model=dict)
@@ -712,7 +758,6 @@ def get_report_file(filename: str) -> HTMLResponse:
         return HTMLResponse(content=f.read())
 
 
-
 # ── AI Domain Specialist & Lead Planner Agent Routes ─────────────────────
 
 
@@ -763,11 +808,11 @@ async def synthesize_sites(req: AgentSynthesizeRequest) -> dict:
         if s:
             sites.append(s)
     if not sites:
-        raise HTTPException(status_code=404, detail="No matching sites found for synthesis")
+        raise HTTPException(
+            status_code=404, detail="No matching sites found for synthesis"
+        )
     res = _orchestrator.execute({"sites": sites})
     return res.model_dump()
-
-
 
 
 # ── DPR Generator Routes ─────────────────────────────────
@@ -828,7 +873,9 @@ async def generate_dpr(
                 tmp.write(zip_bytes)
                 tmp_path = tmp.name
 
-            s3_client = boto3.client("s3", config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
+            s3_client = boto3.client(
+                "s3", config=Config(retries={"max_attempts": 3, "mode": "adaptive"})
+            )
             s3_client.upload_file(tmp_path, bucket, zip_key)
             presigned_url = s3_client.generate_presigned_url(
                 "get_object",
@@ -920,17 +967,20 @@ async def list_scheme_mapping() -> dict:
 
 # ── Static Files & SPA Frontend Serving ─────────────────────
 
+
 def _resolve_frontend_dist() -> Path | None:
     """Resolve frontend dist directory with validated paths."""
     candidates = [
         Path(__file__).resolve().parent.parent / "frontend" / "dist",
-        Path(__file__).resolve().parent.parent / "bhujal-frontend" / "bhujal-frontend" / "dist",
-        Path(os.getenv("FRONTEND_DIST", "")).resolve() if os.getenv("FRONTEND_DIST") else None,
+        Path(os.getenv("FRONTEND_DIST", "")).resolve()
+        if os.getenv("FRONTEND_DIST")
+        else None,
     ]
     for candidate in candidates:
         if candidate and candidate.exists() and candidate.is_dir():
             return candidate
     return None
+
 
 FRONTEND_DIST = _resolve_frontend_dist()
 
@@ -956,22 +1006,51 @@ if FRONTEND_DIST:
             return FileResponse(fav)
         return Response(status_code=204)
 
-    SPA_ROUTES = {"", "map", "field-data", "reports", "about", "about-data", "agents", "overview"}
+    SPA_ROUTES = {
+        "",
+        "map",
+        "field-data",
+        "reports",
+        "about",
+        "about-data",
+        "agents",
+        "overview",
+    }
 
     @app.get("/{full_path:path}")
     async def serve_spa_frontend(full_path: str):
         full_path_clean = full_path.strip("/")
         if ".." in full_path_clean or full_path_clean.startswith("."):
             raise HTTPException(status_code=400, detail="Invalid path")
-        
+
         # Explicit API route prefixes - must match before SPA fallback
         api_prefixes = (
-            "meta", "villages", "sites", "scenario", "recommendation",
-            "observations", "telemetry", "participatory", "pathways",
-            "report", "reports", "dpr", "agent", "docs", "openapi.json", "redoc",
-            "aoi.geojson", "favicon.ico", "assets", "health", "ready",
+            "meta",
+            "villages",
+            "sites",
+            "scenario",
+            "recommendation",
+            "observations",
+            "telemetry",
+            "participatory",
+            "pathways",
+            "report",
+            "reports",
+            "dpr",
+            "agent",
+            "docs",
+            "openapi.json",
+            "redoc",
+            "aoi.geojson",
+            "favicon.ico",
+            "assets",
+            "health",
+            "ready",
         )
-        if any(full_path_clean == p or full_path_clean.startswith(f"{p}/") for p in api_prefixes):
+        if any(
+            full_path_clean == p or full_path_clean.startswith(f"{p}/")
+            for p in api_prefixes
+        ):
             raise HTTPException(status_code=404, detail="API route not found")
 
         # Serve static files if they exist
@@ -993,7 +1072,5 @@ if FRONTEND_DIST:
         raise HTTPException(status_code=404, detail="Not found")
 
 
-
 # ── Lambda handler ─────────────────────────────
 handler = Mangum(app) if Mangum is not None else None
-

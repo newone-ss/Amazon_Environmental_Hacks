@@ -21,7 +21,9 @@ from typing import Any
 
 logger = logging.getLogger("derived_loader")
 
-DERIVED_DIR = Path(__file__).resolve().parent.parent / "data" / "derived"
+_cand1 = Path(__file__).resolve().parent.parent.parent / "data" / "derived"
+_cand2 = Path(__file__).resolve().parent.parent / "data" / "derived"
+DERIVED_DIR = _cand1 if _cand1.exists() else _cand2
 
 
 @lru_cache(maxsize=1)

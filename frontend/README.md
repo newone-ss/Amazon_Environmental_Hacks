@@ -146,9 +146,8 @@ All **10 tests passed cleanly in < 10 seconds**.
 
 ### Quick Start
 ```bash
-# 1. Clone the repository
-git clone https://github.com/your-org/bhujal-frontend.git
-cd bhujal-frontend/bhujal-frontend
+# 1. Navigate to the frontend directory
+cd frontend
 
 # 2. Install dependencies
 npm install

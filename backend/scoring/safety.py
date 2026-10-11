@@ -64,7 +64,9 @@ def _validate_features(features: dict[str, Any]) -> dict[str, Any]:
                 else:
                     validated[key] = str(value).strip().lower()
         except (ValueError, TypeError) as exc:
-            logger.warning("Invalid value for safety feature '%s': %s. Using default.", key, exc)
+            logger.warning(
+                "Invalid value for safety feature '%s': %s. Using default.", key, exc
+            )
             if key == "slope_degrees":
                 validated[key] = 0.0
             elif key == "landslide_susceptibility":
@@ -87,13 +89,17 @@ def _validate_features(features: dict[str, Any]) -> dict[str, Any]:
             if min_val is not None and validated[key] < min_val:
                 logger.warning(
                     "Safety feature '%s' value %s below minimum %s. Clamping.",
-                    key, validated[key], min_val
+                    key,
+                    validated[key],
+                    min_val,
                 )
                 validated[key] = min_val
             if max_val is not None and validated[key] > max_val:
                 logger.warning(
                     "Safety feature '%s' value %s above maximum %s. Clamping.",
-                    key, validated[key], max_val
+                    key,
+                    validated[key],
+                    max_val,
                 )
                 validated[key] = max_val
 

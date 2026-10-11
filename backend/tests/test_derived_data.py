@@ -32,8 +32,10 @@ from scoring.derived_loader import (
     load_derived_temperature,
 )
 
-DERIVED_DIR = Path(__file__).resolve().parent.parent / "data" / "derived"
-BUILD_LAMBDA_DIR = Path(__file__).resolve().parent.parent / "build" / "lambda"
+_cand1 = Path(__file__).resolve().parent.parent.parent / "data" / "derived"
+_cand2 = Path(__file__).resolve().parent.parent / "data" / "derived"
+DERIVED_DIR = _cand1 if _cand1.exists() else _cand2
+BUILD_LAMBDA_DIR = Path(__file__).resolve().parent.parent.parent / "build" / "lambda"
 
 
 # ── 1. Derived JSON Schema & Content Tests ─────────────────────────
@@ -310,24 +312,24 @@ class TestPandasDecoupling:
 
 
 # ── 4. Package Exclusions Test ────────────────────────────────────
-# 
-# 
+#
+#
 # class TestPackageExclusions:
 #     """Verify that build/lambda does not bundle raw CSVs or raw directories."""
-# 
+#
 #     def test_package_excludes_raw_data(self) -> None:
 #         # Build or check build/lambda
 #         from pipeline.package import build_lambda_package
-# 
+#
 #         build_lambda_package()
-# 
+#
 #         assert BUILD_LAMBDA_DIR.exists()
 #         assert not (BUILD_LAMBDA_DIR / "data" / "raw").exists()
-# 
+#
 #         # Confirm zero CSV files packaged
 #         csv_files = list(BUILD_LAMBDA_DIR.rglob("*.csv"))
 #         assert len(csv_files) == 0, f"Found raw CSVs in Lambda build: {csv_files}"
-# 
+#
 #         # Confirm derived files exist
 #         assert (BUILD_LAMBDA_DIR / "data" / "derived" / "groundwater.json").exists()
 #         assert (BUILD_LAMBDA_DIR / "data" / "derived" / "temperature.json").exists()

@@ -227,13 +227,20 @@ class TestEvaluateSiteIntegration:
 
     def test_all_sites_have_three_scores(self) -> None:
         from scoring import get_all_villages
+
         villages = get_all_villages()
         for village in villages:
             site = evaluate_site(village.id)
             assert site is not None, f"Site {village.id} not found"
-            assert len(site.scores) == 3, f"Expected 3 scores for {village.id}, got {len(site.scores)}"
+            assert len(site.scores) == 3, (
+                f"Expected 3 scores for {village.id}, got {len(site.scores)}"
+            )
             score_types = {s.score_type for s in site.scores}
-            assert score_types == {"recharge_score", "heat_water_stress", "spring_drying_index"}
+            assert score_types == {
+                "recharge_score",
+                "heat_water_stress",
+                "spring_drying_index",
+            }
 
     def test_score_classification_consistency(self) -> None:
         """Test that score classification uses the new enum values correctly."""
@@ -242,14 +249,26 @@ class TestEvaluateSiteIntegration:
         )
 
         # Test recharge score classifications
-        high_recharge = {"slope_degrees": 2.0, "soil_permeability": 0.9, "rainfall_intensity": 0.8,
-                         "lulc_perviousness": 0.9, "lineament_density": 0.8, "drainage_density": 0.2}
+        high_recharge = {
+            "slope_degrees": 2.0,
+            "soil_permeability": 0.9,
+            "rainfall_intensity": 0.8,
+            "lulc_perviousness": 0.9,
+            "lineament_density": 0.8,
+            "drainage_density": 0.2,
+        }
         res = calculate_recharge_score(high_recharge)
         assert res.value >= 85
         assert res.score_class == ScoreClass.EXCELLENT
 
-        low_recharge = {"slope_degrees": 35.0, "soil_permeability": 0.2, "rainfall_intensity": 0.3,
-                        "lulc_perviousness": 0.3, "lineament_density": 0.1, "drainage_density": 0.9}
+        low_recharge = {
+            "slope_degrees": 35.0,
+            "soil_permeability": 0.2,
+            "rainfall_intensity": 0.3,
+            "lulc_perviousness": 0.3,
+            "lineament_density": 0.1,
+            "drainage_density": 0.9,
+        }
         res = calculate_recharge_score(low_recharge)
         # With current weights, min realistic score is around 16 (LOW class)
         assert res.value <= 30  # LOW class is 15-29
@@ -262,8 +281,14 @@ class TestEvaluateSiteIntegration:
         assert verdict.status == SafetyStatus.SAFE
 
         # Invalid feature types should be handled gracefully
-        verdict = evaluate_safety_rules({"slope_degrees": "invalid", "seismic_zone": "high"})
-        assert verdict.status in (SafetyStatus.SAFE, SafetyStatus.CONDITIONAL, SafetyStatus.REJECTED)
+        verdict = evaluate_safety_rules(
+            {"slope_degrees": "invalid", "seismic_zone": "high"}
+        )
+        assert verdict.status in (
+            SafetyStatus.SAFE,
+            SafetyStatus.CONDITIONAL,
+            SafetyStatus.REJECTED,
+        )
 
     def test_deterministic_scores_reproducible(self) -> None:
         """Test that the same inputs always produce the same scores."""

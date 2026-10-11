@@ -17,7 +17,9 @@ from typing import Any
 
 from backend.models import ReportResult, Site
 
-REPORTS_DIR = Path(__file__).resolve().parent.parent / "data" / "reports"
+_cand1 = Path(__file__).resolve().parent.parent.parent / "data" / "reports"
+_cand2 = Path(__file__).resolve().parent.parent / "data" / "reports"
+REPORTS_DIR = _cand1 if _cand1.parent.exists() else _cand2
 
 
 def generate_action_dossier_html(
@@ -58,8 +60,16 @@ def generate_action_dossier_html(
         else:
             rec_text = "<span>Bio-engineering only</span>"
 
-        recharge_val = f"{recharge.value:.1f} <small>({recharge.score_class.value})</small>" if recharge else "N/A"
-        stress_val = f"{stress.value:.1f} <small>({stress.score_class.value})</small>" if stress else "N/A"
+        recharge_val = (
+            f"{recharge.value:.1f} <small>({recharge.score_class.value})</small>"
+            if recharge
+            else "N/A"
+        )
+        stress_val = (
+            f"{stress.value:.1f} <small>({stress.score_class.value})</small>"
+            if stress
+            else "N/A"
+        )
         spring_val = (
             f"{spring.value:.1f} <small>({spring.score_class.value})</small>"
             if spring and v.has_spring

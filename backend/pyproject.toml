@@ -7,3 +7,5 @@ ignore = ["EXE", "EXE001", "EXE002"]
 
 [tool.pytest.ini_options]
 testpaths = ["tests"]
+pythonpath = [".", ".."]
+

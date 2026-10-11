@@ -30,12 +30,12 @@ class SafetyStatus(str, Enum):
 class ScoreClass(str, Enum):
     """Generic classification bucket for 0-100 scores."""
 
-    EXCELLENT = "excellent"      # 85-100
-    GOOD = "good"                # 70-84
-    MODERATE = "moderate"        # 50-69
-    POOR = "poor"                # 30-49
-    LOW = "low"                  # 15-29
-    CRITICAL = "critical"        # 0-14
+    EXCELLENT = "excellent"  # 85-100
+    GOOD = "good"  # 70-84
+    MODERATE = "moderate"  # 50-69
+    POOR = "poor"  # 30-49
+    LOW = "low"  # 15-29
+    CRITICAL = "critical"  # 0-14
 
 
 class DataTag(str, Enum):
@@ -66,11 +66,17 @@ class RecommendationDimensions(BaseModel):
     depth_m: float | None = Field(None, ge=0, description="Depth in meters")
     diameter_m: float | None = Field(None, ge=0, description="Diameter in meters")
     area_sqm: float | None = Field(None, ge=0, description="Area in square meters")
-    area_m2: float | None = Field(None, ge=0, description="Area in square meters (alias)")
+    area_m2: float | None = Field(
+        None, ge=0, description="Area in square meters (alias)"
+    )
     volume_cum: float | None = Field(None, ge=0, description="Volume in cubic meters")
     capacity_liters: float | None = Field(None, ge=0, description="Capacity in liters")
-    tank_litres: float | None = Field(None, ge=0, description="Tank capacity in liters (alias)")
-    treatment_area_ha: float | None = Field(None, ge=0, description="Treatment area in hectares")
+    tank_litres: float | None = Field(
+        None, ge=0, description="Tank capacity in liters (alias)"
+    )
+    treatment_area_ha: float | None = Field(
+        None, ge=0, description="Treatment area in hectares"
+    )
     spacing_m: float | None = Field(None, ge=0, description="Spacing in meters")
 
     model_config = {"extra": "allow"}
@@ -201,7 +207,8 @@ class Recommendation(BaseModel):
     materials: list[str] = Field(default_factory=list)
     labour_days: int = Field(0, ge=0)
     cost_range_inr: dict[str, int] = Field(
-        default_factory=lambda: {"low": 0, "high": 0}, description="{'low': 150000, 'high': 500000}"
+        default_factory=lambda: {"low": 0, "high": 0},
+        description="{'low': 150000, 'high': 500000}",
     )
     assumptions: list[str] = Field(
         default_factory=list, description="Assumptions behind this recommendation"

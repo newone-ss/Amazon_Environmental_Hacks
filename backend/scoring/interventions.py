@@ -47,7 +47,9 @@ def compose_recommendations(
         logger.warning(
             "State '%s' not found in labour_rates_by_state config. "
             "Falling back to All-India rate (%s). Available states: %s",
-            state, default_labour_rate, list(labour_rates.keys())
+            state,
+            default_labour_rate,
+            list(labour_rates.keys()),
         )
         labour_rate = default_labour_rate
     else:
@@ -55,7 +57,8 @@ def compose_recommendations(
         if labour_rate <= 0:
             logger.warning(
                 "Invalid labour rate for state '%s': %s. Using default.",
-                state, labour_rate
+                state,
+                labour_rate,
             )
             labour_rate = default_labour_rate
 
@@ -180,7 +183,11 @@ def compose_recommendations(
             )
 
             dims_dict = item.get("default_dimensions", {})
-            dimensions = RecommendationDimensions(**dims_dict) if dims_dict else RecommendationDimensions()
+            dimensions = (
+                RecommendationDimensions(**dims_dict)
+                if dims_dict
+                else RecommendationDimensions()
+            )
 
             rec = Recommendation(
                 intervention_id=i_id,

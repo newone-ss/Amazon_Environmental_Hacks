@@ -154,66 +154,38 @@ Before any civil intervention is approved, the site is evaluated against determi
 .
 |-- .github/workflows/
 |   `-- ci.yml                  # GitHub Actions continuous integration workflow
-|-- agent/                      # Autonomous Multi-Agent Collective (Bedrock & Fallback)
-|   |-- base.py                 # Abstract base agent and Bedrock runtime wrapper
-|   |-- hydrogeology.py         # HydrogeologyAgent (Recharge Analyst)
-|   |-- heat_stress.py          # HeatWaterStressAgent (Vulnerability Diagnostician)
-|   |-- springshed.py           # SpringshedAgent (Catchment Sentry)
-|   |-- safety_auditor.py       # SafetyAuditorAgent (Geotechnical Safety Auditor)
-|   |-- intervention_composer.py# InterventionComposerAgent (Civil Structure & Costing Specialist)
-|   |-- scenario_simulator.py   # ScenarioSimulatorAgent (Climate Sensitivity Simulator)
-|   |-- telemetry.py            # TelemetryQAAgent (Field Telemetry QA Analyst)
-|   |-- orchestrator.py         # LeadPlannerOrchestratorAgent (Administrative Orchestrator)
-|   `-- report_generator.py     # Administrative Action Dossier HTML Generator
-|-- backend/
-|   |-- app.py                  # FastAPI application with Mangum AWS Lambda adapter
-|   `-- models.py               # Pydantic v2 domain schemas and data contracts
-|-- config/
-|   |-- aoi.geojson             # Multi-State Area of Interest boundaries (MP, Odisha, Jharkhand, Pan-India)
-|   |-- costs.yaml              # State-specific MGNREGA rates (Odisha, MP, Jharkhand) and civil material bounds
-|   |-- demo_sites.yaml         # 13 curated settlements across MP, Odisha, and Jharkhand
-|   |-- interventions.yaml      # Engineering intervention suitability matrix
-|   |-- safety_rules.yaml       # Deterministic geotechnical and regulatory veto logic
-|   |-- scenario.yaml           # Rainfall perturbation factors and intervention uplifts
-|   `-- weights.yaml            # Analytical scoring factor weights and classification tiers
-|-- data/
-|   |-- derived/                # Lightweight precomputed datasets (groundwater, temperature, rainfall, settlements)
-|   |-- groundwater_level_cleaned_odisha_jharkhand_mp_2021_2025.csv # CGWB empirical telemetry (34,141 rows)
-|   |-- imd_max_temperature_odisha_jharkhand_mp_2021_2024.csv       # IMD gridded maximum temperature (109,575 rows)
-|   |-- rainfall_cleaned_odisha_jharkhand_mp.csv                    # IMD daily rainfall & departures (5,512 rows)
+|-- backend/                    # Core Python API, Agents, Scoring, Config & Tests
+|   |-- agent/                  # Multi-Agent Collective (Bedrock, DPR, Telemetry, Orchestrator)
+|   |-- backend/                # FastAPI application (app.py) & domain models (models.py)
+|   |-- config/                 # Area of Interest GeoJSON, costs, sites, and safety rules
+|   |-- infra/                  # AWS Serverless Application Model (SAM) CloudFormation template
+|   |-- scoring/                # Deterministic spatial hydrogeology and safety veto engine
+|   |-- tests/                  # Pytest verification suites (agents, api, scoring, models, data)
+|   |-- requirements.txt        # Backend dependencies with pinned semver constraints
+|   |-- pyproject.toml          # Ruff and Pytest project configuration
+|   `-- .env.example            # Environment template for local AWS/FastAPI execution
+|-- data/                       # Empirical datasets and derived precomputed JSONs
+|   |-- derived/                # Precomputed groundwater, rainfall, settlements & temp JSONs
+|   |-- groundwater_level_cleaned_odisha_jharkhand_mp_2021_2025.csv # CGWB empirical telemetry
+|   |-- imd_max_temperature_odisha_jharkhand_mp_2021_2024.csv       # IMD gridded max temp
+|   |-- rainfall_cleaned_odisha_jharkhand_mp.csv                    # IMD daily rainfall
 |   `-- README.md               # Data manifest, licensing records, and provenance ledger
-|-- docs/
-|   |-- api.md                  # Comprehensive REST API specifications and contract documentation
+|-- docs/                       # Architectural specifications, governance, and audit ledgers
+|   |-- agent.md                # Multi-agent engineering directives and operational rules
+|   |-- api.md                  # Comprehensive REST API specifications
 |   |-- architecture.md         # Detailed AWS infrastructure and component flow specifications
 |   |-- assumptions.md          # Scientific and engineering assumptions registry
 |   |-- data_provenance.md      # Settlement-to-telemetry empirical mapping and assumptions
 |   |-- DECISIONS.md            # Formal architectural decision records (ADR)
 |   |-- future.md               # Post-MVP enhancement roadmap
+|   |-- TEST_CHECKLIST.md       # Testing checklist and Definition of Done
 |   `-- validation.md           # Verification, testing, and validation methodology
-|-- infra/
-|   `-- template.yaml           # AWS Serverless Application Model (SAM) CloudFormation template
-|-- pipeline/                   # Offline empirical telemetry aggregation and packaging
-|   |-- build_derived.py        # Precomputes compact derived JSONs from raw CSVs
-|   `-- package.py              # AWS SAM Lambda bundle packager (build/lambda)
-|-- scoring/                    # Deterministic spatial hydrogeology and safety veto engine
-|   |-- recharge.py             # Multi-criteria infiltration suitability overlay
-|   |-- stress.py               # Compound heat-water vulnerability calculator
-|   |-- springs.py              # Springhead desiccation risk index
-|   |-- safety.py               # Deterministic geotechnical veto engine
-|   |-- interventions.py        # Civil structure matching & state-calibrated costing
-|   |-- simulator.py            # Rainfall perturbation & intervention uplift simulator
-|   |-- engine.py               # Unified spatial evaluation engine
-|   `-- run.py                  # Standalone batch site evaluation runner
-|-- tests/
-|   |-- test_models.py          # Pytest verification suite for API and data contracts
-|   |-- test_scoring.py         # Pytest suite for scoring, safety veto, and simulation
-|   |-- test_agents.py          # Pytest suite for autonomous multi-agent collective
-|   |-- test_api.py             # Pytest suite for FastAPI REST endpoints and state filters
-|   `-- test_derived_data.py    # Pytest suite for Phase 4 derived schemas and sign convention
-|-- agent.md                    # Core operational directives, mathematical schemas, and rules
-|-- main.py                     # Unified Command-Line Interface (list, evaluate, simulate, report, server)
-|-- requirements.txt            # Python dependencies with pinned semver constraints
-`-- TEST_CHECKLIST.md           # Concrete testing checklist and Definition of Done
+|-- frontend/                   # React + Vite GIS client (MapStage, FieldData, Reports, Hindi)
+|   |-- src/                    # Components, state, translations, and map rendering
+|   |-- public/                 # Static GIS assets and imagery
+|   |-- package.json            # Node.js dependencies and script definitions
+|   `-- README.md               # Frontend user guide and developer documentation
+`-- README.md                   # Canonical project overview and technical documentation
 ```
 
 ---
@@ -240,20 +212,20 @@ Before any civil intervention is approved, the site is evaluated against determi
    python3 -m venv venv
    source venv/bin/activate
    pip install --upgrade pip
-   pip install -r requirements.txt
+   pip install -r backend/requirements.txt
    ```
 
 3. Configure local environment variables:
    ```bash
-   cp .env.example .env
-   # Edit .env with your target AWS Region and account identifiers
+   cp backend/.env.example backend/.env
+   # Edit backend/.env with target AWS Region and account identifiers
    ```
 
 4. Execute static code quality and validation tests:
    ```bash
-   ruff check .
-   ruff format --check .
-   pytest tests/ -v --tb=short
+   ruff check backend/
+   ruff format --check backend/
+   pytest -c backend/pyproject.toml backend/tests/ -v --tb=short
    ```
 
 5. Command-Line Interface (CLI):

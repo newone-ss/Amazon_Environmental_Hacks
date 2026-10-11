@@ -219,7 +219,6 @@ class TestApiEndpoints:
         assert data_named["safety_status"] == "REJECTED"
         assert data_named["lead_decision"]["verdict"] == "rejected"
 
-
     def test_agent_consult_safe(self) -> None:
         payload = {"site_id": "site_001", "query": "Can we build a check dam here?"}
         response = client.post("/agent/consult", json=payload)
@@ -247,4 +246,3 @@ class TestApiEndpoints:
         assert "summary" in data
         assert "narrative" in data
         assert len(data["recommendations"]) > 0
-

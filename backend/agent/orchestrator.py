@@ -286,7 +286,12 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
                 "Combine farm ponds with shade tree agroforestry along bunds.",
                 "Schedule MGNREGA earthworks during cooler morning hours to protect wage-seekers.",
             ]
-        elif "cost" in q_lower or "budget" in q_lower or "mgnrega" in q_lower or "wage" in q_lower:
+        elif (
+            "cost" in q_lower
+            or "budget" in q_lower
+            or "mgnrega" in q_lower
+            or "wage" in q_lower
+        ):
             if site.recommendations:
                 top_rec = site.recommendations[0]
                 low_c = top_rec.cost_range_inr.get("low", 0)
@@ -294,7 +299,7 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
                 answer = (
                     f"MGNREGA Budget & Cost Specification for {vname} ({site.village.state}): "
                     f"Primary recommended structure: '{top_rec.intervention_name}'. "
-                    f"Indicative capital cost range: INR {low_c:,.0f} to INR {high_c:,.0f} (approx. {(high_c/100000):.2f} Lakhs). "
+                    f"Indicative capital cost range: INR {low_c:,.0f} to INR {high_c:,.0f} (approx. {(high_c / 100000):.2f} Lakhs). "
                     f"Estimated unskilled labour component: {top_rec.labour_days} person-days, calibrated to the state schedule of rates. "
                     f"Material-to-labour ratio complies with standard MGNREGA 60:40 guidelines."
                 )
@@ -304,7 +309,9 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
                 ]
             else:
                 answer = f"No civil structures are cleared for MGNREGA construction at {vname} under current geotechnical criteria."
-                recs = ["Explore administrative funding for watershed bio-fencing and nursery creation."]
+                recs = [
+                    "Explore administrative funding for watershed bio-fencing and nursery creation."
+                ]
         else:
             if site.recommendations:
                 top_rec = site.recommendations[0]
@@ -326,7 +333,9 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
                     f"Site is cleared as {safety_status}, but standard civil structures did not meet minimum suitability thresholds. "
                     "Decentralized loose boulder check dams and plantation bunds are recommended."
                 )
-                recs = ["Commission site inspection by Junior Engineer before finalizing intervention."]
+                recs = [
+                    "Commission site inspection by Junior Engineer before finalizing intervention."
+                ]
 
         return {
             "site_id": site.village.id,
@@ -340,4 +349,3 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
             "mode": "deterministic_fallback",
             "timestamp": datetime.now(UTC).isoformat(),
         }
-
