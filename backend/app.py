@@ -7,8 +7,8 @@ deterministic scoring modules, multi-agent orchestrator, and DynamoDB/S3.
 
 from __future__ import annotations
 
-import base64
 import hashlib
+import json
 import logging
 import os
 import uuid
@@ -432,8 +432,8 @@ async def whatsapp_webhook(
             From = json_body.get("From", json_body.get("from", From))
             MediaUrl0 = json_body.get("MediaUrl0", MediaUrl0)
             MediaContentType0 = json_body.get("MediaContentType0", MediaContentType0)
-        except Exception:
-            pass
+        except (ValueError, json.JSONDecodeError) as exc:
+            logger.debug("Failed to parse WhatsApp JSON payload: %s", exc)
 
     from_val = From or "whatsapp:+919876543210"
     body_val = Body or ""
@@ -516,8 +516,8 @@ async def generate_pathway(
             site_id = body.get("site_id", site_id)
             ssp_scenario = body.get("ssp_scenario", ssp_scenario)
             base_rainfall_fraction = body.get("base_rainfall_fraction", base_rainfall_fraction)
-        except Exception:
-            pass
+        except (ValueError, json.JSONDecodeError) as exc:
+            logger.debug("Failed to parse pathway JSON payload: %s", exc)
 
     if not site_id:
         raise HTTPException(status_code=422, detail="Field 'site_id' is required")
@@ -550,8 +550,8 @@ async def compare_pathways(
             site_id = body.get("site_id", site_id)
             scenarios = body.get("scenarios", scenarios)
             base_rainfall_fraction = body.get("base_rainfall_fraction", base_rainfall_fraction)
-        except Exception:
-            pass
+        except (ValueError, json.JSONDecodeError) as exc:
+            logger.debug("Failed to parse compare JSON payload: %s", exc)
 
     if not site_id:
         raise HTTPException(status_code=422, detail="Field 'site_id' is required")
@@ -722,8 +722,6 @@ async def synthesize_sites(req: AgentSynthesizeRequest) -> dict:
 
 # ── DPR Generator Routes ─────────────────────────────────
 
-from fastapi.responses import Response
-
 
 @app.post("/dpr/generate", response_model=dict)
 async def generate_dpr(
@@ -743,8 +741,8 @@ async def generate_dpr(
                 site_ids = raw_sids
             project_name = body.get("project_name", project_name)
             include_pdf = body.get("include_pdf", include_pdf)
-        except Exception:
-            pass
+        except (ValueError, json.JSONDecodeError) as exc:
+            logger.debug("Failed to parse DPR JSON payload: %s", exc)
 
     if not site_ids:
         raise HTTPException(status_code=400, detail="At least one site_id required")
@@ -820,9 +818,14 @@ async def download_dpr_zip(
     """Download DPR package as ZIP file directly."""
     if request.method == "POST":
         form_data = await request.form()
-        site_ids = form_data.get("site_ids", site_ids)
-        project_name = form_data.get("project_name", project_name)
-        include_pdf = str(form_data.get("include_pdf", include_pdf)).lower() in ("true", "1")
+        form_sids = form_data.get("site_ids")
+        if form_sids is not None:
+            site_ids = str(form_sids)
+        form_proj = form_data.get("project_name")
+        if form_proj is not None:
+            project_name = str(form_proj)
+        form_pdf = form_data.get("include_pdf", include_pdf)
+        include_pdf = str(form_pdf).lower() in ("true", "1")
 
     if not site_ids:
         raise HTTPException(status_code=400, detail="At least one site_id required")

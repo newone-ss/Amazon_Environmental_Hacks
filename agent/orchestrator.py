@@ -7,6 +7,14 @@ reconciling safety vetoes, and synthesizing multi-site executive action dossiers
 
 from __future__ import annotations
 
+from datetime import datetime
+
+try:
+    from datetime import UTC  # type: ignore[attr-defined]
+except ImportError:
+    from datetime import timezone
+
+    UTC = timezone.utc  # noqa: UP017
 from typing import Any
 
 from agent.base import AgentResponse, BaseAgent
@@ -185,9 +193,6 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
         Evaluates the planner's query against geotechnical safety vetoes,
         lithology, hydrological scores, and state-calibrated MGNREGA structures.
         """
-        from datetime import datetime, timezone
-        UTC = timezone.utc
-
         assessment = self.assess_site(site)
         vname = site.village.name
         safety_status = assessment["safety_status"]
