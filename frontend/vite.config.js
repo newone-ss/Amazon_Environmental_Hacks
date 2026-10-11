@@ -100,6 +100,7 @@ function createProxy(target) {
 }
 
 const apiRoutes = [
+  '/api',
   '/meta',
   '/villages',
   '/sites',

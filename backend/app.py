@@ -75,7 +75,20 @@ app = FastAPI(
 )
 
 
-# ── Security Middleware ─────────────────────────
+# ── Security & Normalization Middleware ────────
+@app.middleware("http")
+async def normalize_prefix(request: Request, call_next):
+    path = request.scope.get("path", "")
+    for prefix in ("/api", "/prod"):
+        if path == prefix:
+            request.scope["path"] = "/"
+            break
+        elif path.startswith(f"{prefix}/"):
+            request.scope["path"] = path[len(prefix):]
+            break
+    return await call_next(request)
+
+
 @app.middleware("http")
 async def add_security_headers(request: Request, call_next):
     response = await call_next(request)

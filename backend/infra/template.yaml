@@ -2,12 +2,12 @@ AWSTemplateFormatVersion: '2010-09-09'
 Transform: AWS::Serverless-2016-10-31
 Description: >
   Bhujal — Decision-support tool for groundwater recharge planning.
-  SAM template for Lambda + API Gateway + DynamoDB + S3.
+  CloudFormation template for Lambda + API Gateway + DynamoDB + S3 + CloudFront.
 
 Globals:
   Function:
     Timeout: 30
-    MemorySize: 512
+    MemorySize: 1024
     Runtime: python3.12
     Environment:
       Variables:
@@ -27,28 +27,30 @@ Parameters:
 
 Resources:
 
-  # ── API ────────────────────────────────────────
+  # ── API Gateway HTTP API ────────────────────────
   BhujalApi:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: !Ref Stage
       CorsConfiguration:
         AllowOrigins:
-          - "http://localhost:5173"
-          - !Sub "https://${FrontendDistribution.DomainName}"
+          - "*"
         AllowMethods:
           - GET
           - POST
           - OPTIONS
+          - PUT
+          - DELETE
         AllowHeaders:
-          - Content-Type
+          - "*"
 
   # ── Lambda Function ────────────────────────────
   BhujalFunction:
     Type: AWS::Serverless::Function
     Properties:
-      Handler: backend.app.handler
-      CodeUri: ../
+      FunctionName: !Sub "${AWS::StackName}-api"
+      Handler: app.handler
+      CodeUri: ../../build/lambda/
       Description: Bhujal FastAPI backend via Mangum
       Policies:
         - DynamoDBCrudPolicy:
@@ -61,7 +63,7 @@ Resources:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/${BEDROCK_MODEL_ID}"
+              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/*"
       Events:
         ApiEvent:
           Type: HttpApi
@@ -69,12 +71,18 @@ Resources:
             ApiId: !Ref BhujalApi
             Path: /{proxy+}
             Method: ANY
+        RootEvent:
+          Type: HttpApi
+          Properties:
+            ApiId: !Ref BhujalApi
+            Path: /
+            Method: ANY
 
   # ── DynamoDB — Observations ────────────────────
   ObservationsTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: bhujal-observations
+      TableName: !Sub "${AWS::StackName}-observations"
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: observation_id
@@ -96,12 +104,10 @@ Resources:
   BedrockCacheTable:
     Type: AWS::DynamoDB::Table
     Properties:
-      TableName: bhujal-bedrock-cache
+      TableName: !Sub "${AWS::StackName}-bedrock-cache"
       BillingMode: PAY_PER_REQUEST
       AttributeDefinitions:
         - AttributeName: cache_key
-          AttributeType: S
-        - AttributeName: cached_narrative
           AttributeType: S
       KeySchema:
         - AttributeName: cache_key
@@ -111,7 +117,12 @@ Resources:
   UploadsBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "bhujal-uploads-${AWS::AccountId}"
+      BucketName: !Sub "bhujal-uploads-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
       CorsConfiguration:
         CorsRules:
           - AllowedOrigins:
@@ -128,16 +139,27 @@ Resources:
           - Id: AbortIncompleteMultipartUploads
             Status: Enabled
             AbortIncompleteMultipartUpload:
-              DaysAfterInitiation: 7
+               DaysAfterInitiation: 7
 
   # ── S3 — Frontend Static Hosting ──────────────
   FrontendBucket:
     Type: AWS::S3::Bucket
     Properties:
-      BucketName: !Sub "bhujal-frontend-${AWS::AccountId}"
-      WebsiteConfiguration:
-        IndexDocument: index.html
-        ErrorDocument: index.html
+      BucketName: !Sub "bhujal-frontend-${AWS::AccountId}-${AWS::Region}"
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: true
+        BlockPublicPolicy: true
+        IgnorePublicAcls: true
+        RestrictPublicBuckets: true
+
+  FrontendOAC:
+    Type: AWS::CloudFront::OriginAccessControl
+    Properties:
+      OriginAccessControlConfig:
+        Name: !Sub "${AWS::StackName}-frontend-oac"
+        OriginAccessControlOriginType: s3
+        SigningBehavior: always
+        SigningProtocol: sigv4
 
   FrontendBucketPolicy:
     Type: AWS::S3::BucketPolicy
@@ -155,7 +177,7 @@ Resources:
               StringEquals:
                 AWS:SourceArn: !Sub "arn:aws:cloudfront::${AWS::AccountId}:distribution/${FrontendDistribution}"
 
-  # ── CloudFront — Frontend CDN ─────────────────
+  # ── CloudFront — Frontend & API Gateway CDN ───
   FrontendDistribution:
     Type: AWS::CloudFront::Distribution
     Properties:
@@ -165,9 +187,16 @@ Resources:
         Origins:
           - Id: S3Origin
             DomainName: !GetAtt FrontendBucket.RegionalDomainName
+            OriginAccessControlId: !Ref FrontendOAC
             S3OriginConfig:
               OriginAccessIdentity: ""
-              OriginAccessControlId: !Ref FrontendOAC
+          - Id: ApiOrigin
+            DomainName: !Sub "${BhujalApi}.execute-api.${AWS::Region}.amazonaws.com"
+            CustomOriginConfig:
+              HTTPSPort: 443
+              OriginProtocolPolicy: https-only
+              OriginSSLProtocols:
+                - TLSv1.2
         DefaultCacheBehavior:
           TargetOriginId: S3Origin
           ViewerProtocolPolicy: redirect-to-https
@@ -179,6 +208,42 @@ Resources:
             - HEAD
           ForwardedValues:
             QueryString: false
+        CacheBehaviors:
+          - PathPattern: /api/*
+            TargetOriginId: ApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+              - OPTIONS
+              - PUT
+              - POST
+              - PATCH
+              - DELETE
+            ForwardedValues:
+              QueryString: true
+              Headers:
+                - Authorization
+                - Content-Type
+                - Accept
+              Cookies:
+                Forward: none
+          - PathPattern: /docs*
+            TargetOriginId: ApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+            ForwardedValues:
+              QueryString: true
+          - PathPattern: /openapi.json
+            TargetOriginId: ApiOrigin
+            ViewerProtocolPolicy: redirect-to-https
+            AllowedMethods:
+              - GET
+              - HEAD
+            ForwardedValues:
+              QueryString: false
         CustomErrorResponses:
           - ErrorCode: 403
             ResponseCode: 200
@@ -187,38 +252,26 @@ Resources:
             ResponseCode: 200
             ResponsePagePath: /index.html
 
-  FrontendOAC:
-    Type: AWS::CloudFront::OriginAccessControl
-    Properties:
-      OriginAccessControlConfig:
-        Name: bhujal-frontend-oac
-        OriginAccessControlOriginType: s3
-        SigningBehavior: always
-        SigningProtocol: sigv4
-
-  # ── CloudWatch Log Group for Lambda Function ─────
-  BhujalLogGroup:
-    Type: AWS::Logs::LogGroup
-    Properties:
-      LogGroupName: !Sub "/aws/${AWS::StackName}-BhujalFunction"
-      RetentionInDays: 30
-
 Outputs:
   ApiUrl:
-    Description: API Gateway endpoint URL
+    Description: Direct API Gateway endpoint URL
     Value: !Sub "https://${BhujalApi}.execute-api.${AWS::Region}.amazonaws.com/${Stage}"
 
   FrontendUrl:
-    Description: CloudFront distribution URL
+    Description: Production CloudFront web app URL
     Value: !Sub "https://${FrontendDistribution.DomainName}"
 
-  ObservationsTableName:
-    Description: DynamoDB table for observations
-    Value: !Ref ObservationsTable
+  FrontendBucketName:
+    Description: S3 bucket hosting frontend static assets
+    Value: !Ref FrontendBucket
 
   UploadsBucketName:
     Description: S3 bucket for uploads
     Value: !Ref UploadsBucket
+
+  ObservationsTableName:
+    Description: DynamoDB table for observations
+    Value: !Ref ObservationsTable
 
   BedrockCacheTableName:
     Description: DynamoDB table for Bedrock response cache
