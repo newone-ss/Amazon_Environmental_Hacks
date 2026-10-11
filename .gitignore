@@ -21,8 +21,9 @@ env/
 *.swp
 *.swo
 
-# Environment
 .env
+.env*
+.env.*
 
 # Data (raw and processed are large and not committed)
 data/raw/

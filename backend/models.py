@@ -181,6 +181,10 @@ class Village(BaseModel):
     population: int | None = None
     has_spring: bool = False
     data_tag: DataTag = DataTag.ILLUSTRATIVE
+    safety_status: str | None = None
+    recharge_score: float | None = None
+    heat_water_stress: float | None = None
+    spring_drying_index: float | None = None
 
 
 class Site(BaseModel):
@@ -286,6 +290,7 @@ class ReportRequest(BaseModel):
         False, description="Include scenario analysis in report"
     )
     rainfall_fraction: float = Field(1.0, ge=0.5, le=1.5)
+    language: str = Field("en", description="Language for synthesis ('en' or 'hi')")
 
 
 class ReportResult(BaseModel):
@@ -298,6 +303,9 @@ class ReportResult(BaseModel):
     download_url: str = Field(..., description="Presigned S3 URL or inline content")
     format: str = Field("html", description="'html' or 'pdf'")
     summary: str = Field("", description="Short narrative summary of the report")
+    generation_mode: str = Field("deterministic_fallback", description="'bedrock' or 'deterministic_fallback'")
+    language: str = Field("en", description="Language of generated report")
+    model_id: str | None = Field(None, description="Bedrock foundation model ID used if applicable")
 
 
 # ── Meta ───────────────────────────────────────

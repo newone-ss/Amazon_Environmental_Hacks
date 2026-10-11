@@ -17,9 +17,15 @@ from typing import Any
 
 from backend.models import ReportResult, Site
 
+import os
 _cand1 = Path(__file__).resolve().parent.parent.parent / "data" / "reports"
 _cand2 = Path(__file__).resolve().parent.parent / "data" / "reports"
-REPORTS_DIR = _cand1 if _cand1.parent.exists() else _cand2
+if os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
+    REPORTS_DIR = Path("/tmp/reports")
+elif _cand1.parent.exists():
+    REPORTS_DIR = _cand1
+else:
+    REPORTS_DIR = _cand2
 
 
 def generate_action_dossier_html(
@@ -259,12 +265,35 @@ def create_report(
     with open(filepath, "w", encoding="utf-8") as f:
         f.write(html_content)
 
+    download_url = f"/reports/{filename}"
+    bucket = os.getenv("S3_BUCKET_UPLOADS")
+    if bucket:
+        try:
+            import boto3
+            from botocore.config import Config
+
+            s3_client = boto3.client("s3", config=Config(signature_version="s3v4"))
+            s3_key = f"reports/{filename}"
+            s3_client.put_object(
+                Bucket=bucket,
+                Key=s3_key,
+                Body=html_content.encode("utf-8"),
+                ContentType="text/html; charset=utf-8",
+            )
+            download_url = s3_client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket, "Key": s3_key},
+                ExpiresIn=3600,
+            )
+        except Exception:
+            pass
+
     return ReportResult(
         report_id=report_id,
         title="Bhujal Comprehensive Watershed Planning Dossier",
         generated_at=datetime.now(UTC_TZ),
         site_count=len(sites),
-        download_url=f"/reports/{filename}",
+        download_url=download_url,
         format="html",
         summary=orchestrator_summary,
     )

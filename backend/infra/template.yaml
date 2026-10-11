@@ -14,7 +14,7 @@ Globals:
         DYNAMODB_TABLE_OBSERVATIONS: !Ref ObservationsTable
         DYNAMODB_TABLE_BEDROCK_CACHE: !Ref BedrockCacheTable
         S3_BUCKET_UPLOADS: !Ref UploadsBucket
-        BEDROCK_MODEL_ID: anthropic.claude-3-sonnet-20240229-v1:0
+        BEDROCK_MODEL_ID: amazon.nova-lite-v1:0
         LOG_LEVEL: INFO
 
 Parameters:
@@ -32,6 +32,9 @@ Resources:
     Type: AWS::Serverless::HttpApi
     Properties:
       StageName: !Ref Stage
+      DefaultRouteSettings:
+        ThrottlingBurstLimit: 100
+        ThrottlingRateLimit: 50
       CorsConfiguration:
         AllowOrigins:
           - "*"
@@ -52,6 +55,7 @@ Resources:
       Handler: app.handler
       CodeUri: ../../build/lambda/
       Description: Bhujal FastAPI backend via Mangum
+      ReservedConcurrentExecutions: 10
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Ref ObservationsTable
@@ -63,7 +67,10 @@ Resources:
             - Effect: Allow
               Action:
                 - bedrock:InvokeModel
-              Resource: !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/*"
+              Resource:
+                - !Sub "arn:aws:bedrock:${AWS::Region}::foundation-model/*"
+                - !Sub "arn:aws:bedrock:${AWS::Region}:${AWS::AccountId}:inference-profile/*"
+                - "arn:aws:bedrock:*::foundation-model/*"
       Events:
         ApiEvent:
           Type: HttpApi

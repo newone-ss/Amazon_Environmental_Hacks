@@ -37,8 +37,15 @@ def _load_demo_sites_config() -> dict[str, Any]:
         return yaml.safe_load(f) or {}
 
 
+_cached_villages: list[Village] | None = None
+
+
 def get_all_villages() -> list[Village]:
-    """Retrieve all villages in the demonstration Area of Interest."""
+    """Retrieve all villages in the demonstration Area of Interest with headline scores and safety status."""
+    global _cached_villages
+    if _cached_villages is not None:
+        return _cached_villages
+
     cfg = _load_demo_sites_config()
     villages: list[Village] = []
     for s in cfg.get("sites", []):
@@ -60,7 +67,22 @@ def get_all_villages() -> list[Village]:
             has_spring=bool(s.get("has_spring", False)),
             data_tag=dtag,
         )
+        try:
+            eval_site = evaluate_site(s["id"])
+            if eval_site:
+                if eval_site.safety:
+                    v.safety_status = eval_site.safety.status.value
+                for sc in eval_site.scores:
+                    if sc.score_type == "recharge_score":
+                        v.recharge_score = sc.value
+                    elif sc.score_type == "heat_water_stress":
+                        v.heat_water_stress = sc.value
+                    elif sc.score_type == "spring_drying_index":
+                        v.spring_drying_index = sc.value
+        except Exception:
+            pass
         villages.append(v)
+    _cached_villages = villages
     return villages
 
 

@@ -202,7 +202,7 @@ async def get_meta() -> MetaResponse:
         total_villages=len(villages),
         scoring_weights_hash=_get_weights_hash(),
         data_tags_in_use=[DataTag.REAL, DataTag.PROXY, DataTag.ILLUSTRATIVE],
-        last_pipeline_run=datetime.now(UTC_TZ),
+        last_pipeline_run=datetime(2026, 10, 10, 13, 51, 4, tzinfo=UTC_TZ),
         supported_states=["Odisha", "Madhya Pradesh", "Jharkhand", "Pan-India"],
     )
     _meta_cache = meta.model_dump()
@@ -315,13 +315,52 @@ async def create_observation(obs: ObservationCreate) -> Observation:
     return stored
 
 
+@app.api_route("/upload-url", methods=["GET", "POST"])
+async def get_upload_url(
+    filename: str = Query("observation.jpg"),
+    content_type: str = Query("image/jpeg"),
+) -> dict:
+    """Generate an S3 presigned PUT URL for field photos and documents."""
+    bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
+    region = os.getenv("AWS_REGION", "ap-southeast-2")
+    file_id = f"photo_{uuid.uuid4().hex[:12]}_{filename}"
+    file_key = f"photos/{file_id}"
+
+    try:
+        import boto3
+        from botocore.config import Config
+
+        s3_client = boto3.client(
+            "s3",
+            region_name=region,
+            endpoint_url=f"https://s3.{region}.amazonaws.com",
+            config=Config(signature_version="s3v4", s3={"addressing_style": "virtual"}),
+        )
+        upload_url = s3_client.generate_presigned_url(
+            "put_object",
+            Params={"Bucket": bucket, "Key": file_key, "ContentType": content_type},
+            ExpiresIn=3600,
+        )
+        return {"upload_url": upload_url, "file_key": file_key}
+    except Exception as exc:
+        logger.warning("Failed to generate presigned PUT URL: %s", exc)
+        return {
+            "upload_url": f"https://{bucket}.s3.{region}.amazonaws.com/{file_key}",
+            "file_key": file_key,
+        }
+
+
 @app.get("/observations", response_model=list[Observation])
 async def list_observations(
+    response: Response,
     site_id: str | None = Query(None),
     limit: int = Query(50, ge=1, le=200),
     exclusive_start_key: str | None = Query(None),
 ) -> list[Observation]:
     """List observations, optionally filtered by site_id with pagination."""
+    response.headers["Cache-Control"] = "no-cache, no-store, must-revalidate"
+    response.headers["Pragma"] = "no-cache"
+    response.headers["Expires"] = "0"
     table_name = os.getenv("DYNAMODB_TABLE_OBSERVATIONS")
     if table_name:
         try:
@@ -739,7 +778,8 @@ async def generate_report(request: ReportRequest) -> ReportResult:
         )
 
     # Execute multi-agent collective synthesis
-    agent_res = _orchestrator.execute({"sites": sites})
+    lang = getattr(request, "language", "en") or "en"
+    agent_res = _orchestrator.execute({"sites": sites, "language": lang})
 
     scenario_info = None
     if request.include_scenario:
@@ -750,12 +790,20 @@ async def generate_report(request: ReportRequest) -> ReportResult:
             ],
         }
 
-    return create_report(
+    report = create_report(
         sites=sites,
         orchestrator_summary=agent_res.summary,
         orchestrator_narrative=agent_res.narrative,
         scenario_info=scenario_info,
     )
+    report.generation_mode = agent_res.mode
+    report.language = lang
+    report.model_id = (
+        os.getenv("BEDROCK_MODEL_ID", "amazon.nova-lite-v1:0")
+        if agent_res.mode == "bedrock"
+        else None
+    )
+    return report
 
 
 @app.get("/reports/{filename:path}", response_class=HTMLResponse)
@@ -886,8 +934,12 @@ async def generate_dpr(
                 tmp.write(zip_bytes)
                 tmp_path = tmp.name
 
+            region = os.getenv("AWS_REGION", "ap-southeast-2")
             s3_client = boto3.client(
-                "s3", config=Config(retries={"max_attempts": 3, "mode": "adaptive"})
+                "s3",
+                region_name=region,
+                endpoint_url=f"https://s3.{region}.amazonaws.com",
+                config=Config(signature_version="s3v4", retries={"max_attempts": 3, "mode": "adaptive"}),
             )
             s3_client.upload_file(tmp_path, bucket, zip_key)
             presigned_url = s3_client.generate_presigned_url(
@@ -1086,4 +1138,18 @@ if FRONTEND_DIST:
 
 
 # ── Lambda handler ─────────────────────────────
-handler = Mangum(app) if Mangum is not None else None
+_mangum_handler = Mangum(app) if Mangum is not None else None
+
+
+def handler(event, context):
+    """Entrypoint for AWS Lambda. Handles both API Gateway events and scheduled warm-up pings."""
+    if isinstance(event, dict) and (
+        event.get("source") in ("aws.events", "serverless-plugin-warmup")
+        or event.get("warmup") is True
+    ):
+        logger.info("Warm-up ping received; execution environment kept warm.")
+        return {"statusCode": 200, "body": json.dumps({"status": "warm"})}
+    if _mangum_handler is not None:
+        return _mangum_handler(event, context)
+    return {"statusCode": 500, "body": "Mangum adapter unavailable"}
+
