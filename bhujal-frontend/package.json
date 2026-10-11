@@ -1,14 +1,29 @@
 {
-  "name": "bhujal-frontend-workspace",
+  "name": "bhujal-heat-water-resilience",
   "private": true,
   "version": "1.0.0",
-  "workspaces": [
-    "bhujal-frontend"
-  ],
+  "type": "module",
   "scripts": {
-    "dev": "npm --prefix bhujal-frontend run dev",
-    "build": "npm --prefix bhujal-frontend run build",
-    "preview": "npm --prefix bhujal-frontend run preview",
-    "test": "npm --prefix bhujal-frontend run test"
+    "dev": "vite --host 0.0.0.0",
+    "backend": "python -m uvicorn backend.app:app --reload --port 8000",
+    "dev:all": "node scripts/dev-all.mjs",
+    "build": "vite build",
+    "preview": "vite preview --host 0.0.0.0",
+    "test": "set VITE_USE_MOCK=true && playwright test"
+  },
+  "dependencies": {
+    "@vitejs/plugin-react": "^4.3.4",
+    "lucide-react": "^0.468.0",
+    "maplibre-gl": "^6.13.0",
+    "react": "^18.3.1",
+    "react-dom": "^18.3.1",
+    "recharts": "^3.10.1",
+    "vite": "^6.4.4"
+  },
+  "devDependencies": {
+    "@playwright/test": "^1.64.0",
+    "@types/react": "^19.3.0",
+    "@types/react-dom": "^19.3.0",
+    "typescript": "^7.0.2"
   }
 }
