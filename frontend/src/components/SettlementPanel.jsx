@@ -160,7 +160,8 @@ export default function SettlementPanel({
 
   useEffect(() => {
     if (village?.id && panelRef.current) {
-      panelRef.current.focus();
+      panelRef.current.scrollTop = 0;
+      panelRef.current.focus({ preventScroll: true });
     }
   }, [village?.id]);
 
@@ -393,31 +394,48 @@ export default function SettlementPanel({
 
       {/* Demo Sites Quick Switcher */}
       <div className="demo-sites-bar">
-        <span className="demo-bar-label">Demo sites:</span>
-        <button
-          type="button"
-          className={`demo-site-btn ${village.id === 'site_001' ? 'active' : ''}`}
-          onClick={() => onSelectVillageById('site_001')}
-          title="SAFE site with 4 recommendations"
-        >
-          <span className="dot safe" /> Laxmipur (SAFE)
-        </button>
-        <button
-          type="button"
-          className={`demo-site-btn ${village.id === 'site_004' ? 'active' : ''}`}
-          onClick={() => onSelectVillageById('site_004')}
-          title="CONDITIONAL site with engineering prerequisites"
-        >
-          <span className="dot conditional" /> Dukum (CONDITIONAL)
-        </button>
-        <button
-          type="button"
-          className={`demo-site-btn ${village.id === 'site_002' ? 'active' : ''}`}
-          onClick={() => onSelectVillageById('site_002')}
-          title="REJECTED site with active safety hazard"
-        >
-          <span className="dot rejected" /> Mundaguda (REJECTED)
-        </button>
+        <div className="demo-bar-top">
+          <span className="demo-bar-label">Demo sites</span>
+          <span className="demo-bar-hint">Quick test cases</span>
+        </div>
+        <div className="demo-sites-grid">
+          <button
+            type="button"
+            className={`demo-site-btn ${village.id === 'site_001' ? 'active' : ''}`}
+            onClick={() => onSelectVillageById('site_001')}
+            title="SAFE site with 4 recommendations"
+          >
+            <div className="demo-btn-head">
+              <span className="dot safe" />
+              <span className="demo-btn-title">Laxmipur</span>
+            </div>
+            <span className="demo-btn-sub tag-safe">(SAFE)</span>
+          </button>
+          <button
+            type="button"
+            className={`demo-site-btn ${village.id === 'site_004' ? 'active' : ''}`}
+            onClick={() => onSelectVillageById('site_004')}
+            title="CONDITIONAL site with engineering prerequisites"
+          >
+            <div className="demo-btn-head">
+              <span className="dot conditional" />
+              <span className="demo-btn-title">Dukum</span>
+            </div>
+            <span className="demo-btn-sub tag-conditional">(CONDITIONAL)</span>
+          </button>
+          <button
+            type="button"
+            className={`demo-site-btn ${village.id === 'site_002' ? 'active' : ''}`}
+            onClick={() => onSelectVillageById('site_002')}
+            title="REJECTED site with active safety hazard"
+          >
+            <div className="demo-btn-head">
+              <span className="dot rejected" />
+              <span className="demo-btn-title">Mundaguda</span>
+            </div>
+            <span className="demo-btn-sub tag-rejected">(REJECTED)</span>
+          </button>
+        </div>
       </div>
 
       {/* 2. Tabs: Overview, AI Agents, Plan, Scenario, Evidence */}
