@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState, useCallback } from 'react';
 import {
   CircleHelp,
   ClipboardList,
@@ -18,12 +18,12 @@ import ReportsView from './components/ReportsView.jsx';
 import AboutDataView from './components/AboutDataView.jsx';
 import FirstRunGuideModal from './components/FirstRunGuideModal.jsx';
 
-const navItems = [
+const navItems = useMemo(() => [
   { id: 'Map', key: 'nav_map', icon: MapPin },
   { id: 'Field Data', key: 'nav_field_data', icon: ClipboardList },
   { id: 'Reports', key: 'nav_reports', icon: FileText },
   { id: 'About and Data', key: 'nav_about', icon: Database },
-];
+], []);
 
 function BrandMark({ t }) {
   return (
@@ -229,10 +229,11 @@ export default function App() {
 
   // Load settlements based on state filter
   useEffect(() => {
+    const controller = new AbortController();
     let isMounted = true;
     async function loadVillages() {
       try {
-        const list = await api.getVillages(stateFilter);
+        const list = await api.getVillages(stateFilter, { signal: controller.signal });
         if (!isMounted) return;
         setVillages(list);
         if (list.length > 0) {
@@ -242,29 +243,33 @@ export default function App() {
           }
         }
       } catch (e) {
+        if (e.name === 'AbortError' || e.name === 'CancellationError') return;
         console.error('Failed to load villages', e);
       }
     }
     loadVillages();
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [stateFilter]);
 
   // Load site detail for selected village
   useEffect(() => {
+    const controller = new AbortController();
     let isMounted = true;
     async function loadSite() {
       if (!selectedVillage?.id) return;
       setSiteLoading(true);
       setSiteError(null);
       try {
-        const site = await api.getSite(selectedVillage.id);
+        const site = await api.getSite(selectedVillage.id, { signal: controller.signal });
         if (isMounted) {
           setSelectedSite(site);
           setSites((prev) => ({ ...prev, [selectedVillage.id]: site }));
         }
       } catch (e) {
+        if (e.name === 'AbortError' || e.name === 'CancellationError') return;
         if (isMounted) {
           setSiteError(e.message || 'Could not load site evaluation');
         }
@@ -275,6 +280,7 @@ export default function App() {
     loadSite();
     return () => {
       isMounted = false;
+      controller.abort();
     };
   }, [selectedVillage?.id]);
 
@@ -291,6 +297,18 @@ export default function App() {
     const v = villages.find((item) => item.id === id);
     if (v) handleSelectVillage(v);
   }
+
+  const handleRetry = useCallback(() => {
+    if (selectedVillage?.id) {
+      // Trigger the loadSite effect by temporarily clearing and re-setting selectedVillage
+      setSelectedSite(null);
+      setSiteError(null);
+      setSiteLoading(true);
+      api.getSite(selectedVillage.id).then(setSelectedSite).catch(console.error).finally(() => {
+        setSiteLoading(false);
+      });
+    }
+  }, [selectedVillage?.id]);
 
   function cycleSheetState() {
     setSheetState((curr) => (curr === 'peek' ? 'half' : curr === 'half' ? 'full' : 'peek'));
@@ -363,11 +381,7 @@ export default function App() {
                   onSelectVillageById={handleSelectVillageById}
                   loading={siteLoading}
                   error={siteError}
-                  onRetry={() => {
-                    if (selectedVillage?.id) {
-                      api.getSite(selectedVillage.id).then(setSelectedSite).catch(console.error);
-                    }
-                  }}
+                  onRetry={handleRetry}
                 />
               </div>
             )}

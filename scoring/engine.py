@@ -101,7 +101,9 @@ def evaluate_site(site_id: str) -> Site | None:
         data_tag=dtag,
     )
 
-    features = raw.get("features", {}).copy()
+    # Create a new features dict with derived data (immutable pattern)
+    base_features = raw.get("features", {}).copy()
+    features = dict(base_features)
     if "elevation_m" not in features and village.elevation_m is not None:
         features["elevation_m"] = village.elevation_m
 

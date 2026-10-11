@@ -1,12 +1,13 @@
 """
 Bhujal — Geotechnical Safety Veto Engine
-=========================================
+=======================================
 Evaluates deterministic safety constraints driven by config/safety_rules.yaml.
 Any REJECTED rule immediately vetoes civil intervention clearances.
 """
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
 from backend.models import (
@@ -15,6 +16,88 @@ from backend.models import (
     SafetyVerdict,
 )
 from scoring.base import get_safety_config
+
+logger = logging.getLogger(__name__)
+
+_REQUIRED_FEATURES = {
+    "slope_degrees": (float, (0.0, 90.0)),
+    "landslide_susceptibility": (str, ("low", "moderate", "high", "very_high")),
+    "seismic_zone": (int, (1, 5)),
+    "distance_to_river_m": (float, (0.0, None)),
+    "elevation_above_river_m": (float, (0.0, None)),
+    "protected_area_type": (str, None),  # Optional
+    "soil_type": (str, None),
+}
+
+
+def _validate_features(features: dict[str, Any]) -> dict[str, Any]:
+    """Validate and coerce safety rule features with defaults for missing keys."""
+    validated = {}
+    for key, (expected_type, valid_range) in _REQUIRED_FEATURES.items():
+        if key not in features:
+            logger.debug("Safety feature '%s' missing, using default", key)
+            if key == "slope_degrees":
+                validated[key] = 0.0
+            elif key == "landslide_susceptibility":
+                validated[key] = "low"
+            elif key == "seismic_zone":
+                validated[key] = 2
+            elif key == "distance_to_river_m":
+                validated[key] = 1000.0
+            elif key == "elevation_above_river_m":
+                validated[key] = 50.0
+            elif key == "protected_area_type":
+                validated[key] = None
+            elif key == "soil_type":
+                validated[key] = "loam"
+            continue
+
+        value = features[key]
+        try:
+            if expected_type == float:
+                validated[key] = float(value)
+            elif expected_type == int:
+                validated[key] = int(value)
+            elif expected_type == str:
+                if value is None:
+                    validated[key] = None
+                else:
+                    validated[key] = str(value).strip().lower()
+        except (ValueError, TypeError) as exc:
+            logger.warning("Invalid value for safety feature '%s': %s. Using default.", key, exc)
+            if key == "slope_degrees":
+                validated[key] = 0.0
+            elif key == "landslide_susceptibility":
+                validated[key] = "low"
+            elif key == "seismic_zone":
+                validated[key] = 2
+            elif key == "distance_to_river_m":
+                validated[key] = 1000.0
+            elif key == "elevation_above_river_m":
+                validated[key] = 50.0
+            elif key == "protected_area_type":
+                validated[key] = None
+            elif key == "soil_type":
+                validated[key] = "loam"
+            continue
+
+        # Range validation
+        if valid_range and expected_type in (float, int):
+            min_val, max_val = valid_range
+            if min_val is not None and validated[key] < min_val:
+                logger.warning(
+                    "Safety feature '%s' value %s below minimum %s. Clamping.",
+                    key, validated[key], min_val
+                )
+                validated[key] = min_val
+            if max_val is not None and validated[key] > max_val:
+                logger.warning(
+                    "Safety feature '%s' value %s above maximum %s. Clamping.",
+                    key, validated[key], max_val
+                )
+                validated[key] = max_val
+
+    return validated
 
 
 def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
@@ -30,6 +113,9 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
       - protected_area_type: str | None
       - soil_type: str
     """
+    # Validate and coerce features
+    features = _validate_features(features)
+
     cfg = get_safety_config()
     rule_definitions = cfg.get("rules", [])
 
@@ -39,13 +125,13 @@ def evaluate_safety_rules(features: dict[str, Any]) -> SafetyVerdict:
     triggered_conditional_ids: list[str] = []
     triggered_conditional_reasons: list[str] = []
 
-    slope = float(features.get("slope_degrees", 0.0))
-    landslide = str(features.get("landslide_susceptibility", "low")).lower()
-    seismic = int(features.get("seismic_zone", 2))
-    dist_river = float(features.get("distance_to_river_m", 1000.0))
-    elev_river = float(features.get("elevation_above_river_m", 50.0))
+    slope = features.get("slope_degrees", 0.0)
+    landslide = features.get("landslide_susceptibility", "low")
+    seismic = features.get("seismic_zone", 2)
+    dist_river = features.get("distance_to_river_m", 1000.0)
+    elev_river = features.get("elevation_above_river_m", 50.0)
     protected_area = features.get("protected_area_type")
-    soil_type = str(features.get("soil_type", "loam")).lower()
+    soil_type = features.get("soil_type", "loam")
 
     for rule in rule_definitions:
         r_id = rule.get("id", "UNKNOWN")

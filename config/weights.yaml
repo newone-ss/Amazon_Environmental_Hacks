@@ -93,17 +93,25 @@ spring_drying_index:
 # Applied to the 0-100 score
 classification:
   recharge_score:
-    excellent: [75, 100]      # ASSUMPTION: thresholds to calibrate with field data
-    good: [50, 75]
-    moderate: [25, 50]
-    poor: [0, 25]
+    excellent: [85, 100]
+    good: [70, 85]
+    moderate: [50, 70]
+    poor: [30, 50]
+    low: [15, 30]
+    critical: [0, 15]
   heat_water_stress:
-    critical: [75, 100]
-    high: [50, 75]
-    moderate: [25, 50]
-    low: [0, 25]
+    # For stress: higher = worse
+    critical: [85, 100]   # CRITICAL stress
+    high: [70, 85]        # maps to POOR
+    moderate: [50, 70]    # maps to MODERATE
+    low: [30, 50]         # maps to GOOD
+    very_low: [15, 30]    # maps to EXCELLENT
+    minimal: [0, 15]      # maps to EXCELLENT
   spring_drying_index:
-    very_high: [75, 100]
-    high: [50, 75]
-    moderate: [25, 50]
-    low: [0, 25]
+    # For spring drying: higher = worse
+    very_high: [85, 100]  # maps to CRITICAL
+    high: [70, 85]        # maps to POOR
+    moderate: [50, 70]    # maps to MODERATE
+    low: [30, 50]         # maps to GOOD
+    very_low: [15, 30]    # maps to EXCELLENT
+    minimal: [0, 15]      # maps to EXCELLENT

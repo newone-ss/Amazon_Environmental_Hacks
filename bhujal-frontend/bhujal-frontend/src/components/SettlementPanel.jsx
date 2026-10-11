@@ -202,25 +202,30 @@ export default function SettlementPanel({
 
   // Run scenario simulation
   useEffect(() => {
+    const controller = new AbortController();
     let isCancelled = false;
     async function loadScenario() {
       if (!village?.id) return;
       try {
+        // Use the current primaryRec from closure
+        const interventionId = includeIntervention && site?.recommendations?.[0]?.intervention_id;
         const res = await api.runScenario({
           site_id: village.id,
           rainfall_fraction: rainfallFraction,
-          include_intervention: includeIntervention ? primaryRec?.intervention_id : null,
-        });
+          include_intervention: interventionId,
+        }, { signal: controller.signal });
         if (!isCancelled) setScenarioResult(res);
-      } catch {
+      } catch (e) {
+        if (e.name === 'AbortError' || e.name === 'CancellationError') return;
         // Handled
       }
     }
     loadScenario();
     return () => {
       isCancelled = true;
+      controller.abort();
     };
-  }, [village?.id, rainfallFraction, includeIntervention, primaryRec?.intervention_id]);
+  }, [village?.id, rainfallFraction, includeIntervention, site?.recommendations?.[0]?.intervention_id]);
 
   // Generate DPR package
   async function handleGenerateDpr() {
@@ -252,19 +257,27 @@ export default function SettlementPanel({
   const [agentQuery, setAgentQuery] = useState('');
   const [consultLoading, setConsultLoading] = useState(false);
   const [consultHistory, setConsultHistory] = useState([]);
+  const lastBriefingVillageId = useRef(null);
 
   // Fetch live agent briefing on settlement change
   useEffect(() => {
+    const controller = new AbortController();
     let isCancelled = false;
+    
+    // Deduplication: only fetch if village ID changed
+    if (lastBriefingVillageId.current === village?.id) return;
+    lastBriefingVillageId.current = village?.id;
+    
     async function loadAgentBriefing() {
       if (!village?.id) return;
       setAgentBriefingLoading(true);
       try {
-        const briefing = await api.getAgentBriefing(village.id);
+        const briefing = await api.getAgentBriefing(village.id, { signal: controller.signal });
         if (!isCancelled) {
           setAgentBriefing(briefing);
         }
       } catch (err) {
+        if (err.name === 'AbortError' || err.name === 'CancellationError') return;
         console.warn('Agent briefing load fallback', err);
       } finally {
         if (!isCancelled) setAgentBriefingLoading(false);
@@ -273,6 +286,7 @@ export default function SettlementPanel({
     loadAgentBriefing();
     return () => {
       isCancelled = true;
+      controller.abort();
     };
   }, [village?.id]);
 

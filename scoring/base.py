@@ -132,40 +132,54 @@ def classify_score(
     tiers = classification_config.get(score_type, {})
 
     if score_type == "recharge_score":
-        if value >= tiers.get("excellent", [75, 100])[0]:
+        if value >= tiers.get("excellent", [85, 100])[0]:
             return ScoreClass.EXCELLENT
-        if value >= tiers.get("good", [50, 75])[0]:
+        if value >= tiers.get("good", [70, 85])[0]:
             return ScoreClass.GOOD
-        if value >= tiers.get("moderate", [25, 50])[0]:
+        if value >= tiers.get("moderate", [50, 70])[0]:
             return ScoreClass.MODERATE
-        return ScoreClass.POOR
+        if value >= tiers.get("poor", [30, 50])[0]:
+            return ScoreClass.POOR
+        if value >= tiers.get("low", [15, 30])[0]:
+            return ScoreClass.LOW
+        return ScoreClass.CRITICAL
 
     elif score_type == "heat_water_stress":
-        if value >= tiers.get("critical", [75, 100])[0]:
+        # For stress: higher = worse, so reverse mapping
+        if value >= tiers.get("critical", [85, 100])[0]:
             return ScoreClass.CRITICAL
-        if value >= tiers.get("high", [50, 75])[0]:
-            return ScoreClass.HIGH
-        if value >= tiers.get("moderate", [25, 50])[0]:
+        if value >= tiers.get("high", [70, 85])[0]:
+            return ScoreClass.POOR  # High stress = Poor classification
+        if value >= tiers.get("moderate", [50, 70])[0]:
             return ScoreClass.MODERATE
-        return ScoreClass.LOW
+        if value >= tiers.get("low", [30, 50])[0]:
+            return ScoreClass.GOOD  # Low stress = Good classification
+        return ScoreClass.EXCELLENT
 
     elif score_type == "spring_drying_index":
-        if value >= tiers.get("very_high", [75, 100])[0]:
-            return ScoreClass.VERY_HIGH
-        if value >= tiers.get("high", [50, 75])[0]:
-            return ScoreClass.HIGH
-        if value >= tiers.get("moderate", [25, 50])[0]:
+        # For spring drying: higher = worse
+        if value >= tiers.get("very_high", [85, 100])[0]:
+            return ScoreClass.CRITICAL
+        if value >= tiers.get("high", [70, 85])[0]:
+            return ScoreClass.POOR
+        if value >= tiers.get("moderate", [50, 70])[0]:
             return ScoreClass.MODERATE
-        return ScoreClass.LOW
+        if value >= tiers.get("low", [30, 50])[0]:
+            return ScoreClass.GOOD
+        return ScoreClass.EXCELLENT
 
     # Generic fallback
-    if value >= 75:
+    if value >= 85:
         return ScoreClass.EXCELLENT
-    if value >= 50:
+    if value >= 70:
         return ScoreClass.GOOD
-    if value >= 25:
+    if value >= 50:
         return ScoreClass.MODERATE
-    return ScoreClass.POOR
+    if value >= 30:
+        return ScoreClass.POOR
+    if value >= 15:
+        return ScoreClass.LOW
+    return ScoreClass.CRITICAL
 
 
 def build_score_result(

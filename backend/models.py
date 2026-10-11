@@ -28,16 +28,14 @@ class SafetyStatus(str, Enum):
 
 
 class ScoreClass(str, Enum):
-    """Generic classification bucket."""
+    """Generic classification bucket for 0-100 scores."""
 
-    EXCELLENT = "excellent"
-    GOOD = "good"
-    MODERATE = "moderate"
-    POOR = "poor"
-    LOW = "low"
-    HIGH = "high"
-    VERY_HIGH = "very_high"
-    CRITICAL = "critical"
+    EXCELLENT = "excellent"      # 85-100
+    GOOD = "good"                # 70-84
+    MODERATE = "moderate"        # 50-69
+    POOR = "poor"                # 30-49
+    LOW = "low"                  # 15-29
+    CRITICAL = "critical"        # 0-14
 
 
 class DataTag(str, Enum):
@@ -46,6 +44,48 @@ class DataTag(str, Enum):
     REAL = "real"
     PROXY = "proxy"
     ILLUSTRATIVE = "illustrative"
+
+
+class ObservationType(str, Enum):
+    """Standardized observation types for field data."""
+
+    SPRING_FLOW = "spring_flow"
+    WELL_DEPTH = "well_depth"
+    RAINFALL = "rainfall"
+    WATER_QUALITY = "water_quality"
+    SOIL_MOISTURE = "soil_moisture"
+    GENERAL = "general"
+
+
+class RecommendationDimensions(BaseModel):
+    """Structured dimensions for a recommendation."""
+
+    length_m: float | None = Field(None, ge=0, description="Length in meters")
+    height_m: float | None = Field(None, ge=0, description="Height in meters")
+    width_m: float | None = Field(None, ge=0, description="Width in meters")
+    depth_m: float | None = Field(None, ge=0, description="Depth in meters")
+    diameter_m: float | None = Field(None, ge=0, description="Diameter in meters")
+    area_sqm: float | None = Field(None, ge=0, description="Area in square meters")
+    area_m2: float | None = Field(None, ge=0, description="Area in square meters (alias)")
+    volume_cum: float | None = Field(None, ge=0, description="Volume in cubic meters")
+    capacity_liters: float | None = Field(None, ge=0, description="Capacity in liters")
+    tank_litres: float | None = Field(None, ge=0, description="Tank capacity in liters (alias)")
+    treatment_area_ha: float | None = Field(None, ge=0, description="Treatment area in hectares")
+    spacing_m: float | None = Field(None, ge=0, description="Spacing in meters")
+
+    model_config = {"extra": "allow"}
+
+    def items(self):
+        """Return non-None fields as dict items for backwards compatibility."""
+        return {k: v for k, v in self.model_dump().items() if v is not None}.items()
+
+    def __iter__(self):
+        """Iterate over non-None field names."""
+        return iter(k for k, v in self.model_dump().items() if v is not None)
+
+    def get(self, key, default=None):
+        """Get a field value with default."""
+        return getattr(self, key, default)
 
 
 # ── Score Components ───────────────────────────
@@ -155,13 +195,13 @@ class Recommendation(BaseModel):
     intervention_id: str
     intervention_name: str
     category: str
-    dimensions: dict[str, float] = Field(
-        default_factory=dict, description="E.g., {'length_m': 10, 'height_m': 2}"
+    dimensions: RecommendationDimensions = Field(
+        default_factory=RecommendationDimensions, description="Structured dimensions"
     )
     materials: list[str] = Field(default_factory=list)
-    labour_days: int = 0
+    labour_days: int = Field(0, ge=0)
     cost_range_inr: dict[str, int] = Field(
-        default_factory=dict, description="{'low': 150000, 'high': 500000}"
+        default_factory=lambda: {"low": 0, "high": 0}, description="{'low': 150000, 'high': 500000}"
     )
     assumptions: list[str] = Field(
         default_factory=list, description="Assumptions behind this recommendation"
@@ -209,8 +249,8 @@ class ObservationCreate(BaseModel):
 
     site_id: str
     observer_name: str = ""
-    observation_type: str = Field(
-        ..., description="E.g., 'spring_flow', 'well_depth', 'general'"
+    observation_type: ObservationType = Field(
+        ObservationType.GENERAL, description="Type of observation"
     )
     value: float | None = None
     unit: str | None = None
@@ -259,7 +299,7 @@ class ReportResult(BaseModel):
 class MetaResponse(BaseModel):
     """Response for GET /meta — system metadata."""
 
-    version: str = "0.1.0"
+    version: str = "0.2.0"
     aoi_name: str
     aoi_state: str
     total_villages: int

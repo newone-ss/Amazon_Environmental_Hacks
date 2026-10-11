@@ -56,7 +56,7 @@ class TestDomainSpecialistAgents:
         score = ScoreResult(
             score_type="spring_drying_index",
             value=68.0,
-            score_class=ScoreClass.HIGH,
+            score_class=ScoreClass.MODERATE,  # 68 is in 50-69 range = MODERATE
             drivers=[],
             confidence={"level": "medium", "numeric": 0.7},  # type: ignore
         )
@@ -64,7 +64,7 @@ class TestDomainSpecialistAgents:
             {"village_name": "Dukum", "score": score, "has_spring": True}
         )
         assert res.agent_name == "SpringshedAgent"
-        assert "HIGH" in res.summary
+        assert "MODERATE" in res.summary
 
     def test_safety_auditor_agent_veto(self) -> None:
         agent = SafetyAuditorAgent()

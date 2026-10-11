@@ -32,7 +32,7 @@ class TelemetryQAAgent(BaseAgent):
         obs: Observation = context.get("observation")  # type: ignore
         village_name = context.get("village_name", "Target Site")
 
-        obs_type = obs.observation_type if obs else "general"
+        obs_type = obs.observation_type.value if obs and obs.observation_type else "general"
         val = obs.value if obs else None
         unit = obs.unit if obs else ""
         observer = obs.observer_name if obs else "Anonymous"

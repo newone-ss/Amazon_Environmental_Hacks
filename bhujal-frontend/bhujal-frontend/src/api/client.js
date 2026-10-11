@@ -21,11 +21,14 @@ export class BhujalApiClient {
     this.isBackendOnline = null;
     this.lastHealthCheck = 0;
     this.healthCheckPromise = null;
+    this._recoveryTimer = null;
   }
 
   async checkHealth() {
     const now = Date.now();
+    // Return cached promise if in progress
     if (this.healthCheckPromise) return this.healthCheckPromise;
+    // If recently confirmed offline, don't check again for 10 seconds
     if (this.isBackendOnline === false && now - this.lastHealthCheck < 10000) {
       return false;
     }
@@ -42,6 +45,11 @@ export class BhujalApiClient {
         const online = res.ok && res.status !== 503;
         this.isBackendOnline = online;
         this.lastHealthCheck = Date.now();
+        // Clear any pending recovery timer on success
+        if (online && this._recoveryTimer) {
+          clearTimeout(this._recoveryTimer);
+          this._recoveryTimer = null;
+        }
         return online;
       } catch {
         this.isBackendOnline = false;
@@ -55,7 +63,7 @@ export class BhujalApiClient {
     return this.healthCheckPromise;
   }
 
-  async fetchJson(path, options) {
+  async fetchJson(path, options = {}) {
     if (this.forceMock) {
       throw new Error('Mock mode enabled');
     }
@@ -66,6 +74,7 @@ export class BhujalApiClient {
       if (now - this.lastHealthCheck < 10000) {
         throw new Error('Backend service currently offline');
       }
+      // Trigger health check for recovery
       this.checkHealth();
     }
 
@@ -76,11 +85,18 @@ export class BhujalApiClient {
       ...(options?.headers || {}),
     };
 
+    const signal = options.signal;
+    const controller = signal ? null : new AbortController();
+    const timeoutId = controller ? setTimeout(() => controller.abort(), 10000) : null;
+
     try {
       const res = await fetch(`${this.base}${path}`, {
         ...options,
         headers,
+        signal: controller ? controller.signal : signal,
       });
+
+      if (timeoutId) clearTimeout(timeoutId);
 
       if (res.status === 503) {
         this.isBackendOnline = false;
@@ -95,17 +111,29 @@ export class BhujalApiClient {
       this.isBackendOnline = true;
       return await res.json();
     } catch (err) {
+      if (timeoutId) clearTimeout(timeoutId);
       if (
         err.name === 'TypeError' ||
         err.message.includes('Failed to fetch') ||
         err.message.includes('NetworkError') ||
-        err.message.includes('503')
+        err.message.includes('503') ||
+        err.name === 'AbortError'
       ) {
         this.isBackendOnline = false;
         this.lastHealthCheck = Date.now();
+        // Schedule recovery check
+        this._scheduleRecovery();
       }
       throw err;
     }
+  }
+
+  _scheduleRecovery() {
+    if (this._recoveryTimer) return;
+    this._recoveryTimer = setTimeout(() => {
+      this._recoveryTimer = null;
+      this.checkHealth();
+    }, 15000); // Try recovery after 15 seconds
   }
 
   async getMeta() {
@@ -134,11 +162,11 @@ export class BhujalApiClient {
     try {
       return await this.fetchJson(`/sites/${siteId}`);
     } catch {
-      const site = MOCK_SITES[siteId] || MOCK_SITES['site_001'];
-      if (!site) {
-        throw new Error(`Site not found: ${siteId}`);
+      // Only use mock for known demo sites, throw for unknown
+      if (MOCK_SITES[siteId]) {
+        return MOCK_SITES[siteId];
       }
-      return site;
+      throw new Error(`Site not found: ${siteId}`);
     }
   }
 
@@ -223,9 +251,11 @@ export class BhujalApiClient {
     try {
       return await this.fetchJson(`/upload-url?filename=${encodeURIComponent(filename)}&content_type=${encodeURIComponent(contentType)}`);
     } catch {
+      // Return a clearly marked mock URL that won't be used for real uploads
       return {
-        upload_url: `https://bhujal-observations-bucket.s3.ap-south-1.amazonaws.com/uploads/${Date.now()}_${filename}?mock_presigned=true`,
+        upload_url: `mock://local-upload/${Date.now()}_${filename}`,
         file_key: `uploads/${Date.now()}_${filename}`,
+        is_mock: true,
       };
     }
   }
@@ -471,12 +501,26 @@ export class BhujalApiClient {
     form.append('observer_id', observerId);
     form.append('observer_name', observerName);
     form.append('language_code', languageCode);
-    const res = await fetch(`${this.base}/participatory/observe/text`, {
-      method: 'POST',
-      body: form,
-    });
-    if (!res.ok) throw new Error('Text observation failed');
-    return res.json();
+    try {
+      return await this.fetchJson('/participatory/observe/text', {
+        method: 'POST',
+        body: form,
+        headers: {}, // Let browser set Content-Type with boundary for FormData
+      });
+    } catch {
+      // Mock fallback
+      return {
+        observation_id: `obs_${Date.now()}`,
+        site_id: observerId,
+        observer_name: observerName,
+        observation_type: 'text',
+        value: null,
+        unit: null,
+        notes: text,
+        timestamp: new Date().toISOString(),
+        photo_url: null,
+      };
+    }
   }
 
   async submitWhatsAppObservation(fromPhone, body) {

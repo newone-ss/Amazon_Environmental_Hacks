@@ -13,7 +13,9 @@ from backend.models import (
     Driver,
     MetaResponse,
     ObservationCreate,
+    ObservationType,
     Recommendation,
+    RecommendationDimensions,
     SafetyRuleResult,
     SafetyStatus,
     SafetyVerdict,
@@ -177,6 +179,49 @@ class TestRecommendation:
         assert rec.cost_range_inr["low"] == 150000
 
 
+class TestRecommendationDimensions:
+    def test_dimensions_creation(self) -> None:
+        dims = RecommendationDimensions(length_m=10.0, height_m=2.0, width_m=3.0)
+        assert dims.length_m == 10.0
+        assert dims.height_m == 2.0
+        assert dims.width_m == 3.0
+
+    def test_dimensions_with_aliases(self) -> None:
+        dims = RecommendationDimensions(area_m2=2500.0, tank_litres=10000.0)
+        assert dims.area_m2 == 2500.0
+        assert dims.tank_litres == 10000.0
+
+    def test_dimensions_extra_fields_allowed(self) -> None:
+        dims = RecommendationDimensions(length_m=10.0, custom_field=123.0)
+        assert dims.length_m == 10.0
+        # Extra fields are allowed
+
+
+class TestObservationType:
+    def test_observation_types(self) -> None:
+        obs = ObservationCreate(
+            site_id="site_001",
+            observation_type=ObservationType.SPRING_FLOW,
+            value=2.5,
+            unit="litres_per_second",
+        )
+        assert obs.observation_type == ObservationType.SPRING_FLOW
+
+    def test_observation_type_default(self) -> None:
+        obs = ObservationCreate(site_id="site_001")
+        assert obs.observation_type == ObservationType.GENERAL
+
+
+class TestScoreClass:
+    def test_score_class_enum_values(self) -> None:
+        assert ScoreClass.EXCELLENT.value == "excellent"
+        assert ScoreClass.GOOD.value == "good"
+        assert ScoreClass.MODERATE.value == "moderate"
+        assert ScoreClass.POOR.value == "poor"
+        assert ScoreClass.LOW.value == "low"
+        assert ScoreClass.CRITICAL.value == "critical"
+
+
 # ── Meta ───────────────────────────────────────
 
 
@@ -187,4 +232,4 @@ class TestMeta:
             aoi_state="Odisha",
             total_villages=5,
         )
-        assert meta.version == "0.1.0"
+        assert meta.version == "0.2.0"

@@ -13,6 +13,7 @@ import logging
 import os
 import uuid
 from datetime import datetime, timezone
+from threading import RLock
 
 UTC_TZ = timezone.utc  # noqa: UP017
 from pathlib import Path
@@ -100,8 +101,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# In-memory store for local development fallback
+# In-memory store for local development fallback (thread-safe)
 _local_observations: list[Observation] = []
+_local_observations_lock = RLock()
 _orchestrator = LeadPlannerOrchestratorAgent()
 _participatory_agent = ParticipatoryMonitoringAgent()
 
@@ -151,12 +153,23 @@ def _resolve_site(site_id: str) -> Site | None:
 
 # ── Routes ─────────────────────────────────────
 
+# Cache for /meta endpoint (valid for 5 minutes)
+_meta_cache: dict | None = None
+_meta_cache_time: float = 0
+_meta_cache_ttl = 300  # 5 minutes
+
 
 @app.get("/meta", response_model=MetaResponse)
 async def get_meta() -> MetaResponse:
-    """System metadata and AOI info."""
+    """System metadata and AOI info (cached for 5 minutes)."""
+    global _meta_cache, _meta_cache_time
+    import time
+    now = time.time()
+    if _meta_cache and (now - _meta_cache_time) < _meta_cache_ttl:
+        return MetaResponse(**_meta_cache)
+
     villages = get_all_villages()
-    return MetaResponse(
+    meta = MetaResponse(
         version="0.2.0",
         aoi_name="Priority Watersheds: Odisha, Madhya Pradesh, Jharkhand",
         aoi_state="Multi-State (Odisha, Madhya Pradesh, Jharkhand; Pan-India Extensible)",
@@ -166,6 +179,9 @@ async def get_meta() -> MetaResponse:
         last_pipeline_run=datetime.now(UTC_TZ),
         supported_states=["Odisha", "Madhya Pradesh", "Jharkhand", "Pan-India"],
     )
+    _meta_cache = meta.model_dump()
+    _meta_cache_time = now
+    return meta
 
 
 @app.get("/villages", response_model=list[Village])
@@ -253,47 +269,63 @@ async def create_observation(obs: ObservationCreate) -> Observation:
     if table_name:
         try:
             import boto3
+            from botocore.config import Config
 
-            dynamodb = boto3.resource("dynamodb")
+            dynamodb = boto3.resource("dynamodb", config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
             table = dynamodb.Table(table_name)
             item = stored.model_dump()
             item["timestamp"] = item["timestamp"].isoformat()
             table.put_item(Item=item)
         except Exception as exc:  # noqa: BLE001
-            logger.debug("DynamoDB put_item bypassed (%s). Using local store.", exc)
+            logger.warning("DynamoDB put_item failed after retries: %s. Using local store.", exc)
 
-    _local_observations.append(stored)
+    with _local_observations_lock:
+        _local_observations.append(stored)
     return stored
 
 
 @app.get("/observations", response_model=list[Observation])
-async def list_observations(site_id: str | None = Query(None)) -> list[Observation]:
-    """List observations, optionally filtered by site_id."""
+async def list_observations(
+    site_id: str | None = Query(None),
+    limit: int = Query(50, ge=1, le=200),
+    exclusive_start_key: str | None = Query(None),
+) -> list[Observation]:
+    """List observations, optionally filtered by site_id with pagination."""
     table_name = os.getenv("DYNAMODB_TABLE_OBSERVATIONS")
     if table_name:
         try:
             import boto3
             from boto3.dynamodb.conditions import Key
+            from botocore.config import Config
 
-            dynamodb = boto3.resource("dynamodb")
+            dynamodb = boto3.resource("dynamodb", config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
             table = dynamodb.Table(table_name)
             if site_id:
-                resp = table.query(
-                    IndexName="site-index",
-                    KeyConditionExpression=Key("site_id").eq(site_id),
-                )
-                items = resp.get("Items", [])
+                query_kwargs = {
+                    "IndexName": "site-index",
+                    "KeyConditionExpression": Key("site_id").eq(site_id),
+                    "Limit": limit,
+                }
+                if exclusive_start_key:
+                    import json
+                    query_kwargs["ExclusiveStartKey"] = json.loads(exclusive_start_key)
+                resp = table.query(**query_kwargs)
             else:
-                resp = table.scan(Limit=50)
-                items = resp.get("Items", [])
+                scan_kwargs = {"Limit": limit}
+                if exclusive_start_key:
+                    import json
+                    scan_kwargs["ExclusiveStartKey"] = json.loads(exclusive_start_key)
+                resp = table.scan(**scan_kwargs)
 
+            items = resp.get("Items", [])
             return [Observation(**item) for item in items]
         except Exception as exc:  # noqa: BLE001
-            logger.debug("DynamoDB query bypassed (%s). Using local store.", exc)
+            logger.warning("DynamoDB query failed after retries: %s. Using local store.", exc)
 
-    if site_id:
-        return [o for o in _local_observations if o.site_id == site_id]
-    return list(_local_observations)
+    with _local_observations_lock:
+        if site_id:
+            return [o for o in _local_observations if o.site_id == site_id][:limit]
+        return list(_local_observations)[:limit]
 
 
 # ── Phase 4 Derived Telemetry Routes ─────────────────────────────────
@@ -376,7 +408,7 @@ async def submit_voice_observation(
     language_code: str = Form("en-IN"),
 ) -> AgentResponse:
     """Submit a community observation via voice note (WhatsApp voice message)."""
-    # Upload audio to S3 first
+    # Upload audio to S3 using streaming to avoid memory issues
     bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
     region = os.getenv("AWS_REGION", "ap-south-1")
     audio_key = (
@@ -385,12 +417,18 @@ async def submit_voice_observation(
 
     try:
         import boto3
+        from botocore.config import Config
 
-        s3 = boto3.client("s3", region_name=region)
-        content = await audio.read()
-        s3.put_object(
-            Bucket=bucket, Key=audio_key, Body=content, ContentType=audio.content_type
-        )
+        s3 = boto3.client("s3", region_name=region, config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
+        
+        # Stream upload in chunks to avoid loading entire file into memory
+        chunk_size = 1024 * 1024  # 1MB chunks
+        from boto3.s3.transfer import TransferConfig
+        transfer_config = TransferConfig(multipart_threshold=chunk_size, multipart_chunksize=chunk_size)
+        
+        # Use upload_fileobj for streaming
+        await audio.seek(0)
+        s3.upload_fileobj(audio.file, Bucket=bucket, Key=audio_key, Config=transfer_config)
         audio_s3_uri = f"s3://{bucket}/{audio_key}"
     except Exception as exc:  # noqa: BLE001
         logger.warning("S3 upload failed, using local fallback: %s", exc)
@@ -418,13 +456,43 @@ async def whatsapp_webhook(
     From: str | None = Form(None),
     MediaUrl0: str = Form(""),
     MediaContentType0: str = Form(""),
+    X_Twilio_Signature: str | None = None,
+    X_Hub_Signature_256: str | None = None,
 ) -> Response:
     """
     WhatsApp Business API webhook endpoint.
 
     Receives incoming messages from WhatsApp (via Twilio or Meta Cloud API).
     Handles both text and voice messages, supporting both JSON and Form encodings.
+    Verifies request signatures for security.
     """
+    # Verify Twilio signature (for Twilio WhatsApp API)
+    twilio_auth_token = os.getenv("TWILIO_AUTH_TOKEN")
+    if twilio_auth_token and X_Twilio_Signature:
+        form_data = await request.form()
+        # Reconstruct the URL for validation
+        url = str(request.url)
+        # Validate signature
+        from twilio.request_validator import RequestValidator
+        validator = RequestValidator(twilio_auth_token)
+        if not validator.validate(url, dict(form_data), X_Twilio_Signature):
+            logger.warning("Invalid Twilio signature from %s", request.client.host if request.client else "unknown")
+            raise HTTPException(status_code=403, detail="Invalid Twilio signature")
+
+    # Verify Meta Cloud API signature (X-Hub-Signature-256)
+    meta_app_secret = os.getenv("META_APP_SECRET")
+    if meta_app_secret and X_Hub_Signature_256:
+        body_bytes = await request.body()
+        import hashlib
+        import hmac
+        expected_sig = "sha256=" + hmac.new(
+            meta_app_secret.encode(), body_bytes, hashlib.sha256
+        ).hexdigest()
+        if not hmac.compare_digest(expected_sig, X_Hub_Signature_256):
+            logger.warning("Invalid Meta signature from %s", request.client.host if request.client else "unknown")
+            raise HTTPException(status_code=403, detail="Invalid Meta signature")
+
+    # Re-read form data if we consumed it for validation
     if "application/json" in request.headers.get("content-type", ""):
         try:
             json_body = await request.json()
@@ -434,6 +502,13 @@ async def whatsapp_webhook(
             MediaContentType0 = json_body.get("MediaContentType0", MediaContentType0)
         except (ValueError, json.JSONDecodeError) as exc:
             logger.debug("Failed to parse WhatsApp JSON payload: %s", exc)
+    else:
+        # For form data, we need to re-parse since we may have consumed it
+        form_data = await request.form()
+        Body = form_data.get("Body", Body)
+        From = form_data.get("From", From)
+        MediaUrl0 = form_data.get("MediaUrl0", MediaUrl0)
+        MediaContentType0 = form_data.get("MediaContentType0", MediaContentType0)
 
     from_val = From or "whatsapp:+919876543210"
     body_val = Body or ""
@@ -488,39 +563,19 @@ async def get_observer_stats(observer_id: str) -> dict:
 # ── Adaptation Pathways Routes ─────────────────────────────────
 
 
-class PathwayRequest:
+class PathwayRequest(BaseModel):
     """Request model for pathway generation."""
-
-    def __init__(
-        self,
-        site_id: str = Form(...),
-        ssp_scenario: str = Form("SSP2-4.5"),
-        base_rainfall_fraction: float = Form(1.0),
-    ):
-        self.site_id = site_id
-        self.ssp_scenario = ssp_scenario
-        self.base_rainfall_fraction = base_rainfall_fraction
+    site_id: str = Field(..., description="Target settlement ID")
+    ssp_scenario: str = Field("SSP2-4.5", description="SSP scenario (e.g., SSP1-2.6, SSP2-4.5, SSP3-7.0, SSP5-8.5)")
+    base_rainfall_fraction: float = Field(1.0, ge=0.5, le=2.0, description="Base rainfall fraction")
 
 
 @app.post("/pathways/generate", response_model=dict)
-async def generate_pathway(
-    request: Request,
-    site_id: str | None = Form(None),
-    ssp_scenario: str | None = Form(None),
-    base_rainfall_fraction: float | None = Form(None),
-) -> dict:
+async def generate_pathway(request: PathwayRequest) -> dict:
     """Generate a single adaptation pathway for a site under an SSP scenario."""
-    if "application/json" in request.headers.get("content-type", ""):
-        try:
-            body = await request.json()
-            site_id = body.get("site_id", site_id)
-            ssp_scenario = body.get("ssp_scenario", ssp_scenario)
-            base_rainfall_fraction = body.get("base_rainfall_fraction", base_rainfall_fraction)
-        except (ValueError, json.JSONDecodeError) as exc:
-            logger.debug("Failed to parse pathway JSON payload: %s", exc)
-
-    if not site_id:
-        raise HTTPException(status_code=422, detail="Field 'site_id' is required")
+    site_id = request.site_id
+    ssp_scenario = request.ssp_scenario
+    base_rainfall_fraction = request.base_rainfall_fraction
 
     resolved_site = _resolve_site(site_id)
     target_id = resolved_site.village.id if resolved_site else site_id
@@ -536,34 +591,29 @@ async def generate_pathway(
         raise HTTPException(status_code=500, detail=f"Pathway generation failed: {exc}")
 
 
-@app.post("/pathways/compare", response_model=dict)
-async def compare_pathways(
-    request: Request,
-    site_id: str | None = Form(None),
-    scenarios: str | None = Form(None),
-    base_rainfall_fraction: float | None = Form(None),
-) -> dict:
-    """Generate and compare pathways across multiple SSP scenarios."""
-    if "application/json" in request.headers.get("content-type", ""):
-        try:
-            body = await request.json()
-            site_id = body.get("site_id", site_id)
-            scenarios = body.get("scenarios", scenarios)
-            base_rainfall_fraction = body.get("base_rainfall_fraction", base_rainfall_fraction)
-        except (ValueError, json.JSONDecodeError) as exc:
-            logger.debug("Failed to parse compare JSON payload: %s", exc)
+class PathwayCompareRequest(BaseModel):
+    """Request model for pathway comparison."""
+    site_id: str = Field(..., description="Target settlement ID")
+    scenarios: list[str] | str = Field(
+        default=["SSP1-2.6", "SSP2-4.5", "SSP3-7.0", "SSP5-8.5"],
+        description="List of SSP scenarios or comma-separated string"
+    )
+    base_rainfall_fraction: float = Field(1.0, ge=0.5, le=2.0)
 
-    if not site_id:
-        raise HTTPException(status_code=422, detail="Field 'site_id' is required")
+
+@app.post("/pathways/compare", response_model=dict)
+async def compare_pathways(request: PathwayCompareRequest) -> dict:
+    """Generate and compare pathways across multiple SSP scenarios."""
+    site_id = request.site_id
+    
+    if isinstance(request.scenarios, list):
+        scenario_list = request.scenarios
+    else:
+        scenarios_str = request.scenarios or "SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5"
+        scenario_list = [s.strip() for s in scenarios_str.split(",") if s.strip()]
 
     resolved_site = _resolve_site(site_id)
     target_id = resolved_site.village.id if resolved_site else site_id
-
-    if isinstance(scenarios, list):
-        scenario_list = scenarios
-    else:
-        scenarios_str = scenarios or "SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5"
-        scenario_list = [s.strip() for s in scenarios_str.split(",") if s.strip()]
 
     try:
         pathways = generate_pathway_comparison(target_id, scenario_list)
@@ -764,31 +814,35 @@ async def generate_dpr(
         import tempfile
 
         import boto3
+        from botocore.config import Config
 
         zip_b64 = base64.b64encode(zip_bytes).decode()
         presigned_url = None
 
         bucket = os.getenv("S3_BUCKET_UPLOADS", "bhujal-uploads")
         zip_key = f"dpr/{dpr.project_id}.zip"
+        tmp_path = None
 
         try:
             with tempfile.NamedTemporaryFile(delete=False, suffix=".zip") as tmp:
                 tmp.write(zip_bytes)
                 tmp_path = tmp.name
 
-            try:
-                s3_client = boto3.client("s3")
-                s3_client.upload_file(tmp_path, bucket, zip_key)
-                presigned_url = s3_client.generate_presigned_url(
-                    "get_object",
-                    Params={"Bucket": bucket, "Key": zip_key},
-                    ExpiresIn=3600,
-                )
-            finally:
-                if os.path.exists(tmp_path):
-                    os.unlink(tmp_path)
+            s3_client = boto3.client("s3", config=Config(retries={"max_attempts": 3, "mode": "adaptive"}))
+            s3_client.upload_file(tmp_path, bucket, zip_key)
+            presigned_url = s3_client.generate_presigned_url(
+                "get_object",
+                Params={"Bucket": bucket, "Key": zip_key},
+                ExpiresIn=3600,
+            )
         except Exception as s3_err:  # noqa: BLE001
             logger.warning("S3 DPR upload/presign skipped or failed: %s", s3_err)
+        finally:
+            if tmp_path and os.path.exists(tmp_path):
+                try:
+                    os.unlink(tmp_path)
+                except OSError:
+                    pass
 
         return {
             "project_id": dpr.project_id,
@@ -866,11 +920,21 @@ async def list_scheme_mapping() -> dict:
 
 # ── Static Files & SPA Frontend Serving ─────────────────────
 
-FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
-if not FRONTEND_DIST.exists():
-    FRONTEND_DIST = Path(__file__).resolve().parent.parent / "bhujal-frontend" / "bhujal-frontend" / "dist"
+def _resolve_frontend_dist() -> Path | None:
+    """Resolve frontend dist directory with validated paths."""
+    candidates = [
+        Path(__file__).resolve().parent.parent / "frontend" / "dist",
+        Path(__file__).resolve().parent.parent / "bhujal-frontend" / "bhujal-frontend" / "dist",
+        Path(os.getenv("FRONTEND_DIST", "")).resolve() if os.getenv("FRONTEND_DIST") else None,
+    ]
+    for candidate in candidates:
+        if candidate and candidate.exists() and candidate.is_dir():
+            return candidate
+    return None
 
-if FRONTEND_DIST.exists():
+FRONTEND_DIST = _resolve_frontend_dist()
+
+if FRONTEND_DIST:
     assets_dir = FRONTEND_DIST / "assets"
     if assets_dir.exists():
         app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
@@ -897,20 +961,30 @@ if FRONTEND_DIST.exists():
     @app.get("/{full_path:path}")
     async def serve_spa_frontend(full_path: str):
         full_path_clean = full_path.strip("/")
-        if ".." in full_path_clean:
+        if ".." in full_path_clean or full_path_clean.startswith("."):
             raise HTTPException(status_code=400, detail="Invalid path")
+        
+        # Explicit API route prefixes - must match before SPA fallback
         api_prefixes = (
             "meta", "villages", "sites", "scenario", "recommendation",
             "observations", "telemetry", "participatory", "pathways",
             "report", "reports", "dpr", "agent", "docs", "openapi.json", "redoc",
+            "aoi.geojson", "favicon.ico", "assets", "health", "ready",
         )
         if any(full_path_clean == p or full_path_clean.startswith(f"{p}/") for p in api_prefixes):
             raise HTTPException(status_code=404, detail="API route not found")
 
+        # Serve static files if they exist
         file_candidate = FRONTEND_DIST / full_path_clean
         if full_path_clean and file_candidate.is_file():
+            # Prevent directory traversal
+            try:
+                file_candidate.resolve().relative_to(FRONTEND_DIST.resolve())
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid path")
             return FileResponse(file_candidate)
 
+        # SPA fallback for known routes
         if full_path_clean in SPA_ROUTES or full_path_clean == "":
             index_html = FRONTEND_DIST / "index.html"
             if index_html.exists():

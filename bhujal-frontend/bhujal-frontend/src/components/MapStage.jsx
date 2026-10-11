@@ -299,14 +299,23 @@ export default function MapStage({
     const fullscreen = new maplibregl.FullscreenControl();
     map.addControl(fullscreen, 'top-right');
 
-    // Preload AOI GeoJSON
-    fetch('/aoi.geojson')
-      .then((res) => (res.ok ? res.json() : null))
+    // Preload AOI GeoJSON with timeout
+    const aoiController = new AbortController();
+    const aoiTimeout = setTimeout(() => aoiController.abort(), 5000);
+    fetch('/aoi.geojson', { signal: aoiController.signal })
+      .then((res) => {
+        clearTimeout(aoiTimeout);
+        return res.ok ? res.json() : null;
+      })
       .then((data) => {
         aoiDataRef.current = data;
         if (mapLoaded) reAttachLayers(map);
       })
-      .catch((err) => console.warn('AOI GeoJSON fetch bypassed:', err));
+      .catch((err) => {
+        if (err.name !== 'AbortError') {
+          console.warn('AOI GeoJSON fetch bypassed:', err);
+        }
+      });
 
     // Create interactive reusable popup
     const popup = new maplibregl.Popup({
@@ -404,6 +413,11 @@ export default function MapStage({
 
   // Locate User via device GPS
   function handleLocateUser() {
+    // Check for HTTPS requirement
+    if (location.protocol !== 'https:' && location.hostname !== 'localhost' && location.hostname !== '127.0.0.1') {
+      alert('Geolocation requires HTTPS. Please access the app via HTTPS or localhost.');
+      return;
+    }
     if (!navigator.geolocation) {
       alert('Geolocation is not supported by your browser.');
       return;

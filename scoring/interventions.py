@@ -7,13 +7,16 @@ and estimates indicative MGNREGA cost bounds from config/costs.yaml.
 
 from __future__ import annotations
 
+import logging
 from typing import Any
 
-from backend.models import Recommendation
+from backend.models import Recommendation, RecommendationDimensions
 from scoring.base import (
     get_costs_config,
     get_interventions_config,
 )
+
+logger = logging.getLogger(__name__)
 
 
 def compose_recommendations(
@@ -38,9 +41,23 @@ def compose_recommendations(
     cost_tables = cost_cfg.get("intervention_costs", {})
     labour_rates = cost_cfg.get("labour_rates_by_state", {})
     default_labour_rate = cost_cfg.get("labour_rate_inr_per_day", 350)
-    labour_rate = labour_rates.get(
-        state, labour_rates.get("All-India", default_labour_rate)
-    )
+
+    # Validate state wage rate
+    if state not in labour_rates:
+        logger.warning(
+            "State '%s' not found in labour_rates_by_state config. "
+            "Falling back to All-India rate (%s). Available states: %s",
+            state, default_labour_rate, list(labour_rates.keys())
+        )
+        labour_rate = default_labour_rate
+    else:
+        labour_rate = labour_rates[state]
+        if labour_rate <= 0:
+            logger.warning(
+                "Invalid labour rate for state '%s': %s. Using default.",
+                state, labour_rate
+            )
+            labour_rate = default_labour_rate
 
     slope = float(features.get("slope_degrees", 10.0))
     catchment = float(features.get("catchment_area_ha", 10.0))
@@ -162,11 +179,14 @@ def compose_recommendations(
                 f"Labour costing reflects {state} MGNREGA wage benchmark (INR {labour_rate}/person-day)."
             )
 
+            dims_dict = item.get("default_dimensions", {})
+            dimensions = RecommendationDimensions(**dims_dict) if dims_dict else RecommendationDimensions()
+
             rec = Recommendation(
                 intervention_id=i_id,
                 intervention_name=item["name"],
                 category=item["category"],
-                dimensions=item.get("default_dimensions", {}),
+                dimensions=dimensions,
                 materials=item.get("materials", []),
                 labour_days=int(item.get("labour_days", 30)),
                 cost_range_inr=cost_range,
