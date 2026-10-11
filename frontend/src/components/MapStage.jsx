@@ -394,9 +394,20 @@ export default function MapStage({
       });
     });
 
+    // Auto-resize MapLibre when layout changes (e.g. side panel toggles)
+    const resizeObserver = new ResizeObserver(() => {
+      if (mapRef.current) {
+        mapRef.current.resize();
+      }
+    });
+    if (mapContainerRef.current) {
+      resizeObserver.observe(mapContainerRef.current);
+    }
+
     mapRef.current = map;
 
     return () => {
+      resizeObserver.disconnect();
       popup.remove();
       map.remove();
       mapRef.current = null;

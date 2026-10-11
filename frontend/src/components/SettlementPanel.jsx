@@ -93,7 +93,7 @@ function DriverBars({ drivers = [] }) {
   return (
     <div className="driver-bars-container">
       <div className="driver-bars-header">
-        <span className="drivers-title">Key Drivers ('Why?' Breakdown)</span>
+        <span className="drivers-title">Key Drivers</span>
         {drivers.length > 3 && (
           <button
             type="button"
@@ -594,73 +594,47 @@ export default function SettlementPanel({
           ) : primaryRec ? (
             <div className="rec-summary-card">
               <div className="rec-summary-head">
-                <div className="rec-summary-title">
-                  <Wrench size={18} />
-                  <div>
-                    <span className="eyebrow">RECOMMENDED ACTION</span>
-                    <h4>{primaryRec.intervention_name}</h4>
-                  </div>
+                <div className="rec-summary-badge">
+                  <Wrench size={13} />
+                  <span>RECOMMENDED ACTION</span>
                 </div>
                 <span className="suitability-tag">{(primaryRec.suitability_score * 100).toFixed(0)}% fit</span>
               </div>
-              <p className="rec-category">Category: {primaryRec.category} • Schedule of Rates: {village.state} MGNREGA</p>
-              <div className="rec-metrics-row">
-                <div>
-                  <small>Cost Range (INR)</small>
-                  <b>₹{(primaryRec.cost_range_inr.low / 100000).toFixed(1)}–{(primaryRec.cost_range_inr.high / 100000).toFixed(1)}L</b>
-                </div>
-                <div>
-                  <small>Unskilled Labour</small>
-                  <b>{primaryRec.labour_days} Person-Days</b>
+
+              <div className="rec-title-wrap">
+                <h4 className="rec-title">{primaryRec.intervention_name}</h4>
+                <div className="rec-tags-row">
+                  <span className="rec-category-tag">
+                    {primaryRec.category ? formatFactorName(primaryRec.category) : 'Recharge'} Structure
+                  </span>
+                  <span className="rec-state-tag">{village.state} MGNREGA Standard Schedule</span>
                 </div>
               </div>
+
+              <div className="rec-metrics-row">
+                <div className="rec-metric-item">
+                  <span className="rec-metric-label">Estimated Budget</span>
+                  <span className="rec-metric-val">
+                    ₹{(primaryRec.cost_range_inr.low / 100000).toFixed(1)}–{(primaryRec.cost_range_inr.high / 100000).toFixed(1)} Lakh
+                  </span>
+                </div>
+                <div className="rec-metric-divider" />
+                <div className="rec-metric-item">
+                  <span className="rec-metric-label">Unskilled Labour</span>
+                  <span className="rec-metric-val">{primaryRec.labour_days} Person-Days</span>
+                </div>
+              </div>
+
               <button
                 type="button"
-                className="primary-cta"
+                className="primary-cta rec-cta-btn"
                 onClick={() => setActiveTab('Plan')}
               >
-                View Detailed Work Plan <ChevronRight size={17} />
+                <span>View Detailed Work Plan</span>
+                <ChevronRight size={16} />
               </button>
             </div>
           ) : null}
-
-          {/* 3e. Key Insight with AI/Template Tag and quoted numbers */}
-          <div className="insight-card">
-            <div className="insight-header-row">
-              <div className="insight-heading">
-                <Sparkles size={16} />
-                <strong>Synthesized Key Insight</strong>
-              </div>
-              <span className="origin-badge">Template Synthesized</span>
-            </div>
-            <p>
-              {isRejected
-                ? `${village.name} faces severe geotechnical slope hazards (${safety.rule_ids.join(', ')}). No artificial recharge structures should be constructed.`
-                : `${village.name} exhibits a recharge suitability score of ${rechargeScore?.value.toFixed(1)}/100 and heat-water vulnerability of ${heatScore?.value.toFixed(1)}/100. Spring desiccation risk stands at ${springScore?.value.toFixed(1)}/100.`}
-            </p>
-            <div className="quoted-numbers-row">
-              <span className="quoted-number-pill">Recharge: {rechargeScore?.value.toFixed(1) || 'N/A'}</span>
-              <span className="quoted-number-pill">Heat: {heatScore?.value.toFixed(1) || 'N/A'}</span>
-              <span className="quoted-number-pill">Spring: {springScore?.value.toFixed(1) || 'N/A'}</span>
-            </div>
-          </div>
-
-          {/* 3f. Data Quality Note and Provenance Chips */}
-          <div className="data-quality-note">
-            <div className="dq-top">
-              <Info size={14} />
-              <span>Data Provenance &amp; Verification Note</span>
-            </div>
-            <p>
-              {rechargeScore?.data_quality_note ||
-                'Scores computed via deterministic spatial formulas using CGWB and IMD empirical baselines.'}
-            </p>
-            <div className="dq-chips">
-              <ProvenanceChip tag="real" />
-              <ProvenanceChip tag="proxy" />
-              <ProvenanceChip tag="illustrative" />
-            </div>
-          </div>
         </div>
       )}
 
