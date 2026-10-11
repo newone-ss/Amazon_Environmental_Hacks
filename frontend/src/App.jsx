@@ -80,12 +80,6 @@ function Header({
         <BrandMark t={t} />
 
         <div className="topbar-actions-group">
-          {/* Demo Data Badge */}
-          <span className="demo-data-badge" title="Data based on 13 curated demonstration settlements">
-            <span className="demo-dot" />
-            {t('demo_badge')}
-          </span>
-
           {/* Language Toggle */}
           <button
             type="button"

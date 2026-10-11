@@ -116,16 +116,17 @@ test.describe('Bhujal Decision Support Smoke Tests', () => {
     await expect(langBtn).toBeVisible();
     await langBtn.click();
 
-    // Verify header search placeholder or badge is Hindi
-    await expect(page.locator('.demo-data-badge')).toContainText('डेमो डेटा');
+    // Verify header search placeholder is Hindi
     await expect(page.locator('input[aria-label="बस्ती या जिला खोजें..."]')).toBeVisible();
+    await expect(langBtn).toContainText('EN');
 
     // Verify numbers and rule IDs remain untranslated (e.g. / 100)
     await expect(page.locator('.score-denom').first()).toContainText('/ 100');
 
     // Switch back to English
     await langBtn.click();
-    await expect(page.locator('.demo-data-badge')).toContainText('Demo Data');
+    await expect(page.locator('input[aria-label="Search settlement or district..."]')).toBeVisible();
+    await expect(langBtn).toContainText('हिं (HI)');
   });
 
   test('5. Multi-view navigation and zero console errors', async ({ page }) => {
