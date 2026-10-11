@@ -18,12 +18,12 @@ import ReportsView from './components/ReportsView.jsx';
 import AboutDataView from './components/AboutDataView.jsx';
 import FirstRunGuideModal from './components/FirstRunGuideModal.jsx';
 
-const navItems = useMemo(() => [
+const navItems = [
   { id: 'Map', key: 'nav_map', icon: MapPin },
   { id: 'Field Data', key: 'nav_field_data', icon: ClipboardList },
   { id: 'Reports', key: 'nav_reports', icon: FileText },
   { id: 'About and Data', key: 'nav_about', icon: Database },
-], []);
+];
 
 function BrandMark({ t }) {
   return (
