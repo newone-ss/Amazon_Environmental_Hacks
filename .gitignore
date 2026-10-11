@@ -42,6 +42,10 @@ data/reports/
 /.awssamignore
 /requirements-pipeline.txt
 /scripts/
+/AGENTS.md
+/CLAUDE.md
+/run_dev.bat
+/run_dev.ps1
 pipeline/download/
 pipeline/features/
 pipeline/preprocess/
