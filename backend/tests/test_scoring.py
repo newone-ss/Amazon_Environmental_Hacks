@@ -6,11 +6,6 @@ intervention matching, and scenario simulation.
 from __future__ import annotations
 
 import pytest
-
-from backend.models import (
-    SafetyStatus,
-    ScoreClass,
-)
 from scoring import (
     calculate_heat_water_stress,
     calculate_recharge_score,
@@ -19,6 +14,11 @@ from scoring import (
     evaluate_safety_rules,
     evaluate_site,
     simulate_scenario,
+)
+
+from backend.models import (
+    SafetyStatus,
+    ScoreClass,
 )
 
 

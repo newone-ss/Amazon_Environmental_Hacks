@@ -63,7 +63,7 @@ class BaseAgent:
             try:
                 self.dynamodb = boto3.resource("dynamodb", region_name=self.region)
                 self.cache_table = self.dynamodb.Table(self.bedrock_cache_table)
-            except Exception as e:
+            except Exception as e:  # noqa: BLE001
                 logger.debug("Failed initializing DynamoDB Bedrock cache table: %s", e)
                 self.cache_table = None
         else:

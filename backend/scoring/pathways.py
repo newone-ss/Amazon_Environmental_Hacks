@@ -12,7 +12,6 @@ from pathlib import Path
 from typing import Any
 
 import yaml
-
 from scoring.engine import evaluate_site, run_site_scenario
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"

@@ -19,8 +19,6 @@ from unittest.mock import patch
 
 import pytest
 from fastapi.testclient import TestClient
-
-from backend.app import app
 from scoring.derived_loader import (
     get_district_groundwater_summary,
     get_district_rainfall_summary,
@@ -31,6 +29,8 @@ from scoring.derived_loader import (
     load_derived_settlements,
     load_derived_temperature,
 )
+
+from backend.app import app
 
 _cand1 = Path(__file__).resolve().parent.parent.parent / "data" / "derived"
 _cand2 = Path(__file__).resolve().parent.parent / "data" / "derived"

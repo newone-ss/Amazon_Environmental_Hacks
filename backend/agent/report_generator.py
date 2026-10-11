@@ -8,16 +8,17 @@ and climate scenario projections.
 
 from __future__ import annotations
 
+import logging
+import os
 import uuid
 from datetime import datetime, timezone
-
-UTC_TZ = timezone.utc  # noqa: UP017
 from pathlib import Path
 from typing import Any
 
 from backend.models import ReportResult, Site
 
-import os
+logger = logging.getLogger(__name__)
+UTC_TZ = timezone.utc
 _cand1 = Path(__file__).resolve().parent.parent.parent / "data" / "reports"
 _cand2 = Path(__file__).resolve().parent.parent / "data" / "reports"
 if os.getenv("AWS_LAMBDA_FUNCTION_NAME"):
@@ -285,8 +286,8 @@ def create_report(
                 Params={"Bucket": bucket, "Key": s3_key},
                 ExpiresIn=3600,
             )
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("Failed generating presigned URL for report %s: %s", report_id, exc)
 
     return ReportResult(
         report_id=report_id,

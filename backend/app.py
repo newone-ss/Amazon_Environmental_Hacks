@@ -15,7 +15,7 @@ import uuid
 from datetime import datetime, timezone
 from threading import RLock
 
-UTC_TZ = timezone.utc  # noqa: UP017
+UTC_TZ = timezone.utc
 from pathlib import Path
 
 logger = logging.getLogger(__name__)
@@ -36,6 +36,17 @@ from agent.dpr_generator import create_dpr_zip, generate_dpr_package
 from agent.orchestrator import LeadPlannerOrchestratorAgent
 from agent.participatory import ParticipatoryMonitoringAgent
 from agent.report_generator import create_report
+from scoring import (
+    evaluate_site,
+    generate_adaptation_pathway,
+    generate_pathway_comparison,
+    generate_pathway_visualization_data,
+    get_all_villages,
+    get_site_recommendations,
+    pathway_to_dict,
+    run_site_scenario,
+)
+
 from backend.models import (
     DataTag,
     MetaResponse,
@@ -48,16 +59,6 @@ from backend.models import (
     ScenarioResult,
     Site,
     Village,
-)
-from scoring import (
-    evaluate_site,
-    generate_adaptation_pathway,
-    generate_pathway_comparison,
-    generate_pathway_visualization_data,
-    get_all_villages,
-    get_site_recommendations,
-    pathway_to_dict,
-    run_site_scenario,
 )
 
 _backend_dir = Path(__file__).resolve().parent
@@ -342,7 +343,7 @@ async def get_upload_url(
             ExpiresIn=3600,
         )
         return {"upload_url": upload_url, "file_key": file_key}
-    except Exception as exc:
+    except Exception as exc:  # noqa: BLE001
         logger.warning("Failed to generate presigned PUT URL: %s", exc)
         return {
             "upload_url": f"https://{bucket}.s3.{region}.amazonaws.com/{file_key}",

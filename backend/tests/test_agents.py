@@ -13,6 +13,8 @@ from agent import (
     TelemetryQAAgent,
     create_report,
 )
+from scoring import evaluate_site, get_all_villages
+
 from backend.models import (
     Observation,
     SafetyStatus,
@@ -20,7 +22,6 @@ from backend.models import (
     ScoreClass,
     ScoreResult,
 )
-from scoring import evaluate_site, get_all_villages
 
 
 class TestDomainSpecialistAgents:

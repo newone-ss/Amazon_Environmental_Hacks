@@ -9,16 +9,17 @@ from __future__ import annotations
 
 from typing import Any
 
-from backend.models import (
-    ConfidenceLevel,
-    DataTag,
-    ScoreResult,
-)
 from scoring.base import (
     build_score_result,
     compute_weighted_score,
     get_weights_config,
     normalize_linear,
+)
+
+from backend.models import (
+    ConfidenceLevel,
+    DataTag,
+    ScoreResult,
 )
 
 

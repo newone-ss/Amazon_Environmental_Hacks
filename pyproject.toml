@@ -1,0 +1,10 @@
+[tool.ruff]
+target-version = "py312"
+line-length = 88
+
+[tool.ruff.lint]
+ignore = ["EXE", "EXE001", "EXE002", "E501", "RUF100", "UP"]
+
+[tool.pytest.ini_options]
+testpaths = ["backend/tests"]
+pythonpath = ["backend", "backend/.."]

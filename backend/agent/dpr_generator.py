@@ -16,7 +16,7 @@ from datetime import datetime, timezone
 from typing import TYPE_CHECKING, Any, TypeAlias
 
 # UTC is available in Python 3.11+; use timezone.utc as fallback for type checking
-UTC_TZ = timezone.utc  # type: ignore[assignment]  # noqa: UP017
+UTC_TZ = timezone.utc  # type: ignore[assignment]
 from pathlib import Path
 
 if TYPE_CHECKING:
@@ -29,10 +29,10 @@ if TYPE_CHECKING:
     from openpyxl.utils import get_column_letter
 
     # Proper type alias for mypy - use the actual Document class
-    Document: TypeAlias = DocxDocument  # noqa: UP040
+    Document: TypeAlias = DocxDocument
 else:
     # Runtime fallback - functions using Document check DOCX_AVAILABLE first
-    Document: TypeAlias = object  # noqa: UP040
+    Document: TypeAlias = object
 
 try:
     from docx import Document as _Document
@@ -75,6 +75,8 @@ except ImportError:
     OPENPYXL_AVAILABLE = False
 
 
+from scoring import evaluate_site
+
 from backend.models import (
     Recommendation,  # noqa: F401
     SafetyRuleResult,  # noqa: F401
@@ -82,7 +84,6 @@ from backend.models import (
     ScoreClass,
     Site,
 )
-from scoring import evaluate_site
 
 # Check for weasyprint availability (optional)
 WEASYPRINT_AVAILABLE = importlib.util.find_spec("weasyprint") is not None

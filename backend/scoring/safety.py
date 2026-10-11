@@ -10,12 +10,13 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from scoring.base import get_safety_config
+
 from backend.models import (
     SafetyRuleResult,
     SafetyStatus,
     SafetyVerdict,
 )
-from scoring.base import get_safety_config
 
 logger = logging.getLogger(__name__)
 

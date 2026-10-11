@@ -10,11 +10,12 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from backend.models import Recommendation, RecommendationDimensions
 from scoring.base import (
     get_costs_config,
     get_interventions_config,
 )
+
+from backend.models import Recommendation, RecommendationDimensions
 
 logger = logging.getLogger(__name__)
 

@@ -7,11 +7,21 @@ and civil intervention composition.
 
 from __future__ import annotations
 
+import logging
 from functools import lru_cache
 from pathlib import Path
 from typing import Any
 
 import yaml
+
+logger = logging.getLogger(__name__)
+
+from scoring.interventions import compose_recommendations
+from scoring.recharge import calculate_recharge_score
+from scoring.safety import evaluate_safety_rules
+from scoring.simulator import simulate_scenario
+from scoring.springs import calculate_spring_drying_index
+from scoring.stress import calculate_heat_water_stress
 
 from backend.models import (
     DataTag,
@@ -21,12 +31,6 @@ from backend.models import (
     Site,
     Village,
 )
-from scoring.interventions import compose_recommendations
-from scoring.recharge import calculate_recharge_score
-from scoring.safety import evaluate_safety_rules
-from scoring.simulator import simulate_scenario
-from scoring.springs import calculate_spring_drying_index
-from scoring.stress import calculate_heat_water_stress
 
 CONFIG_DIR = Path(__file__).resolve().parent.parent / "config"
 
@@ -79,8 +83,8 @@ def get_all_villages() -> list[Village]:
                         v.heat_water_stress = sc.value
                     elif sc.score_type == "spring_drying_index":
                         v.spring_drying_index = sc.value
-        except Exception:
-            pass
+        except Exception as exc:  # noqa: BLE001
+            logger.debug("Failed evaluating site headline scores for %s: %s", s.get("id"), exc)
         villages.append(v)
     _cached_villages = villages
     return villages

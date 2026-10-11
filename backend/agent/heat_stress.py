@@ -10,6 +10,7 @@ from __future__ import annotations
 from typing import Any
 
 from agent.base import AgentResponse, BaseAgent
+
 from backend.models import ScoreResult
 
 

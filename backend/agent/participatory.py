@@ -14,20 +14,20 @@ import re
 import uuid
 from datetime import datetime, timezone
 
-UTC_TZ = timezone.utc  # noqa: UP017
+UTC_TZ = timezone.utc
 from pathlib import Path
 from typing import Any
 
 import boto3
-from botocore.exceptions import ClientError
-
 from agent.base import AgentResponse, BaseAgent
+from botocore.exceptions import ClientError
+from scoring import get_all_villages, get_site_raw_data
+
 from backend.models import (
     DataTag,
     Observation,
     ObservationCreate,
 )
-from scoring import get_all_villages, get_site_raw_data
 
 logger = logging.getLogger(__name__)
 

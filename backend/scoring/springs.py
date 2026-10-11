@@ -9,18 +9,19 @@ from __future__ import annotations
 
 from typing import Any
 
+from scoring.base import (
+    build_score_result,
+    compute_weighted_score,
+    get_weights_config,
+    normalize_linear,
+)
+
 from backend.models import (
     Confidence,
     ConfidenceLevel,
     DataTag,
     ScoreClass,
     ScoreResult,
-)
-from scoring.base import (
-    build_score_result,
-    compute_weighted_score,
-    get_weights_config,
-    normalize_linear,
 )
 
 _GEOLOGY_RISK_MAP: dict[str, float] = {

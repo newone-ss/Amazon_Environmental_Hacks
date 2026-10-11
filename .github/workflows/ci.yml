@@ -27,7 +27,7 @@ jobs:
 
       - name: Lint with ruff
         run: |
-          ruff check backend/ --output-format=github
+          ruff check backend/ --config backend/pyproject.toml --output-format=github
 
       - name: Type check with mypy
         run: |

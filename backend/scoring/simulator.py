@@ -7,14 +7,15 @@ driven by config/scenario.yaml.
 
 from __future__ import annotations
 
-from backend.models import (
-    ScenarioResult,
-    ScoreResult,
-)
 from scoring.base import (
     classify_score,
     get_scenario_config,
     get_weights_config,
+)
+
+from backend.models import (
+    ScenarioResult,
+    ScoreResult,
 )
 
 

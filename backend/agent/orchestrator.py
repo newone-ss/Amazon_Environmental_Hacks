@@ -14,7 +14,7 @@ try:
 except ImportError:
     from datetime import timezone
 
-    UTC = timezone.utc  # noqa: UP017
+    UTC = timezone.utc
 from typing import Any
 
 from agent.base import AgentResponse, BaseAgent
@@ -25,6 +25,7 @@ from agent.safety_auditor import SafetyAuditorAgent
 from agent.scenario_simulator import ScenarioSimulatorAgent
 from agent.springshed import SpringshedAgent
 from agent.telemetry import TelemetryQAAgent
+
 from backend.models import SafetyStatus, Site
 
 
