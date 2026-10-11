@@ -7,6 +7,7 @@ deterministic scoring modules, multi-agent orchestrator, and DynamoDB/S3.
 
 from __future__ import annotations
 
+import base64
 import hashlib
 import logging
 import os
@@ -18,9 +19,11 @@ from pathlib import Path
 
 logger = logging.getLogger(__name__)
 
-from fastapi import Body, FastAPI, Form, HTTPException, Query, UploadFile
+from fastapi import Body, FastAPI, Form, HTTPException, Query, Request, UploadFile
 from fastapi.middleware.cors import CORSMiddleware
-from fastapi.responses import HTMLResponse
+from fastapi.responses import FileResponse, HTMLResponse, Response
+from fastapi.staticfiles import StaticFiles
+from pydantic import BaseModel, Field
 
 try:
     from mangum import Mangum
@@ -65,10 +68,33 @@ app = FastAPI(
     version="0.2.0",
 )
 
+# ── Security Middleware ─────────────────────────
+@app.middleware("http")
+async def add_security_headers(request: Request, call_next):
+    response = await call_next(request)
+    response.headers["X-Content-Type-Options"] = "nosniff"
+    response.headers["X-Frame-Options"] = "SAMEORIGIN"
+    response.headers["X-XSS-Protection"] = "1; mode=block"
+    response.headers["Referrer-Policy"] = "strict-origin-when-cross-origin"
+    return response
+
 # CORS — dev and prod origins
+allowed_origins_env = os.getenv("ALLOWED_ORIGINS")
+if allowed_origins_env:
+    allowed_origins = [o.strip() for o in allowed_origins_env.split(",") if o.strip()]
+else:
+    allowed_origins = [
+        "http://localhost:5173",
+        "http://127.0.0.1:5173",
+        "http://localhost:8000",
+        "http://127.0.0.1:8000",
+        "http://localhost:3000",
+        "http://127.0.0.1:3000",
+    ]
+
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:5173", "*"],
+    allow_origins=allowed_origins if "*" not in allowed_origins else ["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -80,12 +106,47 @@ _orchestrator = LeadPlannerOrchestratorAgent()
 _participatory_agent = ParticipatoryMonitoringAgent()
 
 
+class AgentConsultRequest(BaseModel):
+    """Request model for interactive agent consultation."""
+    site_id: str = Field(..., description="Target settlement ID")
+    query: str = Field(..., min_length=2, max_length=1000, description="Planner question")
+    agent_type: str | None = Field(None, description="Optional specific agent role to consult")
+
+
+class AgentSynthesizeRequest(BaseModel):
+    """Request model for multi-site plan synthesis."""
+    site_ids: list[str] = Field(..., min_length=1, description="List of settlement IDs")
+
+
+
 def _get_weights_hash() -> str:
     weights_path = CONFIG_DIR / "weights.yaml"
     if weights_path.exists():
         with open(weights_path, "rb") as f:
             return hashlib.sha256(f.read()).hexdigest()[:16]
     return "default_weights"
+
+
+def _resolve_site(site_id: str) -> Site | None:
+    """
+    Resolve a site entity by either its unique system ID (e.g. 'site_001')
+    or case-insensitive settlement name (e.g. 'laxmipur', 'mundaguda').
+    """
+    site = evaluate_site(site_id)
+    if site:
+        return site
+    site_norm = site_id.strip().lower()
+    for v in get_all_villages():
+        vname = v.name.lower()
+        vid = v.id.lower()
+        if (
+            vname == site_norm
+            or vid == site_norm
+            or vname.replace(" ", "_") == site_norm
+            or vname.replace(" ", "") == site_norm
+        ):
+            return evaluate_site(v.id)
+    return None
 
 
 # ── Routes ─────────────────────────────────────
@@ -125,7 +186,7 @@ async def list_villages(
 @app.get("/sites/{site_id}", response_model=Site)
 async def get_site(site_id: str) -> Site:
     """Full site detail with scores, safety verdict, and recommendations."""
-    site = evaluate_site(site_id)
+    site = _resolve_site(site_id)
     if not site:
         raise HTTPException(status_code=404, detail=f"Site '{site_id}' not found")
     return site
@@ -134,8 +195,10 @@ async def get_site(site_id: str) -> Site:
 @app.post("/scenario", response_model=ScenarioResult)
 async def run_scenario(request: ScenarioRequest) -> ScenarioResult:
     """Run a what-if rainfall scenario for a site."""
+    resolved_site = _resolve_site(request.site_id)
+    resolved_id = resolved_site.village.id if resolved_site else request.site_id
     result = run_site_scenario(
-        site_id=request.site_id,
+        site_id=resolved_id,
         rainfall_fraction=request.rainfall_fraction,
         include_intervention=request.include_intervention,
     )
@@ -151,7 +214,9 @@ async def get_recommendations(
     site_id: str = Body(..., embed=True),
 ) -> list[Recommendation]:
     """Get recommended interventions for a site."""
-    recs = get_site_recommendations(site_id)
+    resolved_site = _resolve_site(site_id)
+    resolved_id = resolved_site.village.id if resolved_site else site_id
+    recs = get_site_recommendations(resolved_id)
     if recs is None:
         raise HTTPException(status_code=404, detail=f"Site '{site_id}' not found")
     return recs
@@ -346,10 +411,11 @@ async def submit_voice_observation(
     return result
 
 
-@app.post("/participatory/observe/whatsapp", response_model=dict)
+@app.post("/participatory/observe/whatsapp")
 async def whatsapp_webhook(
-    Body: str = Form(...),
-    From: str = Form(...),
+    request: Request,
+    Body: str | None = Form(None),
+    From: str | None = Form(None),
     MediaUrl0: str = Form(""),
     MediaContentType0: str = Form(""),
 ) -> Response:
@@ -357,18 +423,28 @@ async def whatsapp_webhook(
     WhatsApp Business API webhook endpoint.
 
     Receives incoming messages from WhatsApp (via Twilio or Meta Cloud API).
-    Handles both text and voice messages.
+    Handles both text and voice messages, supporting both JSON and Form encodings.
     """
-    observer_id = From.replace("whatsapp:", "")
+    if "application/json" in request.headers.get("content-type", ""):
+        try:
+            json_body = await request.json()
+            Body = json_body.get("Body", json_body.get("body", Body))
+            From = json_body.get("From", json_body.get("from", From))
+            MediaUrl0 = json_body.get("MediaUrl0", MediaUrl0)
+            MediaContentType0 = json_body.get("MediaContentType0", MediaContentType0)
+        except Exception:
+            pass
+
+    from_val = From or "whatsapp:+919876543210"
+    body_val = Body or ""
+    observer_id = from_val.replace("whatsapp:", "")
     observer_name = ""
 
     # If media (voice) attached
     if MediaUrl0 and "audio" in MediaContentType0:
-        # In production, download from MediaUrl0 and upload to S3
-        # For now, process as text with note about voice
-        text = f"[Voice message received] {Body}"
+        text = f"[Voice message received] {body_val}"
     else:
-        text = Body
+        text = body_val
 
     result = _participatory_agent.execute(
         {
@@ -379,14 +455,12 @@ async def whatsapp_webhook(
         }
     )
 
-    # Return TwiML response for Twilio
-    from fastapi.responses import Response
-
     twiml = f"""<?xml version="1.0" encoding="UTF-8"?>
 <Response>
     <Message>Thank you! Your observation has been recorded. {result.narrative}</Message>
 </Response>"""
     return Response(content=twiml, media_type="application/xml")
+
 
 
 @app.get("/participatory/leaderboard", response_model=list[dict])
@@ -430,15 +504,31 @@ class PathwayRequest:
 
 @app.post("/pathways/generate", response_model=dict)
 async def generate_pathway(
-    site_id: str = Form(...),
-    ssp_scenario: str = Form("SSP2-4.5"),
-    base_rainfall_fraction: float = Form(1.0),
+    request: Request,
+    site_id: str | None = Form(None),
+    ssp_scenario: str | None = Form(None),
+    base_rainfall_fraction: float | None = Form(None),
 ) -> dict:
     """Generate a single adaptation pathway for a site under an SSP scenario."""
+    if "application/json" in request.headers.get("content-type", ""):
+        try:
+            body = await request.json()
+            site_id = body.get("site_id", site_id)
+            ssp_scenario = body.get("ssp_scenario", ssp_scenario)
+            base_rainfall_fraction = body.get("base_rainfall_fraction", base_rainfall_fraction)
+        except Exception:
+            pass
+
+    if not site_id:
+        raise HTTPException(status_code=422, detail="Field 'site_id' is required")
+
+    resolved_site = _resolve_site(site_id)
+    target_id = resolved_site.village.id if resolved_site else site_id
+    ssp = ssp_scenario or "SSP2-4.5"
+    rf = 1.0 if base_rainfall_fraction is None else float(base_rainfall_fraction)
+
     try:
-        pathway = generate_adaptation_pathway(
-            site_id, ssp_scenario, base_rainfall_fraction
-        )
+        pathway = generate_adaptation_pathway(target_id, ssp, rf)
         return pathway_to_dict(pathway)
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
@@ -448,19 +538,41 @@ async def generate_pathway(
 
 @app.post("/pathways/compare", response_model=dict)
 async def compare_pathways(
-    site_id: str = Form(...),
-    scenarios: str = Form("SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5"),
-    base_rainfall_fraction: float = Form(1.0),
+    request: Request,
+    site_id: str | None = Form(None),
+    scenarios: str | None = Form(None),
+    base_rainfall_fraction: float | None = Form(None),
 ) -> dict:
     """Generate and compare pathways across multiple SSP scenarios."""
-    scenario_list = [s.strip() for s in scenarios.split(",") if s.strip()]
+    if "application/json" in request.headers.get("content-type", ""):
+        try:
+            body = await request.json()
+            site_id = body.get("site_id", site_id)
+            scenarios = body.get("scenarios", scenarios)
+            base_rainfall_fraction = body.get("base_rainfall_fraction", base_rainfall_fraction)
+        except Exception:
+            pass
+
+    if not site_id:
+        raise HTTPException(status_code=422, detail="Field 'site_id' is required")
+
+    resolved_site = _resolve_site(site_id)
+    target_id = resolved_site.village.id if resolved_site else site_id
+
+    if isinstance(scenarios, list):
+        scenario_list = scenarios
+    else:
+        scenarios_str = scenarios or "SSP1-2.6,SSP2-4.5,SSP3-7.0,SSP5-8.5"
+        scenario_list = [s.strip() for s in scenarios_str.split(",") if s.strip()]
+
     try:
-        pathways = generate_pathway_comparison(site_id, scenario_list)
+        pathways = generate_pathway_comparison(target_id, scenario_list)
         return {ssp: pathway_to_dict(p) for ssp, p in pathways.items()}
     except ValueError as exc:
         raise HTTPException(status_code=404, detail=str(exc))
     except Exception as exc:  # noqa: BLE001
         raise HTTPException(status_code=500, detail=f"Pathway comparison failed: {exc}")
+
 
 
 @app.get("/pathways/visualize/{site_id}/{ssp_scenario}", response_model=dict)
@@ -537,14 +649,75 @@ async def generate_report(request: ReportRequest) -> ReportResult:
     )
 
 
-@app.get("/reports/{filename}", response_class=HTMLResponse)
+@app.get("/reports/{filename:path}", response_class=HTMLResponse)
 def get_report_file(filename: str) -> HTMLResponse:
-    """Serve a generated action dossier HTML document."""
-    filepath = REPORTS_DIR / filename
-    if not filepath.exists():
+    """Serve a generated action dossier HTML document with path traversal protection."""
+    if ".." in filename or "/" in filename or "\\" in filename:
+        raise HTTPException(status_code=400, detail="Invalid report filename")
+    safe_filename = Path(filename).name
+    filepath = (REPORTS_DIR / safe_filename).resolve()
+    if not filepath.exists() or not filepath.is_relative_to(REPORTS_DIR.resolve()):
         raise HTTPException(status_code=404, detail="Report dossier not found")
     with open(filepath, "r", encoding="utf-8") as f:
         return HTMLResponse(content=f.read())
+
+
+
+# ── AI Domain Specialist & Lead Planner Agent Routes ─────────────────────
+
+
+@app.get("/agent/briefing/{site_id}", response_model=dict)
+async def get_agent_briefing(site_id: str) -> dict:
+    """Retrieve comprehensive multi-agent briefing across all domain specialists for a settlement."""
+    site = _resolve_site(site_id)
+    if not site:
+        raise HTTPException(status_code=404, detail=f"Site '{site_id}' not found")
+    briefing = _orchestrator.assess_site(site)
+    is_rejected = briefing.get("safety_status") == "REJECTED"
+    briefing["lead_decision"] = {
+        "verdict": "rejected" if is_rejected else "approved",
+        "summary": briefing.get("executive_decision", ""),
+    }
+    agents_map = briefing.get("agent_briefings", {})
+    briefing["agents"] = [
+        agents_map.get("safety_audit", {}),
+        agents_map.get("hydrogeology", {}),
+        agents_map.get("heat_water_stress", {}),
+        agents_map.get("springshed", {}),
+        agents_map.get("civil_engineering", {}),
+    ]
+    return briefing
+
+
+@app.post("/agent/consult", response_model=dict)
+async def consult_agent(req: AgentConsultRequest) -> dict:
+    """
+    Interactive consultation with the Lead District Planner and domain specialist agents.
+    Evaluates queries against deterministic safety vetoes, lithology, and state MGNREGA rates.
+    """
+    site = _resolve_site(req.site_id)
+    if not site:
+        raise HTTPException(status_code=404, detail=f"Site '{req.site_id}' not found")
+    res = _orchestrator.consult(site, req.query, req.agent_type)
+    res["response_text"] = res.get("response", "")
+    res["evidence_bullets"] = res.get("recommendations", [])
+    return res
+
+
+@app.post("/agent/synthesize", response_model=dict)
+async def synthesize_sites(req: AgentSynthesizeRequest) -> dict:
+    """Run multi-site executive action dossier synthesis across settlements."""
+    sites: list[Site] = []
+    for sid in req.site_ids:
+        s = _resolve_site(sid)
+        if s:
+            sites.append(s)
+    if not sites:
+        raise HTTPException(status_code=404, detail="No matching sites found for synthesis")
+    res = _orchestrator.execute({"sites": sites})
+    return res.model_dump()
+
+
 
 
 # ── DPR Generator Routes ─────────────────────────────────
@@ -554,12 +727,34 @@ from fastapi.responses import Response
 
 @app.post("/dpr/generate", response_model=dict)
 async def generate_dpr(
-    site_ids: str = Form(...),
+    request: Request,
+    site_ids: str | None = Form(None),
     project_name: str = Form(""),
     include_pdf: bool = Form(False),
 ) -> dict:
     """Generate a DPR package (DOCX, XLSX, KML) for the given sites."""
-    site_list = [s.strip() for s in site_ids.split(",") if s.strip()]
+    if "application/json" in request.headers.get("content-type", ""):
+        try:
+            body = await request.json()
+            raw_sids = body.get("site_ids")
+            if isinstance(raw_sids, list):
+                site_ids = ",".join(raw_sids)
+            elif isinstance(raw_sids, str):
+                site_ids = raw_sids
+            project_name = body.get("project_name", project_name)
+            include_pdf = body.get("include_pdf", include_pdf)
+        except Exception:
+            pass
+
+    if not site_ids:
+        raise HTTPException(status_code=400, detail="At least one site_id required")
+
+    site_list_raw = [s.strip() for s in site_ids.split(",") if s.strip()]
+    site_list = []
+    for s in site_list_raw:
+        resolved = _resolve_site(s)
+        site_list.append(resolved.village.id if resolved else s)
+
     if not site_list:
         raise HTTPException(status_code=400, detail="At least one site_id required")
 
@@ -602,7 +797,9 @@ async def generate_dpr(
             "project_name": dpr.project_name,
             "site_count": dpr.manifest["site_count"],
             "total_cost_inr": dpr.manifest["total_cost_high_inr"],
+            "total_budget_inr": dpr.manifest["total_cost_high_inr"],
             "total_labour_days": dpr.manifest["total_labour_days"],
+            "download_url": f"/dpr/download?site_ids={','.join(site_list)}",
             "zip_base64": zip_b64,
             "presigned_url": presigned_url,
             "manifest": dpr.manifest,
@@ -613,16 +810,28 @@ async def generate_dpr(
         raise HTTPException(status_code=500, detail=f"DPR generation failed: {exc}")
 
 
-@app.post("/dpr/download", response_class=Response)
+@app.api_route("/dpr/download", methods=["GET", "POST"], response_class=Response)
 async def download_dpr_zip(
-    site_ids: str = Form(...),
-    project_name: str = Form(""),
-    include_pdf: bool = Form(False),
+    request: Request,
+    site_ids: str | None = Query(None),
+    project_name: str = Query(""),
+    include_pdf: bool = Query(False),
 ) -> Response:
     """Download DPR package as ZIP file directly."""
-    site_list = [s.strip() for s in site_ids.split(",") if s.strip()]
-    if not site_list:
+    if request.method == "POST":
+        form_data = await request.form()
+        site_ids = form_data.get("site_ids", site_ids)
+        project_name = form_data.get("project_name", project_name)
+        include_pdf = str(form_data.get("include_pdf", include_pdf)).lower() in ("true", "1")
+
+    if not site_ids:
         raise HTTPException(status_code=400, detail="At least one site_id required")
+
+    raw_list = [s.strip() for s in site_ids.split(",") if s.strip()]
+    site_list = []
+    for s in raw_list:
+        resolved = _resolve_site(s)
+        site_list.append(resolved.village.id if resolved else s)
 
     try:
         dpr = generate_dpr_package(site_list, project_name or None, include_pdf)
@@ -652,5 +861,62 @@ async def list_scheme_mapping() -> dict:
     }
 
 
+# ── Static Files & SPA Frontend Serving ─────────────────────
+
+FRONTEND_DIST = Path(__file__).resolve().parent.parent / "frontend" / "dist"
+if not FRONTEND_DIST.exists():
+    FRONTEND_DIST = Path(__file__).resolve().parent.parent / "bhujal-frontend" / "bhujal-frontend" / "dist"
+
+if FRONTEND_DIST.exists():
+    assets_dir = FRONTEND_DIST / "assets"
+    if assets_dir.exists():
+        app.mount("/assets", StaticFiles(directory=assets_dir), name="assets")
+
+    @app.get("/aoi.geojson")
+    async def get_aoi_geojson():
+        geo_file = FRONTEND_DIST / "aoi.geojson"
+        if geo_file.exists():
+            return FileResponse(geo_file, media_type="application/geo+json")
+        cfg_geo = CONFIG_DIR / "aoi.geojson"
+        if cfg_geo.exists():
+            return FileResponse(cfg_geo, media_type="application/geo+json")
+        raise HTTPException(status_code=404, detail="AOI geojson not found")
+
+    @app.get("/favicon.ico")
+    async def get_favicon():
+        fav = FRONTEND_DIST / "favicon.ico"
+        if fav.exists():
+            return FileResponse(fav)
+        return Response(status_code=204)
+
+    SPA_ROUTES = {"", "map", "field-data", "reports", "about", "about-data", "agents", "overview"}
+
+    @app.get("/{full_path:path}")
+    async def serve_spa_frontend(full_path: str):
+        full_path_clean = full_path.strip("/")
+        if ".." in full_path_clean:
+            raise HTTPException(status_code=400, detail="Invalid path")
+        api_prefixes = (
+            "meta", "villages", "sites", "scenario", "recommendation",
+            "observations", "telemetry", "participatory", "pathways",
+            "report", "reports", "dpr", "agent", "docs", "openapi.json", "redoc",
+        )
+        if any(full_path_clean == p or full_path_clean.startswith(f"{p}/") for p in api_prefixes):
+            raise HTTPException(status_code=404, detail="API route not found")
+
+        file_candidate = FRONTEND_DIST / full_path_clean
+        if full_path_clean and file_candidate.is_file():
+            return FileResponse(file_candidate)
+
+        if full_path_clean in SPA_ROUTES or full_path_clean == "":
+            index_html = FRONTEND_DIST / "index.html"
+            if index_html.exists():
+                return FileResponse(index_html)
+
+        raise HTTPException(status_code=404, detail="Not found")
+
+
+
 # ── Lambda handler ─────────────────────────────
 handler = Mangum(app) if Mangum is not None else None
+

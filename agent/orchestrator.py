@@ -173,3 +173,166 @@ class LeadPlannerOrchestratorAgent(BaseAgent):
             recommendations=recs,
             mode="deterministic_fallback",
         )
+
+    def consult(
+        self,
+        site: Site,
+        query: str,
+        agent_type: str | None = None,
+    ) -> dict[str, Any]:
+        """
+        Interactive multi-agent planner consultation for a specific site.
+        Evaluates the planner's query against geotechnical safety vetoes,
+        lithology, hydrological scores, and state-calibrated MGNREGA structures.
+        """
+        from datetime import datetime, timezone
+        UTC = timezone.utc
+
+        assessment = self.assess_site(site)
+        vname = site.village.name
+        safety_status = assessment["safety_status"]
+        is_rejected = safety_status == "REJECTED"
+        q_lower = query.lower()
+
+        scores_by_type = {s.score_type: s for s in site.scores}
+        recharge_s = scores_by_type.get("recharge_score")
+        heat_s = scores_by_type.get("heat_water_stress")
+        spring_s = scores_by_type.get("spring_drying_index")
+
+        recharge_val = recharge_s.value if recharge_s else 50.0
+        heat_val = heat_s.value if heat_s else 50.0
+        spring_val = spring_s.value if spring_s else 0.0
+
+        # Attempt Bedrock invocation if enabled
+        prompt = (
+            f"Context: Village {vname}, State {site.village.state}, District {site.village.district}.\n"
+            f"Safety Status: {safety_status}.\n"
+            f"Scores: Recharge Suitability {recharge_val:.1f}/100, Heat Stress {heat_val:.1f}/100, Spring Drying Index {spring_val:.1f}/100.\n"
+            f"Recommendations: {[r.intervention_name for r in site.recommendations] if site.recommendations else 'None'}.\n"
+            f"User Planner Query: {query}\n"
+            f"Provide an authoritative, safety-first response as Lead District Planner Orchestrator."
+        )
+        bedrock_narrative = self._invoke_bedrock(prompt)
+
+        if bedrock_narrative:
+            return {
+                "site_id": site.village.id,
+                "village_name": vname,
+                "query": query,
+                "agent_name": self.name,
+                "role": self.role,
+                "safety_status": safety_status,
+                "response": bedrock_narrative,
+                "recommendations": [
+                    f"Follow geotechnical directives for {vname} ({safety_status}).",
+                    "Coordinate with local Gram Panchayat and MGNREGA Programme Officer.",
+                ],
+                "mode": "bedrock",
+                "timestamp": datetime.now(UTC).isoformat(),
+            }
+
+        # Deterministic grounded reasoning fallback
+        recs: list[str] = []
+        if is_rejected:
+            rules = site.safety.rule_ids if site.safety else []
+            reasons = site.safety.reasons if site.safety else []
+            answer = (
+                f"SAFETY VETO ENFORCED: As Lead District Planner, I must advise that {vname} is classified as REJECTED "
+                f"due to geotechnical hazard rules ({', '.join(rules)}). "
+                f"Specifically: {'; '.join(reasons)}. "
+                "No civil structural build (such as check dams, percolation tanks, or masonry weirs) can be sanctioned "
+                "under MGNREGA or District Watershed funds at this location, as doing so introduces unacceptable risks "
+                "of slope destabilization or scarp collapse. "
+                "Recommended alternative: Divert allocations strictly to bio-engineering (afforestation, Vetiver grass vegetative barriers, "
+                "contour hedgerows) and groundwater monitoring."
+            )
+            recs = [
+                "Prohibit capital sanction for concrete or heavy masonry civil works at this site.",
+                "Implement non-structural bio-engineering and soil conservation works.",
+                "Review downstream catchments with slopes < 20° for possible artificial recharge placement.",
+            ]
+        elif "spring" in q_lower or "jhola" in q_lower or "water table" in q_lower:
+            has_sp = site.village.has_spring
+            sp_note = (
+                "A recognized gravity-fed spring exists at this site. Recharge zone protection in the upper recharge ridge is critical to arrest pre-monsoon discharge decline."
+                if has_sp
+                else "No primary registered perennial springhead is recorded in the baseline database for this settlement, though perched seasonal fractures may be present."
+            )
+            answer = (
+                f"Springshed Assessment for {vname}: "
+                f"Spring drying vulnerability index is rated at {spring_val:.1f}/100. "
+                f"{sp_note} Recharge suitability is {recharge_val:.1f}/100. Continuous staggered contour trenches (CCT) on upper barren ridges are prioritized."
+            )
+            recs = [
+                "Map upper micro-catchment recharge zone using GPS field tracking.",
+                "Construct Continuous Contour Trenches (CCT) and loose boulder structures in upper 1st order streams.",
+                "Engage community Jal Sathis to monitor monthly discharge telemetry.",
+            ]
+        elif "heat" in q_lower or "temperature" in q_lower or "summer" in q_lower:
+            answer = (
+                f"Heat-Water Compound Vulnerability for {vname}: "
+                f"Composite heat-water stress score is {heat_val:.1f}/100. "
+                f"In pre-monsoon months (April-June), elevated Land Surface Temperature (LST) and depleted soil moisture "
+                f"create compound distress for tribal farmsteads. "
+                f"Hydrological interventions that maintain surface pondage and shallow water tables directly mitigate local microclimate extremes."
+            )
+            recs = [
+                "Fast-track shallow water harvesting bodies prior to May peak temperatures.",
+                "Combine farm ponds with shade tree agroforestry along bunds.",
+                "Schedule MGNREGA earthworks during cooler morning hours to protect wage-seekers.",
+            ]
+        elif "cost" in q_lower or "budget" in q_lower or "mgnrega" in q_lower or "wage" in q_lower:
+            if site.recommendations:
+                top_rec = site.recommendations[0]
+                low_c = top_rec.cost_range_inr.get("low", 0)
+                high_c = top_rec.cost_range_inr.get("high", 0)
+                answer = (
+                    f"MGNREGA Budget & Cost Specification for {vname} ({site.village.state}): "
+                    f"Primary recommended structure: '{top_rec.intervention_name}'. "
+                    f"Indicative capital cost range: INR {low_c:,.0f} to INR {high_c:,.0f} (approx. {(high_c/100000):.2f} Lakhs). "
+                    f"Estimated unskilled labour component: {top_rec.labour_days} person-days, calibrated to the state schedule of rates. "
+                    f"Material-to-labour ratio complies with standard MGNREGA 60:40 guidelines."
+                )
+                recs = [
+                    f"Submit work proposal under MGNREGA code 60:40 for {top_rec.intervention_name}.",
+                    f"Sanction allocation of {top_rec.labour_days} person-days in the Gram Panchayat annual action plan.",
+                ]
+            else:
+                answer = f"No civil structures are cleared for MGNREGA construction at {vname} under current geotechnical criteria."
+                recs = ["Explore administrative funding for watershed bio-fencing and nursery creation."]
+        else:
+            if site.recommendations:
+                top_rec = site.recommendations[0]
+                answer = (
+                    f"Lead District Planner Assessment for {vname}: "
+                    f"The settlement is verified as {safety_status} for watershed development. "
+                    f"Hydrogeological recharge suitability is {recharge_val:.1f}/100, and heat stress is {heat_val:.1f}/100. "
+                    f"The multi-agent committee endorses '{top_rec.intervention_name}' as the optimal site-level intervention. "
+                    f"This structure will maximize infiltration into fractured bedrock while remaining stable during peak monsoon discharge."
+                )
+                recs = [
+                    f"Sanction technical survey for {top_rec.intervention_name}.",
+                    "Conduct Gram Sabha consultation for location siting in common revenue lands.",
+                    "Download the comprehensive DPR ZIP package for administrative technical sanction.",
+                ]
+            else:
+                answer = (
+                    f"Lead District Planner Assessment for {vname}: "
+                    f"Site is cleared as {safety_status}, but standard civil structures did not meet minimum suitability thresholds. "
+                    "Decentralized loose boulder check dams and plantation bunds are recommended."
+                )
+                recs = ["Commission site inspection by Junior Engineer before finalizing intervention."]
+
+        return {
+            "site_id": site.village.id,
+            "village_name": vname,
+            "query": query,
+            "agent_name": self.name,
+            "role": self.role,
+            "safety_status": safety_status,
+            "response": answer,
+            "recommendations": recs,
+            "mode": "deterministic_fallback",
+            "timestamp": datetime.now(UTC).isoformat(),
+        }
+

@@ -1,0 +1,14 @@
+{
+  "name": "bhujal-frontend-workspace",
+  "private": true,
+  "version": "1.0.0",
+  "workspaces": [
+    "bhujal-frontend"
+  ],
+  "scripts": {
+    "dev": "npm --prefix bhujal-frontend run dev",
+    "build": "npm --prefix bhujal-frontend run build",
+    "preview": "npm --prefix bhujal-frontend run preview",
+    "test": "npm --prefix bhujal-frontend run test"
+  }
+}

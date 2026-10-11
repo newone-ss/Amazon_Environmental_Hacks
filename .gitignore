@@ -62,5 +62,18 @@ Thumbs.db
 htmlcov/
 .coverage
 
+# Node / Frontend
+node_modules/
+**/node_modules/
+test-results/
+**/test-results/
+playwright-report/
+**/playwright-report/
+.last-run.json
+
+# Scratch & temporary
+scratch/
+
 # Logs
 *.log
+

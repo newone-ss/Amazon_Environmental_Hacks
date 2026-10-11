@@ -187,3 +187,64 @@ class TestApiEndpoints:
         assert response.status_code == 200
         assert response.headers["content-type"] == "application/zip"
         assert response.content[:4] == b"PK\x03\x04"
+
+    def test_security_headers(self) -> None:
+        response = client.get("/meta")
+        assert response.headers.get("x-content-type-options") == "nosniff"
+        assert response.headers.get("x-frame-options") == "SAMEORIGIN"
+        assert response.headers.get("x-xss-protection") == "1; mode=block"
+
+    def test_path_traversal_prevention(self) -> None:
+        response = client.get("/reports/../../etc/passwd")
+        assert response.status_code in (404, 422)
+
+    def test_agent_briefing(self) -> None:
+        response = client.get("/agent/briefing/site_001")
+        assert response.status_code == 200
+        data = response.json()
+        assert data["site_id"] == "site_001"
+        assert data["village_name"] == "Laxmipur"
+        assert data["safety_status"] == "SAFE"
+        assert data["lead_decision"]["verdict"] == "approved"
+        assert "ACTION APPROVED" in data["executive_decision"]
+        assert "agent_briefings" in data
+        assert "hydrogeology" in data["agent_briefings"]
+        assert "safety_audit" in data["agent_briefings"]
+        assert len(data["agents"]) == 5
+
+        # Test case-insensitive resolution by village name
+        resp_named = client.get("/agent/briefing/mundaguda")
+        assert resp_named.status_code == 200
+        data_named = resp_named.json()
+        assert data_named["safety_status"] == "REJECTED"
+        assert data_named["lead_decision"]["verdict"] == "rejected"
+
+
+    def test_agent_consult_safe(self) -> None:
+        payload = {"site_id": "site_001", "query": "Can we build a check dam here?"}
+        response = client.post("/agent/consult", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["site_id"] == "site_001"
+        assert data["safety_status"] == "SAFE"
+        assert len(data["response"]) > 20
+        assert len(data["recommendations"]) > 0
+
+    def test_agent_consult_vetoed(self) -> None:
+        payload = {"site_id": "site_002", "query": "Can we build a check dam here?"}
+        response = client.post("/agent/consult", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert data["site_id"] == "site_002"
+        assert data["safety_status"] == "REJECTED"
+        assert "SAFETY VETO ENFORCED" in data["response"]
+
+    def test_agent_synthesize(self) -> None:
+        payload = {"site_ids": ["site_001", "site_002"]}
+        response = client.post("/agent/synthesize", json=payload)
+        assert response.status_code == 200
+        data = response.json()
+        assert "summary" in data
+        assert "narrative" in data
+        assert len(data["recommendations"]) > 0
+
